@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "859101157699",
+    "project_id": "shoe-commerce-d8257",
+    "storage_bucket": "shoe-commerce-d8257.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859101157699:android:fd0e4fe3ee4a26714477f6",
+        "android_client_info": {
+          "package_name": "com.panther.shoeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa2WpUhnqH1h_tcNCml3FWvdlGJJEL1RI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -25,7 +25,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.panther.shoeapp.app.BottomBarScreen
+import com.panther.shoeapp.navigation.BottomBarScreen
 
 @Composable
 fun BottomNav(navController: NavHostController) {

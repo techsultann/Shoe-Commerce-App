@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.panther.shoeapp.app.navigation.RootNavGraph
+import com.panther.shoeapp.navigation.RootNavGraph
 import com.panther.shoeapp.ui.theme.ShoeAppTheme
 
 class MainActivity : ComponentActivity() {

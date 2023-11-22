@@ -1,4 +1,4 @@
-package com.panther.shoeapp.app.navigation
+package com.panther.shoeapp.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController

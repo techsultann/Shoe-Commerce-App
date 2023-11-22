@@ -1,4 +1,4 @@
-package com.panther.shoeapp.app.navigation
+package com.panther.shoeapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

@@ -1,4 +1,4 @@
-package com.panther.shoeapp.app
+package com.panther.shoeapp.navigation
 
 import com.panther.shoeapp.R
 
