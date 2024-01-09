@@ -11,12 +11,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.ui.component.AuthTextField
@@ -27,8 +32,13 @@ import com.panther.shoeapp.utils.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: OnboardingViewModel = viewModel()
 ) {
+
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -58,7 +68,50 @@ fun SignupScreen(
         
         Spacer(modifier = Modifier.padding(16.dp))
 
-        InputTextFields()
+        Text(text = "Username")
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your username")
+            },
+            value = username,
+            onValueChange = { it ->
+                username = it
+            },
+        )
+
+        Spacer(modifier = Modifier.padding(16.dp))
+
+        Text(text = "Email")
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your email")
+            },
+            value = email,
+            onValueChange = { it ->
+                email = it
+            },
+        )
+        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+        Text(text = "Password")
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your password")
+            },
+            value = password,
+            onValueChange = { it ->
+                password = it
+            },
+        )
 
         Spacer(modifier = Modifier.padding(16.dp))
 
@@ -68,6 +121,7 @@ fun SignupScreen(
                 .weight(1f)
                 .requiredHeight(66.dp),
             onClick = {
+                viewModel.signUp(email, password, username)
                 navController.popBackStack()
                 navController.navigate(route = Screen.LoginScreen.route)
             }
@@ -82,43 +136,6 @@ fun SignupScreen(
 
 }
 
-@Composable
-fun InputTextFields() {
-
-    Text(text = "Username")
-
-    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-    AuthTextField(
-        label = {
-            Text(text = "Enter your username")
-        }
-    )
-
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    Text(text = "Email")
-
-    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-    AuthTextField(
-        label = {
-            Text(text = "Enter your email")
-        }
-    )
-    Spacer(modifier = Modifier.padding(vertical = 16.dp))
-
-    Text(text = "Password")
-
-    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-    AuthTextField(
-        label = {
-            Text(text = "Enter your password")
-        }
-    )
-}
-
 
 
 @Preview
@@ -127,16 +144,5 @@ fun PreviewSignUpScreen(){
     Column(modifier = Modifier.fillMaxSize()) {
 
         SignupScreen(navController = rememberNavController())
-    }
-}
-
-@Preview
-@Composable
-fun PreviewInputTextFields(){
-    Column(
-        modifier = Modifier.background(Color.White)
-    ) {
-
-        InputTextFields()
     }
 }

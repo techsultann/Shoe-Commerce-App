@@ -59,7 +59,7 @@ import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.ProductCard
-import com.panther.shoeapp.ui.component.RangeSlider
+import com.panther.shoeapp.ui.component.PriceRangeSlider
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -231,7 +231,7 @@ fun SectionA() {
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState
             ) {
-                RangeSlider(modifier = Modifier)
+                PriceRangeSlider(modifier = Modifier)
 
                 Spacer(modifier = Modifier.padding(50.dp))
 

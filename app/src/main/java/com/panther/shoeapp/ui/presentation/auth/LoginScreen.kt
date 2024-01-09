@@ -8,16 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,8 @@ import com.panther.shoeapp.utils.Screen
 fun LoginScreen(
     navController: NavHostController
 ) {
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -61,7 +64,34 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.padding(16.dp))
 
-        LoginTextFields()
+        Text(text = "Email")
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your email")
+            },
+            value = email,
+            onValueChange = { it ->
+                email = it
+            },
+        )
+        Spacer(modifier = Modifier.padding(16.dp))
+
+        Text(text = "Password")
+
+        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your password")
+            },
+            value = password,
+            onValueChange = { it ->
+                password = it
+            },
+        )
 
         Row {
             val checkedState = remember { mutableStateOf(false ) }
@@ -100,26 +130,7 @@ fun LoginScreen(
 @Composable
 fun LoginTextFields() {
 
-    Text(text = "Email")
 
-    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-    AuthTextField(
-        label = {
-            Text(text = "Enter your email")
-        }
-    )
-    Spacer(modifier = Modifier.padding(16.dp))
-
-    Text(text = "Password")
-
-    Spacer(modifier = Modifier.padding(vertical = 4.dp))
-
-    AuthTextField(
-        label = {
-            Text(text = "Enter your password")
-        }
-    )
 }
 
 @Preview
