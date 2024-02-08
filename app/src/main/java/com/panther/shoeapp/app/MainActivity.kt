@@ -16,7 +16,6 @@ class MainActivity : ComponentActivity() {
             ShoeAppTheme {
 
                 RootNavGraph(navController = rememberNavController())
-
             }
         }
     }

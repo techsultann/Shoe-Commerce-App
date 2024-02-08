@@ -3,6 +3,8 @@ package com.panther.shoeapp.ui.component
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -14,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +25,9 @@ fun AuthTextField(
     singleLine: Boolean = true,
     label: @Composable() (() -> Unit)?,
     value: String,
-    onValueChange: (String) -> Unit = {}
+    onValueChange: (String) -> Unit = {},
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions
 ) {
 
     var text by rememberSaveable { mutableStateOf("") }
@@ -37,7 +40,9 @@ fun AuthTextField(
         onValueChange = onValueChange,
         singleLine = singleLine,
         label = label,
-        shape = CircleShape
+        shape = CircleShape,
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions
     )
 }
 
@@ -49,7 +54,8 @@ fun TextFieldWithPlaceholder() {
         value = text,
         onValueChange = { text = it },
         label = { Text("Email") },
-        placeholder = { Text("example@gmail.com") }
+        placeholder = { Text("example@gmail.com") },
+
     )
 }
 /*@Composable
@@ -124,9 +130,12 @@ fun PasswordTextField() {
 }*/
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+/*
 @Preview
 @Composable
 fun PreviewAuthTextField() {
-    AuthTextField(label = { /*TODO*/ }, value = "Hello World!")
-}
+    AuthTextField(label = { */
+/*TODO*//*
+ }, value = "Hello World!")
+}*/

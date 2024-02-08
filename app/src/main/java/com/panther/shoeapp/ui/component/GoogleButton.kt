@@ -1,6 +1,5 @@
 package com.panther.shoeapp.ui.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +36,8 @@ fun GoogleButton() {
             .requiredHeight(66.dp),
         onClick = {clicked = !clicked},
         shape = MaterialTheme.shapes.extraLarge,
-        color = Color.White
+        color = Color.White,
+        shadowElevation = 8.dp
     ) {
         Row(
             modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),

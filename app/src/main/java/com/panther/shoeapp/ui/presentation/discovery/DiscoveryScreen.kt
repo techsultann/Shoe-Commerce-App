@@ -128,7 +128,7 @@ fun DiscoveryScreen(
 
                 Text(
                     text = buildAnnotatedString {
-                        append("1001 Shoes Are \n\n")
+                        append("1001 Shoes Are \n")
                         pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
                         append("Available")
                     },

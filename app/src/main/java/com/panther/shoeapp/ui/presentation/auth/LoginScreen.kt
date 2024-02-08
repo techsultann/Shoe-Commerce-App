@@ -8,11 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,23 +26,47 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.ui.component.AuthTextField
 import com.panther.shoeapp.ui.component.GoogleButton
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.utils.Resource
 import com.panther.shoeapp.utils.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    navController: NavHostController
+    navController: NavHostController,
+    viewModel: OnboardingViewModel = viewModel()
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    val loginState by viewModel.loginState.collectAsState()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    LaunchedEffect(key1 = loginState) {
+        when (loginState) {
+            is Resource.Loading -> {
+
+            }
+            is Resource.Success -> {
+                viewModel.Login(email, password)
+                navController.popBackStack()
+                navController.navigate(route = Screen.HomeScreen.route)
+
+            }
+            is Resource.Error -> {
+                scaffoldState.snackbarHostState.showSnackbar("Login failed")
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -76,6 +106,8 @@ fun LoginScreen(
             onValueChange = { it ->
                 email = it
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions()
         )
         Spacer(modifier = Modifier.padding(16.dp))
 
@@ -91,6 +123,8 @@ fun LoginScreen(
             onValueChange = { it ->
                 password = it
             },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions()
         )
 
         Row {
@@ -116,8 +150,7 @@ fun LoginScreen(
                 .weight(1f)
                 .requiredHeight(66.dp),
             onClick = {
-                navController.popBackStack()
-                navController.navigate(route = Screen.HomeScreen.route)
+                viewModel.Login(email, password)
             }
         ) {
             Text(text = "Log in")
