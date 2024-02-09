@@ -1,6 +1,7 @@
 package com.panther.shoeapp.ui.presentation.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,7 +156,8 @@ fun SignupScreen(
             keyboardActions = KeyboardActions()
         )
 
-        Spacer(modifier = Modifier.padding(16.dp))
+
+        Spacer(modifier = Modifier.weight(1f))
 
         ShoeAppButton(
             modifier = Modifier
@@ -176,7 +182,25 @@ fun SignupScreen(
                 )
             }
         }
-        
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .clickable { navController.navigate(Screen.LoginScreen.route) },
+            textAlign = TextAlign.Center,
+            text = buildAnnotatedString {
+
+                append("Already have an account? ")
+                append(
+                    AnnotatedString(
+                        text = "Sign in ",
+                        spanStyle = SpanStyle(Color.Red)
+                    )
+                )
+            },
+            fontSize = 16.sp
+        )
 
         
     }

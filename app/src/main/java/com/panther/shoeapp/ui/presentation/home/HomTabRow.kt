@@ -1,18 +1,19 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package com.panther.shoeapp
+package com.panther.shoeapp.ui.presentation.home
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -31,33 +32,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.panther.shoeapp.models.products
-import com.panther.shoeapp.ui.presentation.category.CategoryProductCard
+import com.panther.shoeapp.ui.component.FancyIndicator
+import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.theme.FieldColor
-import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
-
-@Composable
-fun FancyIndicator(color: Color, modifier: Modifier = Modifier) {
-    // Draws a rounded rectangular with border around the Tab, with a 5.dp padding from the edges
-    // Color is passed in as a parameter [color]
-    Box(
-        modifier
-            .padding(5.dp)
-            .fillMaxSize()
-            .border(BorderStroke(2.dp, color), CircleShape)
-    )
-}
+import com.panther.shoeapp.ui.theme.skyBlue
+import com.panther.shoeapp.ui.theme.white
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FancyTab() {
+fun HomeTabRow() {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    val titles = listOf("All", "Men", "Women", "Kids")
+    val titles = listOf("All", "Nike", "Adidas", "Puma")
     val pagerState = rememberPagerState {
         titles.size
     }
@@ -93,12 +83,28 @@ fun FancyTab() {
                 Tab(
                     selected = index == selectedTabIndex ,
                     onClick = { selectedTabIndex = index },
-                    text = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis ) },
+                    text = {
+                        if (index == selectedTabIndex) {
+                            Text(
+                                title,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = white
+                            )
+                        } else {
+                            Text(
+                                title,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = navyBlue
+                            )
+                        }
+                           },
                     modifier = Modifier
                         .padding(6.dp)
                         .clip(CircleShape)
                         .background(
-                            color = if (index == selectedTabIndex) Red
+                            color = if (index == selectedTabIndex) skyBlue
                             else FieldColor
                         )
                 )
@@ -119,21 +125,25 @@ fun FancyTab() {
               
               val productItems = when (titles[index]) {
                   "All" -> products
-                  "Men" -> products
-                  "Women" -> products
-                  "Kids" -> products
+                  "Nike" -> products
+                  "Adidas" -> products
+                  "Puma" -> products
                   else -> emptyList()
                 }
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(count = 2),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(16.dp)
                 ) {
+
                     items(productItems) { product ->
-                        CategoryProductCard(product.name, product.price, product.image)
+
+                        ProductCard(product.name, product.price, product.image)
                     }
                 }
+
             }
         }
     }
@@ -145,5 +155,5 @@ fun FancyTab() {
 @Preview
 @Composable
 fun TabRowPreview() {
-    FancyTab()
+    HomeTabRow()
 }

@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.panther.shoeapp.FancyTab
 import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -117,7 +116,7 @@ fun CategoryScreen() {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(16.dp)
             )
-            FancyTab()
+            CategoryTabRow()
         }
     }
 }

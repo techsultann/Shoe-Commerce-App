@@ -58,7 +58,7 @@ fun DiscoveryScreen(
         drawerState = drawerState,
 
         drawerContent = {
-            NavDrawer(route = String())
+            NavDrawer(route = String(), modifier = Modifier, navHostController)
         }
 
     ) {

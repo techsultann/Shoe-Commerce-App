@@ -21,8 +21,8 @@ class OnboardingViewModel @Inject constructor (
     private val repo: RepositoryImpl
 ) : ViewModel() {
 
-    private val _signupResult = MutableStateFlow<Resource<AuthResult>>(Resource.Loading())
-    val signupResult: StateFlow<Resource<AuthResult>> = _signupResult
+    private val _signupResult = MutableStateFlow<Resource<User>>(Resource.Loading())
+    val signupResult: StateFlow<Resource<User>> = _signupResult
     private val _loginState = MutableStateFlow<Resource<User>>(Resource.Loading())
     val loginState : StateFlow<Resource<User>> = _loginState
 

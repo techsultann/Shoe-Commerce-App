@@ -1,7 +1,6 @@
 package com.panther.shoeapp.repository
 
 import android.util.Log
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.panther.shoeapp.models.User
@@ -11,25 +10,29 @@ import javax.inject.Inject
 
 class RepositoryImpl @Inject constructor(private val auth: FirebaseAuth) : Repository {
 
-    override suspend fun signUp(email: String, password: String, username: String): Resource<AuthResult> {
+    override suspend fun signUp(email: String, password: String, username: String): Resource<User> {
 
         return try {
 
-            val response = auth.createUserWithEmailAndPassword(email, password).await()
-            Log.d("TAG", "Signup: SUCCESS")
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener{ task ->
+                    if (task.isSuccessful) {
 
-            val profileUpdates = UserProfileChangeRequest.Builder()
-                .setDisplayName(username)
-                .build()
+                        val currentUser = auth.currentUser
+                        val profileUpdates = UserProfileChangeRequest.Builder()
+                            .setDisplayName(username)
+                            .build()
 
-            response.user?.updateProfile(profileUpdates)?.await()
-            auth.currentUser?.sendEmailVerification()?.await()
+                        currentUser?.updateProfile(profileUpdates)
+                        currentUser?.sendEmailVerification()
+                    }
+                }
 
-            Resource.Success(response)
+            Resource.Success(User())
         } catch (e: Exception) {
 
             Log.e("TAG", "Signup: FAILED")
-            return Resource.Error(e.localizedMessage ?: "Unknown error occured")
+            return Resource.Error(e.localizedMessage ?: "Unknown error occurred")
 
         }
 

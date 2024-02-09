@@ -2,7 +2,6 @@ package com.panther.shoeapp.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,20 +10,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemColors
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,27 +29,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
+import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.utils.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavDrawer(
     route: String,
-     modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    //viewModel: HomeViewModel = viewModel()
 ) {
 
-    var selectedItemIndex by rememberSaveable {
-        mutableStateOf(0)
-
-    }
+    var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    //val displayName by viewModel.displayName.collectAsState()
 
             ModalDrawerSheet(
                 drawerContainerColor = Color.White,
@@ -79,12 +77,13 @@ fun NavDrawer(
 
                     },
                     selected = route == Screen.HomeScreen.route,
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate(route = Screen.CategoryScreen.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
                     ),
-                    shape = RectangleShape
+                    shape = RectangleShape,
+                    modifier = Modifier.background(Color.White)
                 )
 
                 NavigationDrawerItem(
@@ -265,13 +264,18 @@ fun NavDrawer(
 @Preview
 @Composable
 fun PreviewNavDrawer() {
-    NavDrawer(route = String())
+    NavDrawer(route = String(), modifier = Modifier, rememberNavController())
 }
 
 
 
 @Composable
-fun DrawerHeader(modifier: Modifier) {
+fun DrawerHeader(
+    modifier: Modifier,
+    viewModel: HomeViewModel = viewModel()
+) {
+
+    val displayName by viewModel.displayName.collectAsState()
 
     Box(
         modifier = Modifier
@@ -303,7 +307,7 @@ fun DrawerHeader(modifier: Modifier) {
             Column {
 
                 Text(
-                    text = "Alexander Hussain",
+                    text = displayName ,
                     color = Color(0xFF152354),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold

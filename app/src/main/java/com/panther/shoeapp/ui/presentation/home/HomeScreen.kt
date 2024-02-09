@@ -51,15 +51,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.models.data.Product
-import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
-import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.PriceRangeSlider
+import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -67,7 +67,10 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun HomeScreen(navHostController: NavHostController) {
+fun HomeScreen(
+    navHostController: NavHostController,
+    viewModel: HomeViewModel = viewModel()
+) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -76,7 +79,7 @@ fun HomeScreen(navHostController: NavHostController) {
         drawerState = drawerState,
 
         drawerContent = {
-            NavDrawer(route = String())
+            NavDrawer(route = String(), modifier = Modifier, navHostController)
         }
 
     ) {
@@ -163,9 +166,7 @@ fun HomeScreen(navHostController: NavHostController) {
                 SectionA()
 
                 // Spacer(modifier = Modifier.padding(16.dp))
-                SectionB()
-
-                SectionC(productList = products)
+                HomeTabRow()
 
             }
 
@@ -191,14 +192,15 @@ fun SectionA() {
 
         Text(
             text = buildAnnotatedString { 
-                append("Enjoy New Nike\n\n")
+                append("Enjoy New Nike\n")
                 pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
                 append("Products")
             },
             color = navyBlue,
             fontSize = 36.sp,
             textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            lineHeight = 46.sp
         )
 
         Spacer(modifier = Modifier.weight(1f))
