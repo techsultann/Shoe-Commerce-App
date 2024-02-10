@@ -8,25 +8,29 @@ import androidx.navigation.navigation
 import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
 import com.panther.shoeapp.ui.presentation.auth.SignupScreen
-import com.panther.shoeapp.utils.ON_BOARDING_ROUTE
-import com.panther.shoeapp.utils.Screen
 
-fun NavGraphBuilder.onboardingNavGraph(
+fun NavGraphBuilder.authNavGraph(
     navController: NavHostController
 ) {
 
     navigation(
-        startDestination = Screen.OnboardScreen.route,
-        route = ON_BOARDING_ROUTE
+        startDestination = AuthScreen.OnboardScreen.route,
+        route = Graph.AUTHENTICATION
     ) {
-        composable(route = Screen.SignupScreen.route) {
+        composable(route = AuthScreen.SignupScreen.route) {
             val vm = hiltViewModel<OnboardingViewModel>()
             SignupScreen(navController = navController, vm)
         }
-        composable(route = Screen.LoginScreen.route) {
+        composable(route = AuthScreen.LoginScreen.route) {
             val vm = hiltViewModel<OnboardingViewModel>()
             LoginScreen(navController = navController, vm)
         }
 
     }
+}
+
+sealed class AuthScreen(val route: String) {
+    object OnboardScreen : AuthScreen(route = "onboard_screen")
+    object SignupScreen : AuthScreen(route = "signup_screen")
+    object LoginScreen : AuthScreen (route = "login_screen")
 }

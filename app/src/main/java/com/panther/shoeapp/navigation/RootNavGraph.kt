@@ -4,9 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.panther.shoeapp.ui.presentation.onboard.OnboardScreen
-import com.panther.shoeapp.utils.ROOT_ROUTE
-import com.panther.shoeapp.utils.Screen
+import com.panther.shoeapp.ui.presentation.home.HomeScreen
 
 @Composable
 fun RootNavGraph(
@@ -14,14 +12,19 @@ fun RootNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.OnboardScreen.route,
-        route = ROOT_ROUTE
+        startDestination = Graph.AUTHENTICATION,
+        route = Graph.ROOT
     ) {
-        composable(route = Screen.OnboardScreen.route) {
-            OnboardScreen(navController)
+        authNavGraph(navController)
+        composable(route = Graph.HOME){
+            HomeScreen()
         }
-        onboardingNavGraph(navController)
-        homeNavGraph(navController)
-        bottomNavGraph(navController)
     }
+}
+
+object Graph {
+    const val ROOT = "root_graph"
+    const val AUTHENTICATION = "auth_graph"
+    const val HOME = "home_graph"
+    const val DETAILS = "details_graph"
 }

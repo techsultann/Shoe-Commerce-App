@@ -39,8 +39,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
+import com.panther.shoeapp.navigation.Graph
+import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
-import com.panther.shoeapp.utils.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,8 +77,8 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
-                    onClick = { navController.navigate(route = Screen.CategoryScreen.route) },
+                    selected = route == Graph.HOME,
+                    onClick = { navController.navigate(route = HomeScreenNav.CategoryScreen.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -97,7 +98,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -117,7 +118,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -137,7 +138,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -157,7 +158,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -178,7 +179,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -198,7 +199,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -218,7 +219,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
@@ -241,7 +242,7 @@ fun NavDrawer(
                         )
 
                     },
-                    selected = route == Screen.HomeScreen.route,
+                    selected = route == Graph.HOME,
                     onClick = { /*TODO*/ },
                     icon = {
                         Icon(

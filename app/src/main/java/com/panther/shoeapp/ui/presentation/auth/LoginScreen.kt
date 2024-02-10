@@ -1,6 +1,7 @@
 package com.panther.shoeapp.ui.presentation.auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,20 +26,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.panther.shoeapp.navigation.AuthScreen
+import com.panther.shoeapp.navigation.Graph
 import com.panther.shoeapp.ui.component.AuthTextField
 import com.panther.shoeapp.ui.component.GoogleButton
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.utils.Resource
-import com.panther.shoeapp.utils.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,7 +66,7 @@ fun LoginScreen(
             is Resource.Success -> {
                 viewModel.Login(email, password)
                 navController.popBackStack()
-                navController.navigate(route = Screen.HomeScreen.route)
+                navController.navigate(route = Graph.HOME)
 
             }
             is Resource.Error -> {
@@ -141,8 +148,8 @@ fun LoginScreen(
 
             Text(text = "Remember me", Modifier.padding(start = 8.dp, top = 16.dp))
         }
-        
-        Spacer(modifier = Modifier.padding(16.dp))
+
+        Spacer(modifier = Modifier.weight(1f))
         
         ShoeAppButton(
             modifier = Modifier
@@ -156,6 +163,25 @@ fun LoginScreen(
             Text(text = "Log in")
             
         }
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .clickable { navController.navigate(AuthScreen.SignupScreen.route) },
+            textAlign = TextAlign.Center,
+            text = buildAnnotatedString {
+
+                append("Don't have an account? ")
+                append(
+                    AnnotatedString(
+                        text = "Sign up ",
+                        spanStyle = SpanStyle(Color.Red)
+                    )
+                )
+            },
+            fontSize = 16.sp
+        )
 
     }
 }

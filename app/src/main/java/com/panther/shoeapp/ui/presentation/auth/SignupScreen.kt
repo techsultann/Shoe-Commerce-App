@@ -39,11 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.ui.component.AuthTextField
 import com.panther.shoeapp.ui.component.GoogleButton
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.utils.Resource
-import com.panther.shoeapp.utils.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +68,7 @@ fun SignupScreen(
                 showProgress = false
                 viewModel.signUp(email, password, username)
                 navController.popBackStack()
-                navController.navigate(route = Screen.LoginScreen.route)
+                navController.navigate(route = AuthScreen.LoginScreen.route)
             }
             is Resource.Error -> {
                 showProgress = false
@@ -187,7 +187,7 @@ fun SignupScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
-                .clickable { navController.navigate(Screen.LoginScreen.route) },
+                .clickable { navController.navigate(AuthScreen.LoginScreen.route) },
             textAlign = TextAlign.Center,
             text = buildAnnotatedString {
 
