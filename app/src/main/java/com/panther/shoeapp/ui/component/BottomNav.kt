@@ -1,6 +1,7 @@
 package com.panther.shoeapp.ui.component
 
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -40,24 +41,31 @@ fun BottomNav(navController: NavHostController) {
     val navBackEntry by navController.currentBackStackEntryAsState()
 
     val currentDestination = navBackEntry?.destination
+    val bottomBarDestination = screens.any { it.route == currentDestination?.route }
 
-    NavigationBar(
-        modifier = Modifier
-            .padding(16.dp)
-            .clip(shape = RoundedCornerShape(50.dp)),
-        containerColor = Color(0xFF152354),
-        contentColor = Color.White
-    ) {
+    if (bottomBarDestination){
 
-        screens.forEach { screen ->
+        NavigationBar(
+            modifier = Modifier
+                .background(Color.Transparent)
+                .padding(16.dp)
+                .clip(shape = RoundedCornerShape(50.dp)),
+            containerColor = Color(0xFF152354),
+            contentColor = Color.White
+        ) {
 
-            AddItem(
-                screen = screen,
-                currentDestination = currentDestination ,
-                navController = navController
-            )
+            screens.forEach { screen ->
+
+                AddItem(
+                    screen = screen,
+                    currentDestination = currentDestination ,
+                    navController = navController
+                )
+            }
         }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

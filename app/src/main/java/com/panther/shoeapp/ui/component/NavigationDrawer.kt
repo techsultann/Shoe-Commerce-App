@@ -49,7 +49,7 @@ fun NavDrawer(
     route: String,
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    //viewModel: HomeViewModel = viewModel()
+   // viewModel: HomeViewModel = viewModel()
 ) {
 
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
@@ -119,7 +119,7 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate(route = HomeScreenNav.DiscoversScreen.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -159,7 +159,7 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate(route = HomeScreenNav.PaymentCardScreen.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -228,7 +228,7 @@ fun NavDrawer(
                     shape = RectangleShape
                 )
 
-                Spacer(modifier.weight(1f))
+                Spacer(modifier.padding(vertical = 20.dp))
 
                 NavigationDrawerItem(
                     modifier = modifier.padding(bottom = 26.dp),

@@ -1,12 +1,12 @@
 package com.panther.shoeapp.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,15 +47,26 @@ fun AuthTextField(
 }
 
 @Composable
-fun TextFieldWithPlaceholder() {
-    var text by rememberSaveable { mutableStateOf("") }
+fun TextFieldWithPlaceholder(
+    modifier: Modifier,
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    placeholder:  @Composable() (() -> Unit)?,
+    singleLine: Boolean = true,
+) {
 
     TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = { Text("Email") },
-        placeholder = { Text("example@gmail.com") },
-
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        singleLine = singleLine,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(CircleShape)
+            .clipToBounds()
+            .requiredHeight(66.dp),
+        shape = CircleShape
     )
 }
 /*@Composable

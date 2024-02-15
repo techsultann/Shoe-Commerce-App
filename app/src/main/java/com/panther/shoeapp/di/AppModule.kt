@@ -3,6 +3,8 @@ package com.panther.shoeapp.di
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.panther.shoeapp.repository.Repository
 import com.panther.shoeapp.repository.RepositoryImpl
 import dagger.Module
@@ -19,6 +21,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFireStore() : FirebaseFirestore = Firebase.firestore
+
 
     @Provides
     @Singleton
