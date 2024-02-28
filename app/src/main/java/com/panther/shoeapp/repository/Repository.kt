@@ -8,4 +8,8 @@ interface Repository {
     suspend fun signUp(email: String, password: String, username: String) : Resource<User>
 
     suspend fun login(email: String, password: String) : Resource<User>
+
+    suspend fun saveUserDataToFiresStore(userName: String, email: String) : Resource<User>
+
+    suspend fun getUserRole(userId: String): String?
 }

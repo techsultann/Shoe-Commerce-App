@@ -42,7 +42,6 @@ import com.panther.shoeapp.models.data.Product
 import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
-import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -162,7 +161,13 @@ fun AllProductsList(productList: List<Product>) {
 
         items(productList) { product ->
 
-            ProductCard(product.name, product.price, product.image)
+//            ProductCard(
+//                product.name,
+//                product.price.toDouble(),
+//                product.image.toString(),
+//                product.id,
+//                navHostController = NavHostController
+//            )
         }
     }
 }

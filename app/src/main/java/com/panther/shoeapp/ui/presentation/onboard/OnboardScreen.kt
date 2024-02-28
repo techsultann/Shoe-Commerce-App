@@ -126,7 +126,7 @@ fun OnboardScreen(navController: NavHostController) {
         ShoeAppButton(
             onClick = {
                 navController.popBackStack()
-                navController.navigate(route = AuthScreen.SignupScreen.route)
+                navController.navigate(route = AuthScreen.LoginScreen.route)
             },
             modifier = Modifier
                 .padding(16.dp)

@@ -29,7 +29,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(auth: FirebaseAuth) : Repository {
-        return RepositoryImpl(auth)
+    fun provideRepository(auth: FirebaseAuth, fireStore: FirebaseFirestore) : Repository {
+        return RepositoryImpl(auth, fireStore)
     }
 }

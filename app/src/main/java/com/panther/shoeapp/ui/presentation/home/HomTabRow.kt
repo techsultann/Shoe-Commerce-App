@@ -26,6 +26,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.FancyIndicator
 import com.panther.shoeapp.ui.component.ProductCard
@@ -42,10 +46,15 @@ import com.panther.shoeapp.ui.theme.FieldColor
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
+import com.panther.shoeapp.utils.Resource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeTabRow() {
+fun HomeTabRow(
+    navHostController: NavHostController,
+    viewModel: HomeViewModel = viewModel()
+) {
+    val shoeResource by viewModel.allShoes.collectAsState()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val titles = listOf("All", "Nike", "Adidas", "Puma")
     val pagerState = rememberPagerState {
@@ -81,8 +90,16 @@ fun HomeTabRow() {
             titles.forEachIndexed { index, title ->
 
                 Tab(
-                    selected = index == selectedTabIndex ,
-                    onClick = { selectedTabIndex = index },
+                    selected = pagerState.currentPage == index ,//index == selectedTabIndex ,
+                    onClick = {
+                        selectedTabIndex = index
+                        when (title) {
+                            "All" -> viewModel.getAllShoes()
+                            "Nike" -> viewModel.getNikeShoes()
+                            "Adidas" -> products
+                            "Puma" -> products
+                        }
+                              },
                     text = {
                         if (index == selectedTabIndex) {
                             Text(
@@ -122,25 +139,46 @@ fun HomeTabRow() {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-              
-              val productItems = when (titles[index]) {
-                  "All" -> products
-                  "Nike" -> products
-                  "Adidas" -> products
-                  "Puma" -> products
-                  else -> emptyList()
-                }
+                when (shoeResource) {
+                    is Resource.Loading ->{
 
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(count = 2),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
+                    }
+                    is Resource.Success -> {
+                        val shoeList = shoeResource.data ?: emptyList()
+//                        val productItems = when (titles[index]) {
+//                            "All" -> shoeList
+//                            "Nike" -> products
+//                            "Adidas" -> products
+//                            "Puma" -> products
+//                            else -> emptyList()
+//                        }
 
-                    items(productItems) { product ->
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(count = 2),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
 
-                        ProductCard(product.name, product.price, product.image)
+                            items(
+                                items = shoeList,
+                                key = {
+                                    it.id!!
+                                }
+                            ) { product ->
+
+                                ProductCard(
+                                    product.name!!,
+                                    product.price!!,
+                                    product.images?.first().toString(),
+                                    product.id!!,
+                                    navHostController
+                                )
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+
                     }
                 }
 
@@ -155,5 +193,5 @@ fun HomeTabRow() {
 @Preview
 @Composable
 fun TabRowPreview() {
-    HomeTabRow()
+    HomeTabRow(rememberNavController())
 }

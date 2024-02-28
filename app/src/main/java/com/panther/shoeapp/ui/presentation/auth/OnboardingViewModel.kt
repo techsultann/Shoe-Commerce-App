@@ -3,7 +3,8 @@ package com.panther.shoeapp.ui.presentation.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.panther.shoeapp.models.User
 import com.panther.shoeapp.repository.RepositoryImpl
 import com.panther.shoeapp.utils.Object
@@ -18,7 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor (
-    private val repo: RepositoryImpl
+    private val repo: RepositoryImpl,
+    private val fireStore: FirebaseFirestore,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val _signupResult = MutableStateFlow<Resource<User>>(Resource.Loading())
@@ -36,7 +39,7 @@ class OnboardingViewModel @Inject constructor (
 
             if (isEmailValid(email)) {
                 _signupResult.value = repo.signUp(email, password, username)
-                Log.d("ONBOARDING VIEW MODEL", "SIGNUP: $_signupResult")
+                Log.d("SIGNUP TAG", "SIGNUP: ${_signupResult.value.data}")
 
             } else {
                 return@launch
@@ -46,18 +49,30 @@ class OnboardingViewModel @Inject constructor (
         }
     }
 
-    fun Login(email: String, password: String){
+    fun saveUserDataToFiresStore(
+        userName: String,
+        email: String
+    ){
+        viewModelScope.launch (Dispatchers.IO) {
+
+            repo.saveUserDataToFiresStore(userName, email)
+
+        }
+
+    }
+
+    fun login(email: String, password: String){
 
         viewModelScope.launch(Dispatchers.IO) {
             if (isEmailValid(email)) {
                 val login = loginState.value
                 _loginState.value = repo.login(email, password)
-                Log.d("ONBOARDING VIEW MODEL", "LOGIN: $login")
+                Log.d("LOGIN TAG", "LOGIN: $login")
             }
-
 
         }
     }
+
 
     fun logOut(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -72,9 +87,3 @@ class OnboardingViewModel @Inject constructor (
 fun isNamePatternCorrect(fullName: String): Boolean {
     return fullName.matches(Regex("^[A-Za-z ]+\$"))
 }
-
-data class SignupState(
-    val isLoading: Boolean = false,
-    val data: AuthResult? = null,
-    val error: String? = null,
-)

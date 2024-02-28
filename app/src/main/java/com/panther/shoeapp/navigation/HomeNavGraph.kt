@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.panther.shoeapp.ui.presentation.auth.LoginScreen
+import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
 import com.panther.shoeapp.ui.presentation.card.CardScreen
 import com.panther.shoeapp.ui.presentation.category.CategoryScreen
 import com.panther.shoeapp.ui.presentation.details.DetailsScreen
@@ -55,10 +57,12 @@ fun HomeNavGraph(
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController){
     navigation(
         route = Graph.DETAILS,
-        startDestination = HomeScreenNav.DetailsScreen.route
+        startDestination = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"
     ){
-        composable(route = HomeScreenNav.DetailsScreen.route){
-            DetailsScreen()
+        composable(route = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"){ backStackEntry ->
+            val viewModel = hiltViewModel<HomeViewModel>()
+            val shoeId = backStackEntry.arguments?.getString("shoeId")
+            DetailsScreen(shoeId = shoeId, viewModel)
         }
     }
 }
@@ -78,6 +82,10 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         }
         composable(route = HomeScreenNav.DiscoversScreen.route){
             DiscoveryScreen(navHostController = navController)
+        }
+        composable(route = AuthScreen.LoginScreen.route){
+            val vm = hiltViewModel<OnboardingViewModel>()
+            LoginScreen(navController = navController, vm)
         }
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.text.KeyboardActions
@@ -65,8 +66,7 @@ fun SignupScreen(
 
             }
             is Resource.Success -> {
-                showProgress = false
-                viewModel.signUp(email, password, username)
+                viewModel.saveUserDataToFiresStore(username, email)
                 navController.popBackStack()
                 navController.navigate(route = AuthScreen.LoginScreen.route)
             }
@@ -83,6 +83,8 @@ fun SignupScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
+        Spacer(modifier = Modifier.height(36.dp))
 
         Text(
             text = "Create an Account",
@@ -169,17 +171,18 @@ fun SignupScreen(
             }
         ) {
             if (signUpResult is Resource.Loading) {
+                Text(
+                    text = "Sign Up",
+                    fontSize = 18.sp
+                )
+            }
+            else {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surface,
                     strokeCap = StrokeCap.Butt
                 )
-            }
-            else {
-                Text(
-                    text = "Sign Up",
-                    fontSize = 18.sp
-                )
+
             }
         }
 

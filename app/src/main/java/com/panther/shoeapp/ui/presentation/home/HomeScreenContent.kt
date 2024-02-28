@@ -2,9 +2,7 @@ package com.panther.shoeapp.ui.presentation.home
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,9 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
@@ -32,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +49,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
-import com.panther.shoeapp.models.data.Product
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.PriceRangeSlider
-import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -72,6 +66,7 @@ fun HomeScreenContent(
 
     val drawerState = DrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val getAllShoeState by viewModel.allShoes.collectAsState()
     ModalNavigationDrawer(
 
         drawerState = drawerState,
@@ -164,7 +159,7 @@ fun HomeScreenContent(
                 SectionA()
 
                 // Spacer(modifier = Modifier.padding(16.dp))
-                HomeTabRow()
+                HomeTabRow(navHostController, viewModel)
 
             }
 
@@ -261,21 +256,21 @@ fun SectionA() {
 }
 
 
-@Composable
-fun SectionC(productList: List<Product>) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 2),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-
-        items(productList) { product ->
-
-            ProductCard(product.name, product.price, product.image)
-        }
-    }
-}
+//@Composable
+//fun SectionC(productList: List<Product>) {
+//    LazyVerticalGrid(
+//        columns = GridCells.Fixed(count = 2),
+//        verticalArrangement = Arrangement.spacedBy(8.dp),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//        contentPadding = PaddingValues(16.dp)
+//    ) {
+//
+//        items(productList) { product ->
+//
+//            ProductCard(product.name, product.price, product.image)
+//        }
+//    }
+//}
 
 
 @Preview

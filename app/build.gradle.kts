@@ -106,6 +106,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     // Lifecycle utilities for Compose
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+
+    //coil
+    implementation("io.coil-kt:coil:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
 
 kapt {

@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
+import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.navigation.Graph
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
@@ -49,11 +50,10 @@ fun NavDrawer(
     route: String,
     modifier: Modifier = Modifier,
     navController: NavHostController,
-   // viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel()
 ) {
 
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
-    //val displayName by viewModel.displayName.collectAsState()
 
             ModalDrawerSheet(
                 drawerContainerColor = Color.White,
@@ -243,7 +243,11 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        viewModel.logout()
+                        navController.popBackStack()
+                        navController.navigate(route = AuthScreen.LoginScreen.route)
+                              },
                     icon = {
                         Icon(
                             painter = painterResource(id = R.drawable.share),

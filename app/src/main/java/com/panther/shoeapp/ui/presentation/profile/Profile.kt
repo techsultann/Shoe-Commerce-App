@@ -89,7 +89,7 @@ fun ProfileScreen() {
         ) {
 
             Image(
-                painterResource(id = R.drawable.techsultan),
+                painterResource(id = R.drawable.vomero_womens),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

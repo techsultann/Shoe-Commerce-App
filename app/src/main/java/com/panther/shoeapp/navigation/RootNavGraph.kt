@@ -28,4 +28,5 @@ object Graph {
     const val HOME = "home_graph"
     const val DETAILS = "details_graph"
     const val NAV_DRAWER = "nav_drawer_graph"
+    const val ADMIN = "admin_graph"
 }

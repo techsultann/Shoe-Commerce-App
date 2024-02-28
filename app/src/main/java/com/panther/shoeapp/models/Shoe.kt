@@ -1,17 +1,15 @@
 package com.panther.shoeapp.models
 
-import com.google.firebase.firestore.DocumentReference
-
 data class Shoe(
-    val id: String,
-    val name: String,
-    val description: String,
-    val price: Double,
-    val imageUrl: String,
-    val brand: String,
-    val sizes: List<String>,
-    val colors: List<String>,
-    val categoryId: DocumentReference,
-    val featured: Boolean,
-    val stock: Int
+    val id: String? = null,
+    val name: String? = null,
+    val description: String? = null,
+    val price: Double? = null,
+    val images: List<String>? = null,
+    val brand: String? = null,
+    val sizes: List<String>? = null,
+    val colors: List<String>? = null,
+    val category: String? = null,
+    val featured: Boolean? = null,
+    val stock: Int? = null
 )
