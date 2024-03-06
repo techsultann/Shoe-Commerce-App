@@ -1,11 +1,14 @@
 package com.panther.shoeapp.ui.presentation.cart
 
-import androidx.compose.foundation.Image
+import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,11 +19,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
@@ -30,31 +38,51 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.panther.shoeapp.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.panther.shoeapp.ui.component.AlertDialog
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.FieldColor
 import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.skyBlue
+import com.panther.shoeapp.ui.theme.white
+import com.panther.shoeapp.utils.Resource
 
 @Composable
-fun CartScreen(){
+fun CartScreen(
+    navHostController: NavHostController,
+    viewModel: CartViewModel = viewModel()
+){
+    val itemCount by viewModel.itemCount.collectAsState()
+    val cartItemState by viewModel.cartItems.collectAsState()
+    LaunchedEffect(cartItemState) {
+        viewModel.getItemCount()
+    }
 
     Scaffold(
         topBar = {
@@ -110,26 +138,60 @@ fun CartScreen(){
                 .padding(paddingValues)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
         ) {
 
-            Text(
-                text = buildAnnotatedString {
-                    append("Your Cart\n")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
-                    append("List (2)")
-                },
-                color = navyBlue,
-                fontSize = 36.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                lineHeight = 46.sp,
-                modifier = Modifier.padding(16.dp)
-            )
+            when (cartItemState) {
+                is Resource.Loading -> {
 
-            CartCard(name = "Air Zoom", price = "$650", image = R.drawable.air_zoom)
+                }
+                is Resource.Success -> {
+                    val cartItem = cartItemState.data ?: emptyList()
 
-            CartCard(name = "Air Max Zoom", price = "$720", image = R.drawable.air_max_300)
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Your Cart\n")
+                            pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
+                            append("List ($itemCount)")
+                        },
+                        color = navyBlue,
+                        fontSize = 36.sp,
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 46.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                    )
 
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                        contentPadding = PaddingValues(4.dp)
+                    ) {
+                        items(cartItem) { product ->
+
+                            Log.d("CART ITEM", "Cart: $cartItem")
+
+                            CartCard(
+                                name = product.name.toString(),
+                                price = product.price,
+                                image = product.image.toString(),
+                                id = product.id,
+                                initialQuantity = product.quantity
+                            )
+                        }
+
+                    }
+
+                }
+                is Resource.Error -> {
+                    val errorMessage = (cartItemState as Resource.Error).message
+                    // Show error UI (e.g., display error message)
+                    Log.d("CART ITEM", "Cart: $errorMessage")
+                }
+
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -145,7 +207,7 @@ fun CartScreen(){
 
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -163,11 +225,10 @@ fun CartScreen(){
             ShoeAppButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 100.dp)
                     .requiredHeight(66.dp),
                 onClick = { /*TODO*/ }
-            ) {
-                Text(
+            ) {                Text(
                     text = "Checkout",
                     fontSize = 18.sp
                 )
@@ -177,25 +238,23 @@ fun CartScreen(){
 }
 
 
-@Preview
-@Composable
-fun PreviewCartScreen(){
-    CartScreen()
-}
-
-
-
-
 @Composable
 fun CartCard(
     name: String,
-    price: String,
-    image: Int
+    price: Double?,
+    image: String,
+    id: String?,
+    initialQuantity: Int? = 1,
+    viewModel: CartViewModel = viewModel()
 ) {
+    var quantity by remember {
+        mutableIntStateOf(initialQuantity!!)
+    }
+    val openAlertDialog = remember { mutableStateOf(false) }
 
     Surface(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 4.dp)
             .fillMaxWidth()
             .height(160.dp),
         shape = RoundedCornerShape(6.dp),
@@ -216,58 +275,101 @@ fun CartCard(
                     .background(FieldColor),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = image),
-                    contentDescription = "sneaker image",
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(image)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = name,
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
                 )
 
             }
 
 
-
-            Column() {
+            Column(
+                modifier = Modifier,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = name,
                     color = Color(0xFF152354),
-                    fontSize = 20.sp
-                )
-                Spacer(modifier = Modifier.padding(horizontal = 6.dp))
-                Text(
-                    text = price,
-                    color = Color(0xFF152354),
-                    fontSize = 20.sp
+                    fontSize = 12.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .width(100.dp),
+                    maxLines = 2
                 )
 
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
+                Text(
+                    text = "N $price",
+                    color = Color(0xFF152354),
+                    fontSize = 12.sp
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+
                 Row(
-                    modifier = Modifier,
-                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .width(100.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+
+                    Surface(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(shape = CircleShape),
+                        tonalElevation = 4.dp,
+                        shadowElevation = 4.dp,
+                        color = skyBlue
+                    ){
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Add icon",
                             modifier = Modifier
+                                .size(20.dp)
                                 .background(skyBlue)
                                 .clip(CircleShape)
-                                .clickable { }
+                                .clickable {
+                                    if (quantity >= 1) {
+                                        quantity++
+                                    }
+                                },
+                            tint = white
                         )
                     }
+
                         Text(
-                            text = "1",
+                            text = quantity.toString(),
                             color = Color(0xFF152354),
                             fontSize = 20.sp
                         )
-                    IconButton(onClick = { /*TODO*/ }) {
+
+                    Surface(
+                        modifier = Modifier
+                            .border(BorderStroke(1.dp, skyBlue), CircleShape)
+                            .size(30.dp)
+                            .clip(shape = CircleShape),
+                        tonalElevation = 4.dp,
+                        shadowElevation = 4.dp,
+                        color = white
+                    ){
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = Icons.Default.Remove,
                             contentDescription = "Add icon",
                             modifier = Modifier
-                                .background(skyBlue)
                                 .clip(CircleShape)
-                                .clickable { }
+                                .clickable {
+                                    quantity -= 1
+                                    viewModel.updateCart(id.toString(), quantity)
+                                },
+                            tint = skyBlue
+
                         )
                     }
 
@@ -276,28 +378,42 @@ fun CartCard(
 
             }
 
-
             Box(modifier = Modifier
                 .width(51.dp)
                 .height(81.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Red),
+                .background(Red)
+                .clickable {
+                    openAlertDialog.value = true
+
+                },
                 contentAlignment = Alignment.Center
 
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
-                    contentDescription = "cart icon",
+                    contentDescription = "delete icon",
                     tint = Color.White
                 )
 
             }
-        }
-    }
-}
 
-@Preview
-@Composable
-fun PreviewCartCard() {
-    CartCard(name = "Nike Zoom Air", price = "$250", image = R.drawable.air_max_270)
+        }
+        when {
+            openAlertDialog.value -> {
+
+                AlertDialog(
+                    onDismissRequest = { openAlertDialog.value = false },
+                    onConfirmation = {
+                        if (id != null) {
+                            viewModel.deleteCart(id)
+                        }
+                        openAlertDialog.value = false
+                                     },
+                    dialogTitle = "Are your sure you wanna remove this item?"
+                )
+            }
+        }
+
+    }
 }

@@ -29,10 +29,10 @@ import com.panther.shoeapp.ui.theme.FieldColor
 
 @Composable
 fun ProductCard(
-    name: String,
-    price: Double,
-    image: String,
-    shoeId: String,
+    name: String?,
+    price: Double?,
+    image: String?,
+    shoeId: String?,
     navHostController: NavHostController
 ) {
 
@@ -62,11 +62,13 @@ fun ProductCard(
 
         }
         Spacer(modifier = Modifier.padding(horizontal = 16.dp))
-        Text(
-            text = name!!,
-            color = Color(0xFF152354),
-            fontSize = 20.sp
-        )
+        if (name != null) {
+            Text(
+                text = name,
+                color = Color(0xFF152354),
+                fontSize = 20.sp
+            )
+        }
         Spacer(modifier = Modifier.padding(horizontal = 16.dp))
         Text(
             text = "# $price",

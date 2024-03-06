@@ -21,6 +21,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,9 +41,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.models.data.Product
-import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
+import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -54,6 +56,8 @@ fun DiscoveryScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val viewModelState by viewModel.allShoes.collectAsState()
+    val itemCount by viewModel.itemCount.collectAsState()
 
     ModalNavigationDrawer(
 
@@ -130,7 +134,7 @@ fun DiscoveryScreen(
 
                 Text(
                     text = buildAnnotatedString {
-                        append("1001 Shoes Are \n")
+                        append("$itemCount Shoes Are \n")
                         pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
                         append("Available")
                     },
@@ -142,7 +146,26 @@ fun DiscoveryScreen(
                     lineHeight = 36.sp
                 )
 
-                AllProductsList(productList = products)
+                val shoeList = viewModelState.data ?: emptyList()
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(count = 2),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+
+                    items(shoeList) { product ->
+
+                        ProductCard(
+                            product.name.toString(),
+                            product.price!!.toDouble(),
+                            product.images!!.first().toString(),
+                            product.id!!,
+                            navHostController = navHostController
+                        )
+                    }
+                }
 
             }
         }
@@ -152,24 +175,24 @@ fun DiscoveryScreen(
 @Composable
 fun AllProductsList(productList: List<Product>) {
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 2),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-
-        items(productList) { product ->
-
+//    LazyVerticalGrid(
+//        columns = GridCells.Fixed(count = 2),
+//        verticalArrangement = Arrangement.spacedBy(8.dp),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//        contentPadding = PaddingValues(16.dp)
+//    ) {
+//
+//        items(productList) { product ->
+//
 //            ProductCard(
 //                product.name,
 //                product.price.toDouble(),
 //                product.image.toString(),
 //                product.id,
-//                navHostController = NavHostController
+//                navHostController = nav
 //            )
-        }
-    }
+//        }
+//    }
 }
 
 @Preview

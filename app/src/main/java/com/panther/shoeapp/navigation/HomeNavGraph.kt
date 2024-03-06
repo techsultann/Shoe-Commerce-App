@@ -11,8 +11,11 @@ import androidx.navigation.navigation
 import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
 import com.panther.shoeapp.ui.presentation.card.CardScreen
+import com.panther.shoeapp.ui.presentation.cart.CartScreen
+import com.panther.shoeapp.ui.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.presentation.category.CategoryScreen
 import com.panther.shoeapp.ui.presentation.details.DetailsScreen
+import com.panther.shoeapp.ui.presentation.details.DetailsViewModel
 import com.panther.shoeapp.ui.presentation.discovery.DiscoveryScreen
 import com.panther.shoeapp.ui.presentation.home.HomeScreenContent
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
@@ -39,8 +42,9 @@ fun HomeNavGraph(
             val viewModel = hiltViewModel<HomeViewModel>()
             DiscoveryScreen(navController, viewModel)
         }
-        composable(route = BottomBarScreen.Favorite.route){
-
+        composable(route = BottomBarScreen.Cart.route){
+            val viewModel = hiltViewModel<CartViewModel>()
+            CartScreen(navHostController = navController)
         }
         composable(route = BottomBarScreen.Message.route){
             //MessageScreen()
@@ -60,7 +64,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController){
         startDestination = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"
     ){
         composable(route = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"){ backStackEntry ->
-            val viewModel = hiltViewModel<HomeViewModel>()
+            val viewModel = hiltViewModel<DetailsViewModel>()
             val shoeId = backStackEntry.arguments?.getString("shoeId")
             DetailsScreen(shoeId = shoeId, viewModel)
         }

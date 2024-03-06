@@ -14,9 +14,9 @@ sealed class BottomBarScreen(
         route = "discovery",
         icon = R.drawable.discovery
     )
-    object Favorite: BottomBarScreen(
-        route = "favorite",
-        icon = R.drawable.heart
+    object Cart: BottomBarScreen(
+        route = "cart",
+        icon = R.drawable.cart,
     )
     object Message: BottomBarScreen(
         route = "message",

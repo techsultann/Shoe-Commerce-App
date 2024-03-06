@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +26,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.navigation.BottomBarScreen
+import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.ui.theme.white
 
 @Composable
 fun BottomNav(navController: NavHostController) {
@@ -34,7 +35,7 @@ fun BottomNav(navController: NavHostController) {
     val screens = listOf(
         BottomBarScreen.Home,
         BottomBarScreen.Discovery,
-        BottomBarScreen.Favorite,
+        BottomBarScreen.Cart,
         BottomBarScreen.Message,
         BottomBarScreen.Profile
     )
@@ -47,10 +48,10 @@ fun BottomNav(navController: NavHostController) {
 
         NavigationBar(
             modifier = Modifier
-                .background(Color.Transparent)
-                .padding(16.dp)
-                .clip(shape = RoundedCornerShape(50.dp)),
-            containerColor = Color(0xFF152354),
+                .background(Color.Transparent, CircleShape)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .clip(shape = CircleShape),
+            containerColor = navyBlue,
             contentColor = Color.White
         ) {
 
@@ -75,39 +76,43 @@ fun RowScope.AddItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
-    val colorNavyBlue = 0xFF152354
-    val colorWhite = 0xffFFFFFF
 
-    NavigationBarItem(
-        modifier = Modifier
-            .clip(CircleShape),
-        selected = currentDestination?.hierarchy?.any {
-            it.route == screen.route
-        } == true,
-        onClick = {
-            navController.navigate(screen.route){
-                // Pop up to the start destination of the graph to
-                // avoid building up a large stack of destinations
-                // on the back stack as users select items
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
+        NavigationBarItem(
+            modifier = Modifier
+                .clip(CircleShape),
+            selected = currentDestination?.hierarchy?.any {
+                it.route == screen.route
+            } == true,
+            onClick = {
+                navController.navigate(screen.route){
+                    // Pop up to the start destination of the graph to
+                    // avoid building up a large stack of destinations
+                    // on the back stack as users select items
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    // Avoid multiple copies of the same destination when
+                    // reselecting the same item
+                    launchSingleTop = true
+                    // Restore state when reselecting a previously selected item
+                    restoreState = true
                 }
-                // Avoid multiple copies of the same destination when
-                // reselecting the same item
-                launchSingleTop = true
-                // Restore state when reselecting a previously selected item
-                restoreState = true
-            }
-                  },
-        icon = {
-               Icon(painter = painterResource(id = screen.icon), contentDescription = "navigation icon")
-        },
-        colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = Color(colorNavyBlue),
-            unselectedIconColor = Color(colorWhite),
-            indicatorColor = MaterialTheme.colorScheme.background
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(id = screen.icon),
+                    contentDescription = "navigation icon"
+                )
+            },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = navyBlue,
+                unselectedIconColor = white,
+                indicatorColor = MaterialTheme.colorScheme.background
+            )
         )
-    )
+
+
+
 }
 
 @Preview

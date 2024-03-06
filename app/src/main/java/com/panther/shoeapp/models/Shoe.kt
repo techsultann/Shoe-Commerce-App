@@ -13,3 +13,12 @@ data class Shoe(
     val featured: Boolean? = null,
     val stock: Int? = null
 )
+
+data class CartItem(
+    val id: String? = null,
+    val name: String? = null,
+    val price: Double? = null,
+    val image: String? = null,
+    val quantity: Int? = null,
+)
+

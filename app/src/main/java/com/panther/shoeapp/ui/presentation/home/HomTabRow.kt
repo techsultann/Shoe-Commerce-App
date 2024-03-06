@@ -144,14 +144,15 @@ fun HomeTabRow(
 
                     }
                     is Resource.Success -> {
+
                         val shoeList = shoeResource.data ?: emptyList()
-//                        val productItems = when (titles[index]) {
-//                            "All" -> shoeList
-//                            "Nike" -> products
-//                            "Adidas" -> products
-//                            "Puma" -> products
-//                            else -> emptyList()
-//                        }
+
+                        when (titles[index]) {
+                            "All" -> viewModel.allShoes
+                            "Nike" -> viewModel.nike
+                            "Adidas" -> viewModel.adidas
+                            "Puma" -> viewModel.puma
+                        }
 
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(count = 2),

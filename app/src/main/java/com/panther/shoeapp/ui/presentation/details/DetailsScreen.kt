@@ -1,5 +1,6 @@
 package com.panther.shoeapp.ui.presentation.details
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,30 +51,25 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.component.TopAppBar
-import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
 import com.panther.shoeapp.ui.theme.yellow
+import com.panther.shoeapp.utils.Resource
 
 @Composable
 fun DetailsScreen(
     shoeId: String?,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: DetailsViewModel = viewModel()
 ) {
-    val shoeResource by viewModel.shoeById.collectAsState()
-    val shoeDetails = shoeResource.data
+    val shoeDetailsState by viewModel.shoeById.collectAsState()
+    val shoeDetails = shoeDetailsState.data
+    val mContext = LocalContext.current
 
     if (shoeId != null) {
             viewModel.getShoeById(shoeId)
         }
-//    LaunchedEffect(key1 = shoeId) {
-//
-//        if (shoeId != null) {
-//            viewModel.getShoeById(shoeId)
-//        }
-//    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -147,118 +143,143 @@ fun DetailsScreen(
             .background(MaterialTheme.colorScheme.background)
         ) {
 
-            ShoeImagePager()
-
-
-            if (shoeDetails != null) {
-                Text(
-                    text = shoeDetails.name!!,
-                    color = navyBlue,
-                    fontSize = 24.sp,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
-
-            if (shoeDetails != null) {
-                Text(
-                    text = shoeDetails.description!!,
-                    fontSize = 18.sp,
-                    color = navyBlue,
-                    textAlign = TextAlign.Justify,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
-
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Column(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                ) {
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Price: ")
-                            pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                            if (shoeDetails != null) {
-                                append("N${shoeDetails.price.toString()}")
-                            }
-                        },
-                        color = navyBlue,
-                        fontSize = 22.sp,
-                        textAlign = TextAlign.Start,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Brand: ")
-                            pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                            if (shoeDetails != null) {
-                                append(shoeDetails.brand)
-                            }
-                        },
-                        color = navyBlue,
-                        fontSize = 22.sp,
-                        textAlign = TextAlign.Start,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("Sizes: ")
-                            pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                            append("Rubber 100%")
-                        },
-                        color = navyBlue,
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Start,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            when (shoeDetailsState) {
+                is Resource.Loading -> {
 
                 }
+                is Resource.Success -> {
 
+                    ShoeImagePager()
 
-                Box(modifier = Modifier
-                    .width(99.dp)
-                    .height(157.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(skyBlue)
-                    .clickable {  },
-                    contentAlignment = Alignment.Center
-
-                ) {
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.cart),
-                            contentDescription = "cart icon")
-                        Spacer(modifier = Modifier.padding(vertical = 12.dp))
-                        if (shoeDetails != null) {
-                            Text(
-                                text = "N${shoeDetails.price.toString()}",
-                                color = white,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+                    if (shoeDetails != null) {
+                        Text(
+                            text = shoeDetails.name!!,
+                            color = navyBlue,
+                            fontSize = 24.sp,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     }
 
+                    if (shoeDetails != null) {
+                        Text(
+                            text = shoeDetails.description!!,
+                            fontSize = 18.sp,
+                            color = navyBlue,
+                            textAlign = TextAlign.Justify,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
+
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Column(
+                            modifier = Modifier
+                                .wrapContentHeight()
+                        ) {
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Price: ")
+                                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
+                                    if (shoeDetails != null) {
+                                        append("N${shoeDetails.price.toString()}")
+                                    }
+                                },
+                                color = navyBlue,
+                                fontSize = 22.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Brand: ")
+                                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
+                                    if (shoeDetails != null) {
+                                        append(shoeDetails.brand)
+                                    }
+                                },
+                                color = navyBlue,
+                                fontSize = 22.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Sizes: ")
+                                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
+                                    append("Rubber 100%")
+                                },
+                                color = navyBlue,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
+                            )
+
+                        }
+
+
+                        Box(modifier = Modifier
+                            .width(99.dp)
+                            .height(157.dp)
+                            .clip(RoundedCornerShape(24.dp))
+                            .background(skyBlue)
+                            .clickable {
+
+                                viewModel.addToCart(
+                                    shoeId = shoeId.toString(),
+                                    shoeImage = shoeDetails!!.images!!
+                                        .firstOrNull()
+                                        .toString(),
+                                    name = shoeDetails.name.toString(),
+                                    price = shoeDetails.price!!
+                                )
+                                Toast.makeText(mContext, "Product added to cart", Toast.LENGTH_SHORT).show()
+                            },
+                            contentAlignment = Alignment.Center
+
+                        ) {
+
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.cart),
+                                    contentDescription = "cart icon")
+
+                                Spacer(modifier = Modifier.padding(vertical = 12.dp))
+
+                                if (shoeDetails != null) {
+                                    Text(
+                                        text = "N${shoeDetails.price.toString()}",
+                                        color = white,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+
+                        }
+                    }
+                }
+                is Resource.Error -> {
+
                 }
             }
+
+
 
 
         }
@@ -271,7 +292,7 @@ fun DetailsScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoeImagePager(
-    viewModel: HomeViewModel = viewModel()
+    viewModel: DetailsViewModel = viewModel()
 ) {
     val shoeResource by viewModel.shoeById.collectAsState()
     val shoeDetails = shoeResource.data
@@ -319,112 +340,5 @@ fun ShoeImagePager(
 
 }
 
-@Composable
-fun DetailsText() {
-
-    Row(modifier = Modifier
-        .background(MaterialTheme.colorScheme.background)
-        .fillMaxWidth()
-        .padding(16.dp),
-        horizontalArrangement = Arrangement.Start,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Column(modifier = Modifier) {
-
-            Text(
-                text = "Structure",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = navyBlue
-            )
-
-            Spacer(modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp))
-
-            Text(
-                text = buildAnnotatedString {
-                    append("Price: ")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                    append("Rubber 100%")
-                },
-                color = navyBlue,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = buildAnnotatedString {
-                    append("Brand: ")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                    append("Rubber 100%")
-                },
-                color = navyBlue,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = buildAnnotatedString {
-                    append("Sizes: ")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                    append("Rubber 100%")
-                },
-                color = navyBlue,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = buildAnnotatedString {
-                    append("Colors: ")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                    append("Rubber 100%")
-                },
-                color = navyBlue,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.padding(vertical = 8.dp))
-
-            Text(
-                text = "Colors",
-                fontSize = 16.sp,
-                color = skyBlue
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(modifier = Modifier
-            .width(99.dp)
-            .height(157.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(skyBlue),
-            contentAlignment = Alignment.Center
-
-        ) {
-
-            Column {
-                Image(
-                    painter = painterResource(id = R.drawable.cart),
-                    contentDescription = "cart icon")
-                Spacer(modifier = Modifier.padding(vertical = 16.dp))
-                Text(
-                    text = "$ 650",
-                    color = white,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-        }
-    }
-
-
-
-}
 
 

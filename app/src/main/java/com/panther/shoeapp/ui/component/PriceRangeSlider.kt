@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SliderDefaults
@@ -50,14 +50,14 @@ fun PriceRangeSlider(modifier: Modifier){
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
-                text = "$${priceRangeStart}",
+                text = "N${priceRangeStart}",
                 color = navyBlue
             )
 
             Spacer(modifier = modifier.weight(1f))
 
             Text(
-                text = "$${priceRangeEnd} ",
+                text = "N${priceRangeEnd} ",
                 color = navyBlue
             )
         }
@@ -65,9 +65,9 @@ fun PriceRangeSlider(modifier: Modifier){
             modifier = modifier
                 .padding(start = 16.dp, end = 16.dp)
                 .shadow(
-                    elevation = 6.dp,
-                    shape = RoundedCornerShape(24.dp),
-                    spotColor = Color.Gray,
+                    elevation = 20.dp,
+                    shape = CircleShape,
+                    spotColor = skyBlue,
                     ambientColor = Color.Transparent
                 )
             ,

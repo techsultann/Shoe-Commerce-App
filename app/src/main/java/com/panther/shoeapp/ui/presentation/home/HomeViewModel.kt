@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
-import com.panther.shoeapp.models.Category
 import com.panther.shoeapp.models.Shoe
 import com.panther.shoeapp.models.User
 import com.panther.shoeapp.utils.Resource
@@ -26,10 +26,15 @@ class HomeViewModel @Inject constructor(
     val displayName : StateFlow<String> = _displayName
     private val _allShoes = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
     val allShoes : StateFlow<Resource<List<Shoe>>> = _allShoes
-    private val _shoeById = MutableStateFlow<Resource<Shoe>>(Resource.Loading())
-    val shoeById: StateFlow<Resource<Shoe>> = _shoeById
-    private val _allCategory = MutableStateFlow<Resource<Category>>(Resource.Loading())
-    val category : StateFlow<Resource<Category>> = _allCategory
+    private val _nike = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
+    val nike : StateFlow<Resource<List<Shoe>>> = _nike
+    private val _adidas = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
+    val adidas : StateFlow<Resource<List<Shoe>>> = _adidas
+    private val _puma = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
+    val puma : StateFlow<Resource<List<Shoe>>> = _puma
+    private val _itemCount = MutableStateFlow(0)
+    val itemCount = _itemCount
+
 
     init {
         viewModelScope.launch {
@@ -44,6 +49,8 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+
+        getAllShoes()
     }
 
     fun getAllShoes() {
@@ -51,6 +58,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
+                _allShoes.value = Resource.Loading()
                 fireStore.collection("Shoes")
                     .get()
                     .addOnSuccessListener { result ->
@@ -66,51 +74,125 @@ class HomeViewModel @Inject constructor(
                         _allShoes.value = Resource.Error(e.localizedMessage)
                     }
             } catch (e: Exception) {
+                _allShoes.value = Resource.Loading()
                 Log.d("GET ALL SHOES", "${e.message}")
             }
 
         }
     }
 
-    fun getShoeById(shoeId: String) {
-        fireStore.collection("Shoes")
-            .document(shoeId)
-            .get()
-            .addOnSuccessListener { document ->
-                val shoe = document.toObject(Shoe::class.java)
-                Log.d("GET ALL SHOES", "Shoes: $shoe")
-                _shoeById.value = Resource.Success(shoe!!)
-            }
-            .addOnFailureListener { e ->
-                _shoeById.value = Resource.Error(e.localizedMessage)
-            }
-    }
-
     fun getNikeShoes() {
 
-        viewModelScope.launch {
-            fireStore.collection("shoes")
-                .whereEqualTo("brand", "Nike")
-                .get()
-                .addOnSuccessListener { querySnapshot ->
-                    val allShoes = mutableListOf<Shoe>()
+        viewModelScope.launch(Dispatchers.IO) {
 
-                    for (document in querySnapshot.documents){
-                        val shoe = document.toObject(Shoe::class.java)
-                        if (shoe != null) {
-                            allShoes.add(shoe)
+            try {
+                _nike.value = Resource.Loading()
+                fireStore.collection("Shoes")
+                    .whereEqualTo("brand", "Nike")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val nikeShoes = mutableListOf<Shoe>()
+
+                        for (document in querySnapshot){
+                            val shoe = document.toObject(Shoe::class.java)
+                            nikeShoes.add(shoe)
                         }
+                        _nike.value = Resource.Success(nikeShoes)
 
                     }
+                    .addOnFailureListener{ exception ->
+                        _nike.value = Resource.Error(exception.message)
+                        Log.e("ALL SHOE", exception.message.toString())
+                    }
+            }catch (e: Exception) {
+                Log.d("GET NIKE SHOES", "${e.message}")
+            }
 
-                }
-                .addOnFailureListener{ exception ->
-                    Log.e("ALL SHOE", exception.message.toString())
-                }
         }
     }
 
-    fun logout(): Resource<User> {
+    fun getAdidasShoes() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+                _adidas.value = Resource.Loading()
+                fireStore.collection("Shoes")
+                    .whereEqualTo("brand", "Adidas")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val adidasShoes = mutableListOf<Shoe>()
+
+                        for (document in querySnapshot){
+                            val shoe = document.toObject(Shoe::class.java)
+                            adidasShoes.add(shoe)
+                        }
+                        _adidas.value = Resource.Success(adidasShoes)
+
+                    }
+                    .addOnFailureListener{ exception ->
+                        _adidas.value = Resource.Error(exception.localizedMessage)
+                        Log.e("ALL SHOE", exception.message.toString())
+                    }
+            }catch (e: Exception) {
+                Log.d("GET NIKE SHOES", "${e.message}")
+            }
+
+        }
+    }
+
+    fun getPumaShoes() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+                _puma.value = Resource.Loading()
+                fireStore.collection("Shoes")
+                    .whereEqualTo("brand", "Puma")
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val pumaShoes = mutableListOf<Shoe>()
+
+                        for (document in querySnapshot){
+                            val shoe = document.toObject(Shoe::class.java)
+                            pumaShoes.add(shoe)
+                        }
+                        _puma.value = Resource.Success(pumaShoes)
+
+                    }
+                    .addOnFailureListener{ exception ->
+                        _puma.value = Resource.Error(exception.localizedMessage)
+                        Log.e("ALL SHOE", exception.message.toString())
+                    }
+            }catch (e: Exception) {
+                Log.d("GET NIKE SHOES", "${e.message}")
+            }
+
+        }
+    }
+
+    fun getItemCount() {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val countQuery = fireStore.collection("Shoes")
+                .count()
+
+            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Count fetched successfully
+                    _itemCount.value = (task.result?.count ?: 0).toInt()
+                    val snapshot = task.result
+                    Log.d("ITEM COUNT", "Number Of Item: ${snapshot.count}")
+                } else {
+                    Log.d("ITEM COUNT", "Count failed: ", task.exception)
+                    _itemCount.value = 0
+                }
+            }
+        }
+    }
+
+
+        fun logout(): Resource<User> {
         return try {
             auth.signOut()
             Log.d("TAG", "Logout: SUCCESS")
