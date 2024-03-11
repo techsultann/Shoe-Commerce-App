@@ -51,9 +51,12 @@ class HomeViewModel @Inject constructor(
         }
 
         getAllShoes()
+        getNikeShoes()
+        getAdidasShoes()
+        getPumaShoes()
     }
 
-    fun getAllShoes() {
+    private fun getAllShoes() {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -141,7 +144,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getPumaShoes() {
+    private fun getPumaShoes() {
 
         viewModelScope.launch(Dispatchers.IO) {
 

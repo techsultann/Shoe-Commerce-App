@@ -31,15 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.FancyIndicator
 import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.theme.FieldColor
@@ -54,9 +56,9 @@ fun HomeTabRow(
     navHostController: NavHostController,
     viewModel: HomeViewModel = viewModel()
 ) {
-    val shoeResource by viewModel.allShoes.collectAsState()
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    //val shoeResource by viewModel.allShoes.collectAsState()
     val titles = listOf("All", "Nike", "Adidas", "Puma")
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState {
         titles.size
     }
@@ -93,12 +95,6 @@ fun HomeTabRow(
                     selected = pagerState.currentPage == index ,//index == selectedTabIndex ,
                     onClick = {
                         selectedTabIndex = index
-                        when (title) {
-                            "All" -> viewModel.getAllShoes()
-                            "Nike" -> viewModel.getNikeShoes()
-                            "Adidas" -> products
-                            "Puma" -> products
-                        }
                               },
                     text = {
                         if (index == selectedTabIndex) {
@@ -128,6 +124,7 @@ fun HomeTabRow(
             }
         }
 
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
@@ -139,44 +136,60 @@ fun HomeTabRow(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                when (shoeResource) {
-                    is Resource.Loading ->{
+
+                val shoeResource = when(selectedTabIndex) {
+                    0 -> viewModel.allShoes.collectAsState()
+                    1 -> viewModel.nike.collectAsState()
+                    2 -> viewModel.adidas.collectAsState()
+                    3 -> viewModel.puma.collectAsState()
+                    else -> {viewModel.allShoes.collectAsState()}
+                }
+
+                when (val resource = shoeResource.value) {
+
+                    is Resource.Loading -> {
 
                     }
                     is Resource.Success -> {
 
-                        val shoeList = shoeResource.data ?: emptyList()
+                        val shoeList = resource.data ?: emptyList()
 
-                        when (titles[index]) {
-                            "All" -> viewModel.allShoes
-                            "Nike" -> viewModel.nike
-                            "Adidas" -> viewModel.adidas
-                            "Puma" -> viewModel.puma
-                        }
+                        if (shoeList.isEmpty()) {
+                            Text(
+                                text = "No product available at the moment, Check back later...",
+                                fontSize = 22.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding()
+                                    .align(Alignment.Center)
+                            )
+                        } else {
+                            LazyVerticalGrid(
+                                columns = GridCells.Fixed(count = 2),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                contentPadding = PaddingValues(16.dp)
+                            ) {
 
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(count = 2),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(16.dp)
-                        ) {
+                                items(
+                                    items = shoeList,
+                                    key = {
+                                        it.id!!
+                                    }
+                                ) { product ->
 
-                            items(
-                                items = shoeList,
-                                key = {
-                                    it.id!!
+                                    ProductCard(
+                                        product.name!!,
+                                        product.price!!,
+                                        product.images?.first().toString(),
+                                        product.id!!,
+                                        navHostController
+                                    )
                                 }
-                            ) { product ->
-
-                                ProductCard(
-                                    product.name!!,
-                                    product.price!!,
-                                    product.images?.first().toString(),
-                                    product.id!!,
-                                    navHostController
-                                )
                             }
                         }
+
                     }
                     is Resource.Error -> {
 

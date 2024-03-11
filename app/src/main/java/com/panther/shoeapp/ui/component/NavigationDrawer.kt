@@ -159,7 +159,7 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { navController.navigate(route = HomeScreenNav.PaymentCardScreen.route) },
+                    onClick = { navController.navigate(route = "${HomeScreenNav.PaymentCardScreen.route}/{cardType}/{name}/{cardNumber}") },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background

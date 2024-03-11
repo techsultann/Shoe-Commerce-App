@@ -94,7 +94,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.firebase:firebase-firestore")
 
     // ViewModel and lifecycle
@@ -111,6 +111,10 @@ dependencies {
     //coil
     implementation("io.coil-kt:coil:2.5.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //Google pay
+    implementation("com.google.android.gms:play-services-wallet:19.3.0")
+    implementation("com.google.pay.button:compose-pay-button:1.0.0")
 }
 
 kapt {

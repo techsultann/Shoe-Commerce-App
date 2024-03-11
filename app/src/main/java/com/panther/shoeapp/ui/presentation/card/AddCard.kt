@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,24 +26,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TextFieldWithPlaceholder
 import com.panther.shoeapp.ui.component.TopAppBar
 
 @Composable
-fun AddCardScreen() {
+fun AddCardScreen(
+    navHostController: NavHostController
+) {
 
     var cardType by rememberSaveable { mutableStateOf("") }
     var cardHolderName by rememberSaveable { mutableStateOf("") }
     var cardNumber by rememberSaveable { mutableStateOf("") }
-   // var cardType by rememberSaveable { mutableStateOf("") }
+    var expiryDate by rememberSaveable { mutableStateOf("") }
+    var cvv by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -141,14 +150,32 @@ fun AddCardScreen() {
                     .fillMaxWidth()
             )
 
-            TextFieldWithPlaceholder(
-                modifier = Modifier,
-                value = cardNumber ,
-                onValueChange = {
-                    cardNumber = it
-                },
+            TextField(
+                value = cardNumber,
+                onValueChange = { cardNumber = it.take(16) },
                 placeholder = {
                     Text(text = "00000 0000 0000 0000")
+                },
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clip(CircleShape)
+                    .clipToBounds()
+                    .requiredHeight(66.dp),
+                shape = CircleShape,
+                visualTransformation = { text ->
+                    val trimmed = if (text.text.length >= 16) text.text.substring(0..15) else text.text
+                    var out = ""
+
+                    for (i in trimmed.indices) {
+                        out += trimmed[i]
+                        if (i % 4 == 3 && i != 15) out += "-"
+                    }
+                    TransformedText(
+                        AnnotatedString(out),
+                        creditCardOffsetMapping
+                    )
                 }
             )
 
@@ -162,9 +189,9 @@ fun AddCardScreen() {
 
             TextFieldWithPlaceholder(
                 modifier = Modifier,
-                value = cardNumber ,
+                value = expiryDate ,
                 onValueChange = {
-                    cardNumber = it
+                    expiryDate = it
                 },
                 placeholder = {
                     Text(text = "12/12")
@@ -181,9 +208,9 @@ fun AddCardScreen() {
 
             TextFieldWithPlaceholder(
                 modifier = Modifier,
-                value = cardNumber ,
+                value = cvv ,
                 onValueChange = {
-                    cardNumber = it
+                    cvv = it
                 },
                 placeholder = {
                     Text(text = "000")
@@ -197,7 +224,10 @@ fun AddCardScreen() {
                     .fillMaxWidth()
                     .padding(16.dp)
                     .requiredHeight(66.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navHostController.popBackStack()
+                    navHostController.navigate(route = "${HomeScreenNav.PaymentCardScreen.route}/$cardType/$cardHolderName/$cardNumber")
+                }
             ) {
                 Text(
                     text = "Add Card",
@@ -209,8 +239,27 @@ fun AddCardScreen() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewAddCard() {
-    AddCardScreen()
+// Making XXXX-XXXX-XXXX-XXXX string.
+val creditCardOffsetMapping = object : OffsetMapping {
+    override fun originalToTransformed(offset: Int): Int {
+        if (offset <= 3) return offset
+        if (offset <= 7) return offset + 1
+        if (offset <= 11) return offset + 2
+        if (offset <= 16) return offset + 3
+        return 19
+    }
+
+    override fun transformedToOriginal(offset: Int): Int {
+        if (offset <= 4) return offset
+        if (offset <= 9) return offset - 1
+        if (offset <= 14) return offset - 2
+        if (offset <= 19) return offset - 3
+        return 16
+    }
 }
+
+//@Preview
+//@Composable
+//fun PreviewAddCard() {
+//    AddCardScreen()
+//}

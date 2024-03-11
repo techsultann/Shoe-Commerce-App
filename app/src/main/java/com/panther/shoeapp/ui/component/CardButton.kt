@@ -18,7 +18,8 @@ import com.panther.shoeapp.ui.theme.FieldColor
 @Composable
 fun CardButton(
     boolean: Boolean,
-    icon: Int
+    icon: Int,
+    onClick: () -> Unit
 ) {
 
     IconButton(
@@ -26,7 +27,7 @@ fun CardButton(
             .clip(RoundedCornerShape(16.dp))
             .width(81.dp)
             .height(65.dp),
-        onClick = { /*TODO*/ },
+        onClick = onClick,
         colors = IconButtonDefaults.outlinedIconButtonColors(
             containerColor = FieldColor
         ),

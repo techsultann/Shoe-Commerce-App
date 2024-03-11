@@ -1,7 +1,11 @@
 package com.panther.shoeapp.ui.presentation.profile
 
-import androidx.compose.foundation.Image
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +15,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,11 +23,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,13 +42,35 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.panther.shoeapp.R
+
 import com.panther.shoeapp.ui.component.DetailsBackground
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 
+
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+
+    val name by viewModel.displayName.collectAsState()
+   // val email by viewModel.userEmail.collectAsState()
+    var selectImage by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectImage = uri
+    }
+    LaunchedEffect(key1 = viewModel) {
+        viewModel.displayName()
+        viewModel.userEmail()
+    }
+
 
     Scaffold(
         topBar = {
@@ -65,7 +98,7 @@ fun ProfileScreen() {
 
                             }) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigation back icon",
                                 tint = Color.Unspecified
                             )
@@ -88,21 +121,30 @@ fun ProfileScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Image(
-                painterResource(id = R.drawable.vomero_womens),
-                contentDescription = null,
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(selectImage)
+                    .placeholder(R.drawable.vomero_womens)
+                    .build(),
+                contentDescription = "profile image",
+                placeholder = painterResource(id = R.drawable.vomero_womens),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(100.dp)
                     .clip(CircleShape)
+                    .size(100.dp)
             )
-            
+            Log.d("Display name", "Name: $name")
             Text(
-                text = "Alexander Hussain",
+                text = name.uppercase() ,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-            Text(text = "Change Photo")
+
+            Text(
+                text = "Change Photo",
+                modifier = Modifier
+                    .clickable { galleryLauncher.launch("image/*") }
+            )
 
             Spacer(modifier = Modifier.padding(16.dp))
 
@@ -114,7 +156,7 @@ fun ProfileScreen() {
                     .fillMaxWidth()
             )
 
-            DetailsBackground(text = "Alexander Hussain")
+            DetailsBackground(text = name)
 
             Text(
                 text = "Email",
@@ -124,7 +166,8 @@ fun ProfileScreen() {
                     .fillMaxWidth()
             )
 
-            DetailsBackground(text = "Sadamhussain@gmail.com")
+           // Log.d("User Email", "Email: $email")
+            DetailsBackground(text = "email")
 
             Text(
                 text = "Number",

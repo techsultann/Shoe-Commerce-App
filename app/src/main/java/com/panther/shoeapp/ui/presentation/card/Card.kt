@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -27,17 +27,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.panther.shoeapp.R
+import com.panther.shoeapp.navigation.BottomBarScreen
+import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.CardButton
 import com.panther.shoeapp.ui.component.DetailsBackground
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 
 @Composable
-fun CardScreen() {
+fun CardScreen(
+    cardType: String?,
+    name: String?,
+    cardNumber:String?,
+    navHostController: NavHostController
+) {
 
     Scaffold(
         topBar = {
@@ -65,7 +72,7 @@ fun CardScreen() {
 
                             }) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigation back icon",
                                 tint = Color.Unspecified
                             )
@@ -94,13 +101,19 @@ fun CardScreen() {
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CardButton(boolean = true, icon = R.drawable.apple_pay)
-                CardButton(boolean = true, icon = R.drawable.visa_logo)
-                CardButton(boolean = true, icon = R.drawable.master_card)
-                CardButton(boolean = true, icon = R.drawable.ic_round_add)
+                CardButton(boolean = true, icon = R.drawable.apple_pay, onClick = {})
+                CardButton(boolean = true, icon = R.drawable.visa_logo, onClick = {})
+                CardButton(boolean = true, icon = R.drawable.master_card, onClick = {})
+                CardButton(
+                    boolean = true,
+                    icon = R.drawable.ic_round_add,
+                    onClick = {
+                        navHostController.navigate(route = HomeScreenNav.AddCardScreen.route)
+                    }
+                )
             }
 
-            AddCreditCard()
+            AddCreditCard(cardType, name, cardNumber)
 
             Spacer(modifier = Modifier.padding(16.dp))
 
@@ -129,7 +142,10 @@ fun CardScreen() {
                     .fillMaxWidth()
                     .padding(16.dp)
                     .requiredHeight(66.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navHostController.popBackStack()
+                    navHostController.navigate(route = BottomBarScreen.Home.route)
+                }
             ) {
                 Text(
                     text = "Done",
@@ -140,8 +156,8 @@ fun CardScreen() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewCardScreen() {
-    CardScreen()
-}
+//@Preview
+//@Composable
+//fun PreviewCardScreen() {
+//    CardScreen()
+//}

@@ -41,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,6 +64,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.AlertDialog
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -72,6 +74,8 @@ import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
 import com.panther.shoeapp.utils.Resource
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun CartScreen(
@@ -80,8 +84,18 @@ fun CartScreen(
 ){
     val itemCount by viewModel.itemCount.collectAsState()
     val cartItemState by viewModel.cartItems.collectAsState()
+    val cartItems = cartItemState.data ?: emptyList()
+    var subTotalPrice by remember { mutableDoubleStateOf(0.0) }
+
     LaunchedEffect(cartItemState) {
-        viewModel.getItemCount()
+
+        coroutineScope {
+            launch {
+                viewModel.getItemCount()
+            }
+        }
+
+
     }
 
     Scaffold(
@@ -146,7 +160,6 @@ fun CartScreen(
 
                 }
                 is Resource.Success -> {
-                    val cartItem = cartItemState.data ?: emptyList()
 
                     Text(
                         text = buildAnnotatedString {
@@ -169,9 +182,11 @@ fun CartScreen(
                         verticalArrangement = Arrangement.spacedBy(6.dp),
                         contentPadding = PaddingValues(4.dp)
                     ) {
-                        items(cartItem) { product ->
+                        items(cartItems) { product ->
 
-                            Log.d("CART ITEM", "Cart: $cartItem")
+                            //Log.d("CART ITEM", "Cart: $cartItems")
+//                            val subTotal = product.price?.times(product.quantity ?: 1) ?: 0.0
+//                            totalPrice += subTotal
 
                             CartCard(
                                 name = product.name.toString(),
@@ -216,8 +231,13 @@ fun CartScreen(
                     fontSize = 16.sp
                 )
 
+                Log.d("TOTAL AMOUNT", "Total: $subTotalPrice")
+                for (product in cartItems) {
+                    subTotalPrice += product.price!! * product.quantity!!
+                }
+
                 Text(
-                    text = "$ 1375",
+                    text = "N $subTotalPrice",
                     fontSize = 16.sp
                 )
             }
@@ -225,14 +245,17 @@ fun CartScreen(
             ShoeAppButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 100.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 100.dp)
                     .requiredHeight(66.dp),
-                onClick = { /*TODO*/ }
-            ) {                Text(
+                onClick = { navHostController.navigate( route = "${HomeScreenNav.CheckoutScreen.route}/$subTotalPrice" )  }
+            ) {
+                Text(
                     text = "Checkout",
                     fontSize = 18.sp
                 )
             }
+
+
         }
     }
 }
@@ -417,3 +440,15 @@ fun CartCard(
 
     }
 }
+
+//@Composable
+//fun totalAmount(cartItems: List<CartItem>): Double {
+//    var totalAmount = 0.0
+//
+//    for (product in cartItems) {
+//        var itemTotal = product.price?.times(product.quantity!!)
+//        itemTotal = itemTotal!! + itemTotal
+//    }
+//
+//    return totalAmount
+//}

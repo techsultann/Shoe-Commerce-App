@@ -5,21 +5,28 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
+import com.panther.shoeapp.ui.presentation.card.AddCardScreen
 import com.panther.shoeapp.ui.presentation.card.CardScreen
 import com.panther.shoeapp.ui.presentation.cart.CartScreen
 import com.panther.shoeapp.ui.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.presentation.category.CategoryScreen
+import com.panther.shoeapp.ui.presentation.checkout.CheckOutScreen
+import com.panther.shoeapp.ui.presentation.checkout.CheckoutViewModel
+import com.panther.shoeapp.ui.presentation.checkout.OrderSuccessfulScreen
 import com.panther.shoeapp.ui.presentation.details.DetailsScreen
 import com.panther.shoeapp.ui.presentation.details.DetailsViewModel
 import com.panther.shoeapp.ui.presentation.discovery.DiscoveryScreen
 import com.panther.shoeapp.ui.presentation.home.HomeScreenContent
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.presentation.profile.ProfileScreen
+import com.panther.shoeapp.ui.presentation.profile.ProfileViewModel
 import com.panther.shoeapp.ui.presentation.settings.SettingsScreen
 
 
@@ -44,16 +51,18 @@ fun HomeNavGraph(
         }
         composable(route = BottomBarScreen.Cart.route){
             val viewModel = hiltViewModel<CartViewModel>()
-            CartScreen(navHostController = navController)
+            CartScreen(navHostController = navController, viewModel)
         }
         composable(route = BottomBarScreen.Message.route){
             //MessageScreen()
         }
         composable(route = BottomBarScreen.Profile.route){
-            ProfileScreen()
+            val viewModel = hiltViewModel<ProfileViewModel>()
+            ProfileScreen(viewModel)
         }
         navDrawerGraph(navController)
         detailsNavGraph(navController)
+        cartNavGraph(navController)
 
     }
 
@@ -70,6 +79,31 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController){
         }
     }
 }
+
+fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
+    navigation(
+        route = Graph.CHECKOUT,
+        startDestination = "${HomeScreenNav.CheckoutScreen.route}/{subTotalPrice}"
+    ){
+        composable(
+            route = "${HomeScreenNav.CheckoutScreen.route}/{subTotalPrice}",
+            arguments = listOf(navArgument("subTotalPrice") {type = NavType.StringType} )
+        ){ backStackEntry ->
+
+            val viewModel = hiltViewModel<CheckoutViewModel>()
+            val subTotalPrice = backStackEntry.arguments?.getString("subTotalPrice")
+            CheckOutScreen(navController, subTotalPrice, viewModel)
+        }
+        composable(route = HomeScreenNav.SuccessfulScreen.route){
+            OrderSuccessfulScreen(navController)
+        }
+        composable(route = BottomBarScreen.Home.route){
+            val viewModel = hiltViewModel<HomeViewModel>()
+            HomeScreenContent(navController, viewModel)
+        }
+    }
+}
+
 fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
     navigation(
         route = Graph.NAV_DRAWER,
@@ -78,8 +112,23 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         composable(route = HomeScreenNav.CategoryScreen.route){
             CategoryScreen(navController)
         }
-        composable(route = HomeScreenNav.PaymentCardScreen.route){
-            CardScreen()
+        composable(
+            route = "${ HomeScreenNav.PaymentCardScreen.route }/{cardType}/{name}/{cardNumber}",
+            arguments = listOf(
+                navArgument("cardType") {type = NavType.StringType},
+                navArgument("name") {type = NavType.StringType},
+                navArgument("cardNumber") {type = NavType.StringType}
+            )
+        ){ backStackEntry ->
+            val cardType = backStackEntry.arguments?.getString("cardType")
+            val name = backStackEntry.arguments?.getString("name")
+            val cardNumber = backStackEntry.arguments?.getString("cardNumber")
+            CardScreen(cardType, name, cardNumber, navController)
+        }
+        composable(
+            route = HomeScreenNav.AddCardScreen.route,
+        ){
+            AddCardScreen(navController)
         }
         composable(route = HomeScreenNav.SettingsScreen.route){
             SettingsScreen()
@@ -100,6 +149,9 @@ sealed class HomeScreenNav(val route: String) {
     object DetailsScreen : HomeScreenNav(route = "details_screen")
     object CategoryScreen : HomeScreenNav(route = "category_screen")
     object PaymentCardScreen : HomeScreenNav(route = "card_screen")
+    object AddCardScreen : HomeScreenNav(route = "add_card_screen")
     object SettingsScreen : HomeScreenNav(route = "settings_screen")
     object DiscoversScreen : HomeScreenNav(route = "discover_screen")
+    object CheckoutScreen : HomeScreenNav(route = "checkout_screen")
+    object SuccessfulScreen : HomeScreenNav(route = "successful_screen")
 }

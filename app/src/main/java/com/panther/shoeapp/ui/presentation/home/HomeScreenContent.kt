@@ -256,23 +256,6 @@ fun SectionA() {
 }
 
 
-//@Composable
-//fun SectionC(productList: List<Product>) {
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(count = 2),
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(16.dp)
-//    ) {
-//
-//        items(productList) { product ->
-//
-//            ProductCard(product.name, product.price, product.image)
-//        }
-//    }
-//}
-
-
 @Preview
 @Composable
 fun MainScreenPreview() {

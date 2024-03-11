@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -23,28 +24,56 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.google.pay.button.ButtonTheme
+import com.google.pay.button.ButtonType
+import com.google.pay.button.PayButton
 import com.panther.shoeapp.R
+import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.CardButton
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.utils.PaymentsUtil
 
 
 @Composable
-fun CheckOutScreen() {
+fun CheckOutScreen(
+    navHostController: NavHostController,
+    subTotalPrice: String?,
+    viewModel: CheckoutViewModel
+) {
+
+    val state by viewModel.state.collectAsState()
+    val shippingCost by remember {
+        mutableDoubleStateOf(3000.00)
+    }
+    val subTotal by remember {
+        mutableDoubleStateOf(subTotalPrice!!.toDouble())
+    }
+
+    val totalAmount = shippingCost + subTotal
+    val total by remember {
+        mutableDoubleStateOf(totalAmount)
+    }
+
 
     Scaffold(
         topBar = {
@@ -118,14 +147,29 @@ fun CheckOutScreen() {
 
              Row(
                  modifier = Modifier
+                     .height(65.dp)
                      .padding(16.dp)
                      .fillMaxWidth(),
-                 horizontalArrangement = Arrangement.SpaceBetween
+                 horizontalArrangement = Arrangement.SpaceBetween,
+                 verticalAlignment = Alignment.CenterVertically
              ) {
-                 CardButton(boolean = true, icon = R.drawable.apple_pay)
-                 CardButton(boolean = true, icon = R.drawable.visa_logo)
-                 CardButton(boolean = true, icon = R.drawable.master_card)
-                 CardButton(boolean = true, icon = R.drawable.ic_round_add)
+                 PayButton(
+                     modifier = Modifier
+                         .testTag("payButton")
+                         .height(65.dp)
+                         .width(81.dp),
+                     onClick = {
+                         viewModel.requestPayment(priceCents = totalAmount)
+                         navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
+                               },
+                     allowedPaymentMethods = PaymentsUtil.cardPaymentMethod.toString(),
+                     type = ButtonType.Pay,
+                     enabled = state.googlePayButtonClickable,
+                     theme = ButtonTheme.Dark
+                 )
+                 CardButton(boolean = true, icon = R.drawable.visa_logo, onClick = {})
+                 CardButton(boolean = true, icon = R.drawable.master_card, onClick = {})
+                 CardButton(boolean = true, icon = R.drawable.ic_round_add, onClick = {})
              }
             
             Text(
@@ -186,7 +230,7 @@ fun CheckOutScreen() {
                 )
 
                 Text(
-                    text = "$ 1375",
+                    text = "N $subTotalPrice",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -204,7 +248,7 @@ fun CheckOutScreen() {
                 )
 
                 Text(
-                    text = "$ 80",
+                    text = "N $shippingCost",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -222,7 +266,7 @@ fun CheckOutScreen() {
                 )
 
                 Text(
-                    text = "$ 1455",
+                    text = "N $totalAmount",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -235,7 +279,9 @@ fun CheckOutScreen() {
                     .fillMaxWidth()
                     .padding(16.dp)
                     .requiredHeight(66.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
+                }
             ) {
                 Text(
                     text = "Pay Now",
@@ -246,8 +292,8 @@ fun CheckOutScreen() {
     }
 }
 
-@Preview
-@Composable
-fun PreviewCheckOutScreen() {
-    CheckOutScreen()
-}
+//@Preview
+//@Composable
+//fun PreviewCheckOutScreen() {
+//    CheckOutScreen(rememberNavController(), "", )
+//}

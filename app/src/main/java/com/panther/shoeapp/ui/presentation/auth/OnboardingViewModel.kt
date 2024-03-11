@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.panther.shoeapp.models.User
 import com.panther.shoeapp.repository.RepositoryImpl
-import com.panther.shoeapp.utils.Object
+import com.panther.shoeapp.utils.Constants
 import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -81,7 +81,7 @@ class OnboardingViewModel @Inject constructor (
     }
 }
  private fun isEmailValid(email: String): Boolean {
-    return Pattern.matches(Object.EMAIL_VALIDATION_REGEX, email)
+    return Pattern.matches(Constants.EMAIL_VALIDATION_REGEX, email)
 }
 
 fun isNamePatternCorrect(fullName: String): Boolean {

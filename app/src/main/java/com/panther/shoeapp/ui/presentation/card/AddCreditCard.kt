@@ -45,7 +45,11 @@ import com.panther.shoeapp.ui.theme.CardColor
 import com.panther.shoeapp.ui.theme.CardLightColor
 
 @Composable
-fun AddCreditCard() {
+fun AddCreditCard(
+    cardType: String?,
+    name: String?,
+    cardNumber: String?
+) {
     var rotated by remember { mutableStateOf(false) }
 
     val rotation by animateFloatAsState(
@@ -141,17 +145,19 @@ fun AddCreditCard() {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = "Master Card",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            letterSpacing = 2.sp,
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    alpha = animateFront
-                                }
-                        )
+                        if (cardType != null) {
+                            Text(
+                                text = cardType,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                letterSpacing = 2.sp,
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        alpha = animateFront
+                                    }
+                            )
+                        }
 
                         Image(
                             painter = painterResource(id = R.drawable.card_icon),
@@ -177,16 +183,18 @@ fun AddCreditCard() {
                             }
                     )
 
-                    Text(
-                        text = "1286 6857 5838",
-                        fontSize = 24.sp,
-                        color = Color.White,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .graphicsLayer {
-                                alpha = animateFront
-                            }
-                    )
+                    if (cardNumber != null) {
+                        Text(
+                            text = cardNumber,
+                            fontSize = 24.sp,
+                            color = Color.White,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .graphicsLayer {
+                                    alpha = animateFront
+                                }
+                        )
+                    }
 
                     Row(
                         modifier = Modifier
@@ -196,15 +204,17 @@ fun AddCreditCard() {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            text = "Alexander Hussain",
-                            fontSize = 14.sp,
-                            color = Color.White,
-                            modifier = Modifier
-                                .graphicsLayer {
-                                    alpha = animateFront
-                                }
-                        )
+                        if (name != null) {
+                            Text(
+                                text = name,
+                                fontSize = 14.sp,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .graphicsLayer {
+                                        alpha = animateFront
+                                    }
+                            )
+                        }
 
                         Image(
                             painter = painterResource(id = R.drawable.master_card),
