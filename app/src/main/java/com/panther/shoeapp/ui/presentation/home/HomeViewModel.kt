@@ -84,7 +84,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun getNikeShoes() {
+    private fun getNikeShoes() {
 
         viewModelScope.launch(Dispatchers.IO) {
 

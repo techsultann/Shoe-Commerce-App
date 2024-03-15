@@ -94,9 +94,8 @@ fun ProfileScreen(
                         shadowElevation = 4.dp
                     ) {
                         IconButton(
-                            onClick = {
-
-                            }) {
+                            onClick = {}
+                        ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigation back icon",

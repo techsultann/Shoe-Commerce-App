@@ -79,9 +79,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CartScreen(
-    navHostController: NavHostController,
-    viewModel: CartViewModel = viewModel()
+    navHostController: NavHostController
 ){
+    val viewModel: CartViewModel = viewModel()
     val itemCount by viewModel.itemCount.collectAsState()
     val cartItemState by viewModel.cartItems.collectAsState()
     val cartItems = cartItemState.data ?: emptyList()
@@ -94,7 +94,6 @@ fun CartScreen(
                 viewModel.getItemCount()
             }
         }
-
 
     }
 
@@ -184,9 +183,8 @@ fun CartScreen(
                     ) {
                         items(cartItems) { product ->
 
-                            //Log.d("CART ITEM", "Cart: $cartItems")
-//                            val subTotal = product.price?.times(product.quantity ?: 1) ?: 0.0
-//                            totalPrice += subTotal
+                            Log.d("CART ITEM", "Cart: $cartItems")
+
 
                             CartCard(
                                 name = product.name.toString(),

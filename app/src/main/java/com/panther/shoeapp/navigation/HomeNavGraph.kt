@@ -51,7 +51,7 @@ fun HomeNavGraph(
         }
         composable(route = BottomBarScreen.Cart.route){
             val viewModel = hiltViewModel<CartViewModel>()
-            CartScreen(navHostController = navController, viewModel)
+            CartScreen(navHostController = navController)
         }
         composable(route = BottomBarScreen.Message.route){
             //MessageScreen()
