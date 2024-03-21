@@ -1,5 +1,12 @@
 package com.panther.shoeapp.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -72,7 +79,29 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController){
         route = Graph.DETAILS,
         startDestination = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"
     ){
-        composable(route = "${HomeScreenNav.DetailsScreen.route}/{shoeId}"){ backStackEntry ->
+        composable(
+            route = "${HomeScreenNav.DetailsScreen.route}/{shoeId}",
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ){ backStackEntry ->
             val viewModel = hiltViewModel<DetailsViewModel>()
             val shoeId = backStackEntry.arguments?.getString("shoeId")
             DetailsScreen(shoeId = shoeId, viewModel)
@@ -87,14 +116,56 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
     ){
         composable(
             route = "${HomeScreenNav.CheckoutScreen.route}/{subTotalPrice}",
-            arguments = listOf(navArgument("subTotalPrice") {type = NavType.StringType} )
+            arguments = listOf(navArgument("subTotalPrice") {type = NavType.StringType} ),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
         ){ backStackEntry ->
 
             val viewModel = hiltViewModel<CheckoutViewModel>()
             val subTotalPrice = backStackEntry.arguments?.getString("subTotalPrice")
             CheckOutScreen(navController, subTotalPrice, viewModel)
         }
-        composable(route = HomeScreenNav.SuccessfulScreen.route){
+        composable(
+            route = HomeScreenNav.SuccessfulScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ){
             OrderSuccessfulScreen(navController)
         }
         composable(route = BottomBarScreen.Home.route){
@@ -118,7 +189,27 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
                 navArgument("cardType") {type = NavType.StringType},
                 navArgument("name") {type = NavType.StringType},
                 navArgument("cardNumber") {type = NavType.StringType}
-            )
+            ),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
         ){ backStackEntry ->
             val cardType = backStackEntry.arguments?.getString("cardType")
             val name = backStackEntry.arguments?.getString("name")
