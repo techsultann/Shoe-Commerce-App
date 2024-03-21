@@ -1,5 +1,7 @@
 package com.panther.shoeapp.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,7 +15,9 @@ fun RootNavGraph(
     NavHost(
         navController = navController,
         startDestination = Graph.AUTHENTICATION,
-        route = Graph.ROOT
+        route = Graph.ROOT,
+        enterTransition = { EnterTransition.None },
+        exitTransition = { ExitTransition.None }
     ) {
         authNavGraph(navController)
         composable(route = Graph.HOME){

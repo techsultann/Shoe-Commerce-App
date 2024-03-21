@@ -26,6 +26,29 @@ class CartViewModel @Inject constructor(
     private val _itemCount = MutableStateFlow(0)
     val itemCount = _itemCount
 
+    fun getItemCount() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = auth.currentUser!!.uid
+
+            val countQuery = fireStore.collection("baskets")
+                .document(userId)
+                .collection("cartItems")
+                .count()
+
+            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Count fetched successfully
+                    _itemCount.value = (task.result?.count ?: 0).toInt()
+                    val snapshot = task.result
+                    Log.d("ITEM COUNT", "Number Of Item: ${snapshot.count}")
+                } else {
+                    Log.d("ITEM COUNT", "Count failed: ", task.exception)
+                    _itemCount.value = 0
+                }
+            }
+        }
+    }
+
 
     init {
         getCartItems()
@@ -37,7 +60,6 @@ class CartViewModel @Inject constructor(
             val userId = auth.currentUser!!.uid
 
             try {
-
                 _cartItems.value = Resource.Loading()
 
                 fireStore.collection("baskets")
@@ -92,28 +114,6 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun getItemCount() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val userId = auth.currentUser!!.uid
-
-            val countQuery = fireStore.collection("baskets")
-                .document(userId)
-                .collection("cartItems")
-                .count()
-
-            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Count fetched successfully
-                    _itemCount.value = (task.result?.count ?: 0).toInt()
-                    val snapshot = task.result
-                    Log.d("ITEM COUNT", "Number Of Item: ${snapshot.count}")
-                } else {
-                    Log.d("ITEM COUNT", "Count failed: ", task.exception)
-                    _itemCount.value = 0
-                }
-            }
-        }
-    }
 
 
 

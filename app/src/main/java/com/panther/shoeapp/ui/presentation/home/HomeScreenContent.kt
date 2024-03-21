@@ -1,7 +1,10 @@
 package com.panther.shoeapp.ui.presentation.home
 
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,8 +36,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,8 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,7 +63,13 @@ import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.PriceRangeSlider
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
+import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.ui.theme.secondaryTextColor
+import com.panther.shoeapp.ui.theme.yellow
+import com.panther.shoeapp.utils.Util
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -155,10 +170,9 @@ fun HomeScreenContent(
                     .padding(paddingValues = padding)
                     .fillMaxSize()
             ) {
-                // Spacer(modifier = Modifier.padding(16.dp))
                 SectionA()
 
-                // Spacer(modifier = Modifier.padding(16.dp))
+
                 HomeTabRow(navHostController, viewModel)
 
             }
@@ -169,89 +183,275 @@ fun HomeScreenContent(
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SectionA() {
 
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
-    Row(
+    val count = Util.Banners.size
+    val pagerState = rememberPagerState { count }
+    var index: Int by remember { mutableIntStateOf(0) }
+
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(start = 16.dp)
+            .wrapContentHeight()
     ) {
 
-        Text(
-            text = buildAnnotatedString { 
-                append("Enjoy New Nike\n")
-                pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
-                append("Products")
-            },
-            color = navyBlue,
-            fontSize = 36.sp,
-            textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis,
-            lineHeight = 46.sp
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Surface(
+        Row(
             modifier = Modifier
-                .padding(vertical = 16.dp)
-                .width(74.dp)
-                .height(66.dp)
-                .clip(
-                    shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
-                ),
-            color = Color(0xFFFF5545)
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(start = 16.dp)
         ) {
-
-            IconButton(onClick = { showBottomSheet = true }) {
-                Icon(painter = painterResource(
-                    id = R.drawable.filter_8),
-                    contentDescription = "filter icon",
-                    tint = Color.Unspecified
-                )
-
+            LaunchedEffect(Unit) {
+                while (isActive) {
+                    delay(3000)
+                    pagerState.animateScrollToPage(index)
+                    index = (index + 1) % count
+                }
             }
-        }
 
-        if (showBottomSheet){
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .width(300.dp)
+            ) { index ->
 
-            ModalBottomSheet(
-                modifier = Modifier,
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState
-            ) {
-                PriceRangeSlider(modifier = Modifier)
-
-                Spacer(modifier = Modifier.padding(50.dp))
-
-                ShoeAppButton(
+                Text(
+                    text = Util.Banners[index].title,
+                    color = navyBlue,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .requiredHeight(66.dp),
-                    onClick = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                showBottomSheet = false
+                        .width(300.dp)
+                )
+            }
 
+            Spacer(modifier = Modifier.weight(1f))
+
+            Surface(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .width(74.dp)
+                    .height(66.dp)
+                    .clip(
+                        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
+                    ),
+                color = Color(0xFFFF5545)
+            ) {
+
+                IconButton(onClick = { showBottomSheet = true }) {
+                    Icon(painter = painterResource(
+                        id = R.drawable.filter_8),
+                        contentDescription = "filter icon",
+                        tint = Color.Unspecified
+                    )
+
+                }
+            }
+
+            if (showBottomSheet){
+
+                ModalBottomSheet(
+                    modifier = Modifier,
+                    onDismissRequest = { showBottomSheet = false },
+                    sheetState = sheetState
+                ) {
+                    PriceRangeSlider(modifier = Modifier)
+
+                    Spacer(modifier = Modifier.padding(50.dp))
+
+                    ShoeAppButton(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .requiredHeight(66.dp),
+                        onClick = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+
+                                }
                             }
                         }
+                    ) {
+                        Text(
+                            text = "Apply",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
-                ) {
-                    Text(
-                        text = "Apply",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
                 }
             }
         }
+
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) yellow else secondaryTextColor
+                Box(
+                    modifier = Modifier
+                        .padding(3.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(8.dp)
+                )
+            }
+        }
+
+    }
+
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+fun LazyListScope.banners() {
+    val count = Util.Banners.size
+
+    item {
+        val pagerState = rememberPagerState { count }
+        var index: Int by remember { mutableIntStateOf(0) }
+
+        LaunchedEffect(Unit) {
+
+            while (isActive) {
+                delay(3000)
+                pagerState.animateScrollToPage(index)
+                index = (index + 1) % count
+            }
+        }
+
+        Box {
+            HorizontalPager(state = pagerState) { index ->
+
+                BannerCard(title = Util.Banners[index].title)
+
+            }
+        }
+
+        Row(
+            Modifier
+                .wrapContentHeight()
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(pagerState.pageCount) { iteration ->
+                val color = if (pagerState.currentPage == iteration) yellow else Red
+                Box(
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(12.dp)
+                )
+            }
+        }
+
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BannerCard(
+    title: String
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp
+        )
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+
+            Text(
+                text = title,
+                color = navyBlue,
+                fontSize = 24.sp,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Visible,
+                lineHeight = 46.sp,
+                modifier = Modifier
+                    .width(200.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Surface(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .width(74.dp)
+                    .height(66.dp)
+                    .clip(
+                        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
+                    ),
+                color = Color(0xFFFF5545)
+            ) {
+
+                IconButton(onClick = { showBottomSheet = true }) {
+                    Icon(painter = painterResource(
+                        id = R.drawable.filter_8),
+                        contentDescription = "filter icon",
+                        tint = Color.Unspecified
+                    )
+
+                }
+            }
+
+            if (showBottomSheet){
+
+                ModalBottomSheet(
+                    modifier = Modifier,
+                    onDismissRequest = { showBottomSheet = false },
+                    sheetState = sheetState
+                ) {
+                    PriceRangeSlider(modifier = Modifier)
+
+                    Spacer(modifier = Modifier.padding(50.dp))
+
+                    ShoeAppButton(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .requiredHeight(66.dp),
+                        onClick = {
+                            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                if (!sheetState.isVisible) {
+                                    showBottomSheet = false
+
+                                }
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "Apply",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+        }
+
     }
 }
 

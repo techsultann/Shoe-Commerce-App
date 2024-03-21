@@ -185,7 +185,6 @@ fun CartScreen(
 
                             Log.d("CART ITEM", "Cart: $cartItems")
 
-
                             CartCard(
                                 name = product.name.toString(),
                                 price = product.price,
