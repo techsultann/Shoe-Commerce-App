@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthTextField(
+fun  AuthTextField(
     modifier: Modifier = Modifier.requiredHeight(66.dp),
     singleLine: Boolean = true,
     label: @Composable() (() -> Unit)?,

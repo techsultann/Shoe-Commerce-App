@@ -1,9 +1,7 @@
 package com.panther.shoeapp.ui.component
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -47,10 +44,7 @@ fun BottomNav(navController: NavHostController) {
     if (bottomBarDestination){
 
         NavigationBar(
-            modifier = Modifier
-                .background(Color.Transparent, CircleShape)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clip(shape = CircleShape),
+            modifier = Modifier,
             containerColor = navyBlue,
             contentColor = Color.White
         ) {
