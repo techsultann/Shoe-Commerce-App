@@ -193,6 +193,15 @@ fun HomeTabRow(
                     }
                     is Resource.Error -> {
 
+                        Text(
+                            text = "Seems there's an error from our end, We will fix it soon",
+                            fontSize = 22.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding()
+                                .align(Alignment.Center)
+                        )
                     }
                 }
 

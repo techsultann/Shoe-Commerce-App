@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -63,7 +62,6 @@ import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.PriceRangeSlider
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
-import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.secondaryTextColor
 import com.panther.shoeapp.ui.theme.yellow
@@ -312,52 +310,6 @@ fun SectionA() {
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-fun LazyListScope.banners() {
-    val count = Util.Banners.size
-
-    item {
-        val pagerState = rememberPagerState { count }
-        var index: Int by remember { mutableIntStateOf(0) }
-
-        LaunchedEffect(Unit) {
-
-            while (isActive) {
-                delay(3000)
-                pagerState.animateScrollToPage(index)
-                index = (index + 1) % count
-            }
-        }
-
-        Box {
-            HorizontalPager(state = pagerState) { index ->
-
-                BannerCard(title = Util.Banners[index].title)
-
-            }
-        }
-
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) yellow else Red
-                Box(
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(12.dp)
-                )
-            }
-        }
-
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
