@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,10 +28,12 @@ fun  AuthTextField(
     value: String,
     onValueChange: (String) -> Unit = {},
     keyboardOptions: KeyboardOptions,
-    keyboardActions: KeyboardActions
+    keyboardActions: KeyboardActions,
+    leadingIcon: @Composable() (() -> Unit)?,
+    trailingIcon: @Composable() (() -> Unit)?,
+    visualTransformation: VisualTransformation
 ) {
 
-    var text by rememberSaveable { mutableStateOf("") }
     TextField(
         modifier = modifier
             .clip(CircleShape)
@@ -42,7 +45,10 @@ fun  AuthTextField(
         label = label,
         shape = CircleShape,
         keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        visualTransformation = visualTransformation
     )
 }
 

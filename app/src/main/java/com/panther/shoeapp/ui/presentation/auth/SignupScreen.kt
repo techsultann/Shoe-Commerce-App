@@ -12,8 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -34,6 +42,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,6 +69,7 @@ fun SignupScreen(
     var password by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
     val signUpResult by viewModel.signupResult.collectAsState()
+    var passwordHidden by rememberSaveable { mutableStateOf(true) }
     var showProgress by remember { mutableStateOf(false) }
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -120,8 +132,19 @@ fun SignupScreen(
             onValueChange = { it ->
                 username = it
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions()
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Text
+            ),
+            keyboardActions = KeyboardActions(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {},
+            visualTransformation = VisualTransformation.None
         )
 
         Spacer(modifier = Modifier.padding(16.dp))
@@ -138,8 +161,19 @@ fun SignupScreen(
             onValueChange = { it ->
                 email = it
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions()
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Email
+            ),
+            keyboardActions = KeyboardActions(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {},
+            visualTransformation = VisualTransformation.None
         )
         Spacer(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -155,8 +189,28 @@ fun SignupScreen(
             onValueChange = { it ->
                 password = it
             },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions()
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
+            ),
+            keyboardActions = KeyboardActions(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = {passwordHidden = !passwordHidden}
+                ) {
+                    val visibilityIcon = if (passwordHidden) Icons.Outlined.Visibility
+                    else Icons.Outlined.VisibilityOff
+
+                    val description = if (passwordHidden) "Show password" else "Hide password"
+                    Icon(imageVector = visibilityIcon, contentDescription = description, tint = Color.LightGray)
+                }
+            },
+            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None
         )
 
 
