@@ -146,13 +146,13 @@ fun RowScope.AddItem(
             selectedIconColor = navyBlue,
             unselectedIconColor = white,
             indicatorColor = MaterialTheme.colorScheme.background,
-            selectedTextColor = navyBlue,
-            unselectedTextColor = white
+            selectedTextColor = white,
+            unselectedTextColor = navyBlue
         ),
         label = {
             Text(text = screen.label)
         },
-        alwaysShowLabel = false
+        alwaysShowLabel = true
 
     )
 
