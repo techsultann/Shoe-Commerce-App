@@ -45,6 +45,7 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,14 +85,14 @@ fun CartScreen(
     val viewModel: CartViewModel = viewModel()
     val itemCount by viewModel.itemCount.collectAsState()
     val cartItemState by viewModel.cartItems.collectAsState()
-    val cartItems = cartItemState.data ?: emptyList()
-    var subTotalPrice by remember { mutableDoubleStateOf(0.0) }
+    val totalAmount by viewModel.totalAmount.collectAsState(initial = 0.0)
 
-    LaunchedEffect(cartItemState) {
+    LaunchedEffect(Unit) {
 
         coroutineScope {
             launch {
                 viewModel.getItemCount()
+                viewModel.getCartItems()
             }
         }
 
@@ -160,6 +161,8 @@ fun CartScreen(
                 }
                 is Resource.Success -> {
 
+                    val cartItems = cartItemState.data ?: emptyList()
+
                     Text(
                         text = buildAnnotatedString {
                             append("Your Cart\n")
@@ -174,27 +177,35 @@ fun CartScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                     )
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(400.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp),
-                        contentPadding = PaddingValues(4.dp)
-                    ) {
-                        items(cartItems) { product ->
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(400.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
+                            contentPadding = PaddingValues(4.dp)
+                        ) {
 
-                            Log.d("CART ITEM", "Cart: $cartItems")
+                            items(
+                                items = cartItems,
+                                key = { cartItem ->
+                                    cartItem.id!!
+                                }
+                            ) { product ->
 
-                            CartCard(
-                                name = product.name.toString(),
-                                price = product.price,
-                                image = product.image.toString(),
-                                id = product.id,
-                                initialQuantity = product.quantity
-                            )
+                                Log.d("CART ITEM", "Cart: $cartItems")
+
+                                CartCard(
+                                    name = product.name.toString(),
+                                    price = product.price,
+                                    image = product.image.toString(),
+                                    id = product.id,
+                                    initialQuantity = product.quantity
+                                )
+                            }
+
                         }
 
-                    }
+
 
                 }
                 is Resource.Error -> {
@@ -228,13 +239,10 @@ fun CartScreen(
                     fontSize = 16.sp
                 )
 
-                Log.d("TOTAL AMOUNT", "Total: $subTotalPrice")
-                for (product in cartItems) {
-                    subTotalPrice += product.price!! * product.quantity!!
-                }
+                Log.d("TOTAL AMOUNT", "Total: $totalAmount")
 
                 Text(
-                    text = "N $subTotalPrice",
+                    text = "N $totalAmount",
                     fontSize = 16.sp
                 )
             }
@@ -244,7 +252,7 @@ fun CartScreen(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 100.dp)
                     .requiredHeight(66.dp),
-                onClick = { navHostController.navigate( route = "${HomeScreenNav.CheckoutScreen.route}/$subTotalPrice" )  }
+                onClick = { navHostController.navigate( route = "${HomeScreenNav.CheckoutScreen.route}/$totalAmount" )  }
             ) {
                 Text(
                     text = "Checkout",
@@ -267,7 +275,7 @@ fun CartCard(
     initialQuantity: Int? = 1,
     viewModel: CartViewModel = viewModel()
 ) {
-    var quantity by remember {
+    var quantity by rememberSaveable {
         mutableIntStateOf(initialQuantity!!)
     }
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -358,6 +366,7 @@ fun CartCard(
                                 .clickable {
                                     if (quantity >= 1) {
                                         quantity++
+                                        viewModel.updateCart(id.toString(), quantity)
                                     }
                                 },
                             tint = white
@@ -438,14 +447,3 @@ fun CartCard(
     }
 }
 
-//@Composable
-//fun totalAmount(cartItems: List<CartItem>): Double {
-//    var totalAmount = 0.0
-//
-//    for (product in cartItems) {
-//        var itemTotal = product.price?.times(product.quantity!!)
-//        itemTotal = itemTotal!! + itemTotal
-//    }
-//
-//    return totalAmount
-//}

@@ -19,6 +19,6 @@ data class CartItem(
     val name: String? = null,
     val price: Double? = null,
     val image: String? = null,
-    val quantity: Int? = null,
+    var quantity: Int? = null,
 )
 

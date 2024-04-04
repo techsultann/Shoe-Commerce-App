@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,9 +23,21 @@ class CartViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _cartItems = MutableStateFlow<Resource<List<CartItem>>>(Resource.Loading())
-    val cartItems : StateFlow<Resource<List<CartItem>>> = _cartItems
+    val cartItems : StateFlow<Resource<List<CartItem>>> = _cartItems.asStateFlow()
     private val _itemCount = MutableStateFlow(0)
-    val itemCount = _itemCount
+    val itemCount = _itemCount.asStateFlow()
+    private val _totalAmount = MutableStateFlow(0.0)
+    val totalAmount: StateFlow<Double> = _totalAmount.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            cartItems.collect {
+                if (it is Resource.Success){
+                    updateCartAmount()
+                }
+            }
+        }
+    }
 
     fun getItemCount() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -49,12 +62,7 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
-    init {
-        getCartItems()
-    }
-
-    private fun getCartItems() {
+    fun getCartItems() {
         viewModelScope.launch(Dispatchers.IO) {
 
             val userId = auth.currentUser!!.uid
@@ -88,6 +96,13 @@ class CartViewModel @Inject constructor(
         }
     }
 
+    fun updateCartAmount() {
+        val items = cartItems.value.data ?: emptyList()
+        _totalAmount.value = items.sumOf { it.price!! * it.quantity!! }
+        Log.d("UPDATE CART AMOUNT", "Amount: $totalAmount")
+    }
+
+
     fun updateCart(
         shoeId: String,
         quantity: Int?
@@ -102,8 +117,10 @@ class CartViewModel @Inject constructor(
                     .collection("cartItems")
                     .document(shoeId)
                     .update("quantity", quantity)
+
                     .addOnSuccessListener {
                         Log.d("UPDATE CART", "Product quantity updated successfully")
+                        getCartItems()
                     }
                     .addOnFailureListener { e ->
                         Log.w("UPDATE CART", "Error updating product quantity", e)
