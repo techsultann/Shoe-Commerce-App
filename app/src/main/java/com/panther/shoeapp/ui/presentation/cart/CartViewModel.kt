@@ -30,13 +30,13 @@ class CartViewModel @Inject constructor(
     val totalAmount: StateFlow<Double> = _totalAmount.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            cartItems.collect {
-                if (it is Resource.Success){
-                    updateCartAmount()
-                }
-            }
-        }
+//        viewModelScope.launch {
+//            cartItems.collect {
+//                if (it is Resource.Success){
+//                    updateCartAmount()
+//                }
+//            }
+//        }
     }
 
     fun getItemCount() {

@@ -93,6 +93,11 @@ fun CartScreen(
             launch {
                 viewModel.getItemCount()
                 viewModel.getCartItems()
+                viewModel.cartItems.collect{
+                    if (it is Resource.Success){
+                        viewModel.updateCartAmount()
+                    }
+                }
             }
         }
 

@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -62,6 +63,7 @@ import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.PriceRangeSlider
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
+import com.panther.shoeapp.ui.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.secondaryTextColor
 import com.panther.shoeapp.ui.theme.yellow
@@ -159,7 +161,8 @@ fun HomeScreenContent(
             },
 
             bottomBar = {
-                BottomNav(navController = navHostController)
+                val viewModel = hiltViewModel<CartViewModel>()
+                BottomNav(navController = navHostController, viewModel)
             }
         ) { padding ->
 
