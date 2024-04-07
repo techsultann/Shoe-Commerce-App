@@ -129,9 +129,6 @@ fun DiscoveryScreen(
                     }
                 )
 
-            },
-            bottomBar = {
-                BottomNav(navController = navHostController)
             }
         ) { padding ->
 

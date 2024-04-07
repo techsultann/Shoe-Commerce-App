@@ -2,6 +2,7 @@ package com.panther.shoeapp.ui.presentation.checkout
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,20 +15,27 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,18 +44,26 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.pay.button.ButtonTheme
 import com.google.pay.button.ButtonType
 import com.google.pay.button.PayButton
 import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.CardButton
+import com.panther.shoeapp.ui.component.PaymentCard
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -58,21 +74,15 @@ import com.panther.shoeapp.utils.PaymentsUtil
 fun CheckOutScreen(
     navHostController: NavHostController,
     subTotalPrice: String?,
-    viewModel: CheckoutViewModel
 ) {
-
+    val viewModel: CheckoutViewModel = viewModel()
     val state by viewModel.state.collectAsState()
-    val shippingCost by remember {
-        mutableDoubleStateOf(3000.00)
-    }
-    val subTotal by remember {
-        mutableDoubleStateOf(subTotalPrice!!.toDouble())
-    }
-
+    val shippingCost by remember { mutableDoubleStateOf(3000.00) }
+    val subTotal by remember { mutableDoubleStateOf(subTotalPrice!!.toDouble()) }
     val totalAmount = shippingCost + subTotal
-    val total by remember {
-        mutableDoubleStateOf(totalAmount)
-    }
+    val total by remember { mutableDoubleStateOf(totalAmount) }
+    val isEditMode = remember { mutableStateOf(false) }
+    var textState by rememberSaveable { mutableStateOf("Add your address here") }
 
 
     Scaffold(
@@ -142,36 +152,13 @@ fun CheckOutScreen(
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
                 lineHeight = 46.sp,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-             Row(
-                 modifier = Modifier
-                     .height(65.dp)
-                     .padding(16.dp)
-                     .fillMaxWidth(),
-                 horizontalArrangement = Arrangement.SpaceBetween,
-                 verticalAlignment = Alignment.CenterVertically
-             ) {
-                 PayButton(
-                     modifier = Modifier
-                         .testTag("payButton")
-                         .height(65.dp)
-                         .width(81.dp),
-                     onClick = {
-                         viewModel.requestPayment(priceCents = totalAmount)
-                         navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
-                               },
-                     allowedPaymentMethods = PaymentsUtil.cardPaymentMethod.toString(),
-                     type = ButtonType.Pay,
-                     enabled = state.googlePayButtonClickable,
-                     theme = ButtonTheme.Dark
-                 )
-                 CardButton(boolean = true, icon = R.drawable.visa_logo, onClick = {})
-                 CardButton(boolean = true, icon = R.drawable.master_card, onClick = {})
-                 CardButton(boolean = true, icon = R.drawable.ic_round_add, onClick = {})
-             }
-            
+            PaymentCard(image = R.drawable.master_card, cardNo = "1234 **** **** 5678")
+
+            PaymentCard(image = R.drawable.visa_logo, cardNo = "1234 **** **** 5678")
+
             Text(
                 text = "Delivery address",
                 fontSize = 18.sp,
@@ -180,7 +167,7 @@ fun CheckOutScreen(
             
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
@@ -200,14 +187,35 @@ fun CheckOutScreen(
                         text = "Home address",
                         fontSize = 18.sp
                     )
-                    Text(
-                        text = "Toodely Benson Allentown, New Mexico 31134.",
-                        textAlign = TextAlign.Start
-                    )
+                    if (isEditMode.value) {
+
+                        OutlinedTextField(
+                            value = textState,
+                            onValueChange = { textState = it },
+                            colors = TextFieldDefaults.colors(),
+                            modifier = Modifier
+                                .border(0.dp, Color.Transparent),
+                            keyboardOptions = KeyboardOptions(
+                                capitalization = KeyboardCapitalization.Sentences,
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            )
+
+                        )
+                    } else {
+
+                        Text(
+                            text = textState,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+
                 }
 
                 IconButton(
-                    onClick = { /*TODO*/ }
+                    onClick = { isEditMode.value = !isEditMode.value }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.edit_icon),
@@ -217,6 +225,10 @@ fun CheckOutScreen(
                 }
             }
 
+            Divider(
+                thickness = 1.dp,
+                color = Color.LightGray
+            )
 
             Row(
                 modifier = Modifier
@@ -292,8 +304,8 @@ fun CheckOutScreen(
     }
 }
 
-//@Preview
-//@Composable
-//fun PreviewCheckOutScreen() {
-//    CheckOutScreen(rememberNavController(), "", )
-//}
+@Preview
+@Composable
+fun PreviewCheckOutScreen() {
+    CheckOutScreen(rememberNavController(), "" )
+}

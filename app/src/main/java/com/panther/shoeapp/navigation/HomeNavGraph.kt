@@ -60,9 +60,6 @@ fun HomeNavGraph(
             val viewModel = hiltViewModel<CartViewModel>()
             CartScreen(navHostController = navController)
         }
-        composable(route = BottomBarScreen.Message.route){
-            //MessageScreen()
-        }
         composable(route = BottomBarScreen.Profile.route){
             val viewModel = hiltViewModel<ProfileViewModel>()
             ProfileScreen(viewModel)
@@ -141,7 +138,7 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
 
             val viewModel = hiltViewModel<CheckoutViewModel>()
             val subTotalPrice = backStackEntry.arguments?.getString("subTotalPrice")
-            CheckOutScreen(navController, subTotalPrice, viewModel)
+            CheckOutScreen(navController, subTotalPrice)
         }
         composable(
             route = HomeScreenNav.SuccessfulScreen.route,

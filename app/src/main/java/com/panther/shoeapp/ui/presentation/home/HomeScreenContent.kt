@@ -158,11 +158,6 @@ fun HomeScreenContent(
                         }
                     }
                 )
-            },
-
-            bottomBar = {
-                val viewModel = hiltViewModel<CartViewModel>()
-                BottomNav(navController = navHostController, viewModel)
             }
         ) { padding ->
 

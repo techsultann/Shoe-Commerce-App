@@ -22,11 +22,6 @@ sealed class BottomBarScreen(
         icon = R.drawable.cart,
         label = "Cart"
     )
-    object Message: BottomBarScreen(
-        route = "message",
-        icon = R.drawable.heart,
-        label = "Messages"
-    )
     object Profile: BottomBarScreen(
         route = "profile",
         icon = R.drawable.profile,

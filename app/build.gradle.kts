@@ -96,6 +96,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-messaging")
 
     // ViewModel and lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")

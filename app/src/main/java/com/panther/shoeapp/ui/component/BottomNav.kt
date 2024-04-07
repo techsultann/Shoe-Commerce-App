@@ -56,7 +56,6 @@ fun BottomNav(
         BottomBarScreen.Home,
         BottomBarScreen.Discovery,
         BottomBarScreen.Cart,
-        BottomBarScreen.Message,
         BottomBarScreen.Profile
     )
 
@@ -147,7 +146,7 @@ fun RowScope.AddItem(
             unselectedIconColor = white,
             indicatorColor = MaterialTheme.colorScheme.background,
             selectedTextColor = white,
-            unselectedTextColor = navyBlue
+            unselectedTextColor = white
         ),
         label = {
             Text(text = screen.label)
