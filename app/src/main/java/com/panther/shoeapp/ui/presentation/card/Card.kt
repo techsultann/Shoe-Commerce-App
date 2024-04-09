@@ -113,7 +113,7 @@ fun CardScreen(
                 )
             }
 
-            AddCreditCard(cardType, name, cardNumber)
+            CreditCard(cardType, name, cardNumber)
 
             Spacer(modifier = Modifier.padding(16.dp))
 

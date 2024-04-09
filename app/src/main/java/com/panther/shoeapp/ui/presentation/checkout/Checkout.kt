@@ -9,11 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -40,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -57,17 +58,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.pay.button.ButtonTheme
-import com.google.pay.button.ButtonType
-import com.google.pay.button.PayButton
 import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.HomeScreenNav
-import com.panther.shoeapp.ui.component.CardButton
 import com.panther.shoeapp.ui.component.PaymentCard
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
-import com.panther.shoeapp.utils.PaymentsUtil
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -76,13 +74,23 @@ fun CheckOutScreen(
     subTotalPrice: String?,
 ) {
     val viewModel: CheckoutViewModel = viewModel()
-    val state by viewModel.state.collectAsState()
+    val cardState by viewModel.getSavedCards.collectAsState()
     val shippingCost by remember { mutableDoubleStateOf(3000.00) }
     val subTotal by remember { mutableDoubleStateOf(subTotalPrice!!.toDouble()) }
-    val totalAmount = shippingCost + subTotal
-    val total by remember { mutableDoubleStateOf(totalAmount) }
+    val totalAmount by rememberSaveable {
+        mutableDoubleStateOf( shippingCost + subTotal )
+    }
+   // val total by remember { mutableDoubleStateOf(totalAmount) }
     val isEditMode = remember { mutableStateOf(false) }
     var textState by rememberSaveable { mutableStateOf("Add your address here") }
+
+    LaunchedEffect(key1 = Unit) {
+        coroutineScope {
+            launch {
+                viewModel.getSavedCards()
+            }
+        }
+    }
 
 
     Scaffold(
@@ -155,9 +163,31 @@ fun CheckOutScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            PaymentCard(image = R.drawable.master_card, cardNo = "1234 **** **** 5678")
+            val cardList = cardState.data ?: emptyList()
 
-            PaymentCard(image = R.drawable.visa_logo, cardNo = "1234 **** **** 5678")
+            if (cardList.isEmpty()) {
+
+                Text(text = "Add a Payment Method")
+
+            } else {
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(cardList) { card ->
+
+                        val cardImage = when (card.cardName) {
+                            "Master Card" -> { R.drawable.master_card }
+                            "VISA" -> { R.drawable.visa_logo }
+                            "VERVE" -> { R.drawable.master_card }
+                            else -> R.drawable.card_icon
+                        }
+
+                        PaymentCard(image = R.drawable.master_card, cardNo = card.cardNumber.toString())
+                    }
+                }
+            }
+
 
             Text(
                 text = "Delivery address",

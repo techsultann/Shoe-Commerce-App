@@ -21,6 +21,7 @@ import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
 import com.panther.shoeapp.ui.presentation.card.AddCardScreen
 import com.panther.shoeapp.ui.presentation.card.CardScreen
+import com.panther.shoeapp.ui.presentation.card.CreditCardVieModel
 import com.panther.shoeapp.ui.presentation.cart.CartScreen
 import com.panther.shoeapp.ui.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.presentation.category.CategoryScreen
@@ -216,7 +217,8 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         composable(
             route = HomeScreenNav.AddCardScreen.route,
         ){
-            AddCardScreen(navController)
+            val viewModel = hiltViewModel<CreditCardVieModel>()
+            AddCardScreen(navController, viewModel)
         }
         composable(route = HomeScreenNav.SettingsScreen.route){
             SettingsScreen()

@@ -116,6 +116,7 @@ dependencies {
     //Google pay
     implementation("com.google.android.gms:play-services-wallet:19.3.0")
     implementation("com.google.pay.button:compose-pay-button:1.0.0")
+
 }
 
 kapt {

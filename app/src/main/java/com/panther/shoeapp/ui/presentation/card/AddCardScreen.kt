@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +23,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,22 +42,44 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.panther.shoeapp.navigation.BottomBarScreen
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TextFieldWithPlaceholder
 import com.panther.shoeapp.ui.component.TopAppBar
+import com.panther.shoeapp.utils.Resource
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCardScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    viewModel : CreditCardVieModel = viewModel()
 ) {
+    val creditCardState by viewModel.uploadCardDetails.collectAsState()
+    var isCardTypeExpanded by rememberSaveable { mutableStateOf(false) }
 
     var cardType by rememberSaveable { mutableStateOf("") }
     var cardHolderName by rememberSaveable { mutableStateOf("") }
     var cardNumber by rememberSaveable { mutableStateOf("") }
     var expiryDate by rememberSaveable { mutableStateOf("") }
     var cvv by rememberSaveable { mutableStateOf("") }
+
+    LaunchedEffect(key1 = creditCardState) {
+        when (creditCardState) {
+            is Resource.Loading -> {
+
+            }
+            is Resource.Success -> {
+                navHostController.popBackStack()
+                navHostController.navigate(BottomBarScreen.Home.route)
+            }
+            is Resource.Error -> {
+
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -112,16 +140,60 @@ fun AddCardScreen(
                     .fillMaxWidth()
             )
 
-            TextFieldWithPlaceholder(
-                modifier = Modifier,
-                value = cardType ,
-                onValueChange = {
-                                cardType = it
-                },
-                placeholder = {
-                    Text(text = "Visa Card")
+            ExposedDropdownMenuBox(
+                expanded = isCardTypeExpanded,
+                onExpandedChange = { newValue ->
+                    isCardTypeExpanded = newValue
                 }
-            )
+            ) {
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .clip(CircleShape)
+                        .clipToBounds()
+                        .requiredHeight(66.dp)
+                        .menuAnchor(),
+                    value = cardType,
+                    onValueChange = {},
+                    placeholder = { Text(text = "Card Type") },
+                    shape = CircleShape,
+                    readOnly = true,
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = isCardTypeExpanded)
+                    }
+                )
+
+                ExposedDropdownMenu(expanded = isCardTypeExpanded, onDismissRequest = { isCardTypeExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(text = "Master Card") },
+                        onClick = {
+                            cardType = "Master Card"
+                            isCardTypeExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                    DropdownMenuItem(
+                        text = { Text(text = "VISA") },
+                        onClick = {
+                            cardType = "VISA"
+                            isCardTypeExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                    DropdownMenuItem(
+                        text = { Text(text = "VERVE") },
+                        onClick = {
+                            cardType = "VERVE"
+                            isCardTypeExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+
+                }
+            }
 
             Text(
                 text = "Card Holder's Name",
@@ -225,7 +297,11 @@ fun AddCardScreen(
                     .padding(16.dp)
                     .requiredHeight(66.dp),
                 onClick = {
-                    navHostController.popBackStack()
+                    viewModel.saveCardDetails(
+                        cardType,
+                        cardHolderName,
+                        cardNumber
+                    )
                     navHostController.navigate(route = "${HomeScreenNav.PaymentCardScreen.route}/$cardType/$cardHolderName/$cardNumber")
                 }
             ) {

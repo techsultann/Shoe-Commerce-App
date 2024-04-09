@@ -45,7 +45,7 @@ import com.panther.shoeapp.ui.theme.CardColor
 import com.panther.shoeapp.ui.theme.CardLightColor
 
 @Composable
-fun AddCreditCard(
+fun CreditCard(
     cardType: String?,
     name: String?,
     cardNumber: String?

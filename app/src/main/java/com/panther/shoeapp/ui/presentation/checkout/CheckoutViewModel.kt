@@ -1,8 +1,7 @@
 package com.panther.shoeapp.ui.presentation.checkout
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -12,8 +11,11 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.panther.shoeapp.models.CreditCard
 import com.panther.shoeapp.utils.PaymentsUtil
+import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +30,10 @@ class CheckoutViewModel @Inject constructor(
    private val fireStore: FirebaseFirestore,
    private val auth: FirebaseAuth,
    private val paymentsClient: PaymentsClient
-) : AndroidViewModel(Application()) {
+) : ViewModel() {
+
+   private val _getSavedCards = MutableStateFlow<Resource<List<CreditCard>>>(Resource.Loading())
+   val getSavedCards : StateFlow<Resource<List<CreditCard>>> = _getSavedCards
 
    data class State(
       val googlePayAvailable: Boolean? = false,
@@ -39,10 +44,41 @@ class CheckoutViewModel @Inject constructor(
    private val _state = MutableStateFlow(State())
    val state: StateFlow<State> = _state.asStateFlow()
 
-   //private val paymentsClient : PaymentsClient = PaymentsUtil.createPaymentsClient(getApplication<Application>().applicationContext)
-
    init {
       checkGooglePayAvailability()
+   }
+
+   fun getSavedCards() {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         try {
+            _getSavedCards.value = Resource.Loading()
+
+            val userId = auth.currentUser!!.uid
+            fireStore.collection("users")
+               .document(userId)
+               .collection("cards")
+               .get()
+               .addOnSuccessListener { cards ->
+
+                  val cardList = mutableListOf<CreditCard>()
+                  for (card in cards){
+                     val creditCard = card.toObject(CreditCard::class.java)
+                     cardList.add(creditCard)
+                  }
+                  _getSavedCards.value = Resource.Success(cardList)
+                  Log.d("CARD DETAILS", "Card: $cardList")
+               }
+               .addOnFailureListener{ e ->
+                  _getSavedCards.value = Resource.Error(e.localizedMessage)
+
+                  Log.d("CARD DETAILS", "Card: ${e.localizedMessage}")
+               }
+         } catch (e: Exception) {
+            _getSavedCards.value = Resource.Error(e.stackTrace.toString())
+         }
+      }
    }
 
    private fun checkGooglePayAvailability() {
