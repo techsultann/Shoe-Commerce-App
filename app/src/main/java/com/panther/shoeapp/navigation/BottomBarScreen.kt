@@ -4,26 +4,27 @@ import com.panther.shoeapp.R
 
 sealed class BottomBarScreen(
     val route: String,
-    val icon: Int
+    val icon: Int,
+    val label: String
 ) {
     object Home: BottomBarScreen(
         route = "home",
-        icon = R.drawable.home
+        icon = R.drawable.home,
+        label = "Home"
     )
     object Discovery: BottomBarScreen(
         route = "discovery",
-        icon = R.drawable.discovery
+        icon = R.drawable.discovery,
+        label = "Discovery"
     )
-    object Favorite: BottomBarScreen(
-        route = "favorite",
-        icon = R.drawable.heart
-    )
-    object Message: BottomBarScreen(
-        route = "message",
-        icon = R.drawable.heart
+    object Cart: BottomBarScreen(
+        route = "cart",
+        icon = R.drawable.cart,
+        label = "Cart"
     )
     object Profile: BottomBarScreen(
         route = "profile",
-        icon = R.drawable.profile
+        icon = R.drawable.profile,
+        label = "Profile"
     )
 }

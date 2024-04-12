@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+package com.panther.shoeapp.ui.presentation.category
 
-package com.panther.shoeapp
-
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +13,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
@@ -31,31 +29,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.panther.shoeapp.models.products
-import com.panther.shoeapp.ui.presentation.category.CategoryProductCard
+import com.panther.shoeapp.ui.component.FancyIndicator
 import com.panther.shoeapp.ui.theme.FieldColor
 import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
 
-@Composable
-fun FancyIndicator(color: Color, modifier: Modifier = Modifier) {
-    // Draws a rounded rectangular with border around the Tab, with a 5.dp padding from the edges
-    // Color is passed in as a parameter [color]
-    Box(
-        modifier
-            .padding(5.dp)
-            .fillMaxSize()
-            .border(BorderStroke(2.dp, color), CircleShape)
-    )
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FancyTab() {
+fun CategoryTabRow() {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val titles = listOf("All", "Men", "Women", "Kids")
     val pagerState = rememberPagerState {
@@ -116,13 +101,13 @@ fun FancyTab() {
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-              
-              val productItems = when (titles[index]) {
-                  "All" -> products
-                  "Men" -> products
-                  "Women" -> products
-                  "Kids" -> products
-                  else -> emptyList()
+
+                val productItems = when (titles[index]) {
+                    "All" -> products
+                    "Men" -> products
+                    "Women" -> products
+                    "Kids" -> products
+                    else -> emptyList()
                 }
 
                 LazyColumn(
@@ -139,11 +124,10 @@ fun FancyTab() {
     }
 
 
-    }
-
+}
 
 @Preview
 @Composable
 fun TabRowPreview() {
-    FancyTab()
+    CategoryTabRow()
 }

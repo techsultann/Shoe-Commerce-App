@@ -1,10 +1,12 @@
 package com.panther.shoeapp.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,20 +16,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthTextField(
+fun  AuthTextField(
     modifier: Modifier = Modifier.requiredHeight(66.dp),
     singleLine: Boolean = true,
     label: @Composable() (() -> Unit)?,
     value: String,
-    onValueChange: (String) -> Unit = {}
+    onValueChange: (String) -> Unit = {},
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
+    leadingIcon: @Composable() (() -> Unit)?,
+    trailingIcon: @Composable() (() -> Unit)?,
+    visualTransformation: VisualTransformation
 ) {
 
-    var text by rememberSaveable { mutableStateOf("") }
     TextField(
         modifier = modifier
             .clip(CircleShape)
@@ -37,19 +43,36 @@ fun AuthTextField(
         onValueChange = onValueChange,
         singleLine = singleLine,
         label = label,
-        shape = CircleShape
+        shape = CircleShape,
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        visualTransformation = visualTransformation
     )
 }
 
 @Composable
-fun TextFieldWithPlaceholder() {
-    var text by rememberSaveable { mutableStateOf("") }
+fun TextFieldWithPlaceholder(
+    modifier: Modifier,
+    value: String,
+    onValueChange: (String) -> Unit = {},
+    placeholder:  @Composable() (() -> Unit)?,
+    singleLine: Boolean = true,
+) {
 
     TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = { Text("Email") },
-        placeholder = { Text("example@gmail.com") }
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = placeholder,
+        singleLine = singleLine,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(CircleShape)
+            .clipToBounds()
+            .requiredHeight(66.dp),
+        shape = CircleShape
     )
 }
 /*@Composable
@@ -124,9 +147,12 @@ fun PasswordTextField() {
 }*/
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+/*
 @Preview
 @Composable
 fun PreviewAuthTextField() {
-    AuthTextField(label = { /*TODO*/ }, value = "Hello World!")
-}
+    AuthTextField(label = { */
+/*TODO*//*
+ }, value = "Hello World!")
+}*/

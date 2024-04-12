@@ -38,7 +38,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.panther.shoeapp.FancyTab
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -47,7 +48,9 @@ import com.panther.shoeapp.ui.theme.navyBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryScreen() {
+fun CategoryScreen(
+    navHostController: NavHostController
+) {
 
     Scaffold(
         topBar = {
@@ -115,9 +118,10 @@ fun CategoryScreen() {
                 fontSize = 36.sp,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                lineHeight = 42.sp
             )
-            FancyTab()
+            CategoryTabRow()
         }
     }
 }
@@ -197,7 +201,7 @@ fun CategoryProductCard(name: String, price: String, image: Int) {
 @Preview
 @Composable
 fun CategoryPreviewScreen() {
-    CategoryScreen()
+    CategoryScreen(rememberNavController())
 }
 @Preview
 @Composable

@@ -2,23 +2,26 @@ package com.panther.shoeapp.ui.component
 
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -26,38 +29,67 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.navigation.BottomBarScreen
+import com.panther.shoeapp.ui.presentation.cart.CartViewModel
+import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.ui.theme.white
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun BottomNav(navController: NavHostController) {
+fun BottomNav(
+    navController: NavHostController,
+    viewModel: CartViewModel = viewModel()
+) {
+    // Observe the itemCount state flow
+    val itemCount by viewModel.itemCount.collectAsState()
+    LaunchedEffect(Unit) {
+
+        coroutineScope {
+            launch {
+                viewModel.getItemCount()
+            }
+        }
+
+    }
 
     val screens = listOf(
         BottomBarScreen.Home,
         BottomBarScreen.Discovery,
-        BottomBarScreen.Favorite,
-        BottomBarScreen.Message,
+        BottomBarScreen.Cart,
         BottomBarScreen.Profile
     )
+
     val navBackEntry by navController.currentBackStackEntryAsState()
 
     val currentDestination = navBackEntry?.destination
+    val bottomBarDestination = screens.any { it.route == currentDestination?.route }
 
-    NavigationBar(
-        modifier = Modifier
-            .padding(16.dp)
-            .clip(shape = RoundedCornerShape(50.dp)),
-        containerColor = Color(0xFF152354),
-        contentColor = Color.White
-    ) {
+    if (bottomBarDestination){
 
-        screens.forEach { screen ->
+        NavigationBar(
+            modifier = Modifier,
+            containerColor = navyBlue,
+            contentColor = Color.White
+        ) {
 
-            AddItem(
-                screen = screen,
-                currentDestination = currentDestination ,
-                navController = navController
-            )
+            screens.forEach { screen ->
+                val badgeNumber = if (screen == BottomBarScreen.Cart) {
+                    itemCount
+                } else {
+                    null
+                }
+
+                AddItem(
+                    screen = screen,
+                    currentDestination = currentDestination ,
+                    navController = navController,
+                    badgeNumber = badgeNumber
+                )
+            }
         }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,10 +97,9 @@ fun BottomNav(navController: NavHostController) {
 fun RowScope.AddItem(
     screen: BottomBarScreen,
     currentDestination: NavDestination?,
-    navController: NavHostController
+    navController: NavHostController,
+    badgeNumber: Int? = null
 ) {
-    val colorNavyBlue = 0xFF152354
-    val colorWhite = 0xffFFFFFF
 
     NavigationBarItem(
         modifier = Modifier
@@ -90,17 +121,44 @@ fun RowScope.AddItem(
                 // Restore state when reselecting a previously selected item
                 restoreState = true
             }
-                  },
+        },
         icon = {
-               Icon(painter = painterResource(id = screen.icon), contentDescription = "navigation icon")
+            if (screen == BottomBarScreen.Cart) {
+                BadgedBox(badge = { Badge {
+                    Text(text = badgeNumber.toString())
+                }}
+                ) {
+                    Icon(
+                        painter = painterResource(id = screen.icon),
+                        contentDescription = "navigation icon"
+                    )
+                }
+            } else {
+                Icon(
+                    painter = painterResource(id = screen.icon),
+                    contentDescription = "navigation icon"
+                )
+            }
+
         },
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = Color(colorNavyBlue),
-            unselectedIconColor = Color(colorWhite),
-            indicatorColor = MaterialTheme.colorScheme.background
-        )
+            selectedIconColor = navyBlue,
+            unselectedIconColor = white,
+            indicatorColor = MaterialTheme.colorScheme.background,
+            selectedTextColor = white,
+            unselectedTextColor = white
+        ),
+        label = {
+            Text(text = screen.label)
+        },
+        alwaysShowLabel = true
+
     )
+
+
+
 }
+
 
 @Preview
 @Composable

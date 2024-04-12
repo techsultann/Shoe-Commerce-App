@@ -21,6 +21,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,31 +37,44 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.models.data.Product
-import com.panther.shoeapp.models.products
 import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.TopAppBar
+import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun DiscoveryScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    viewModel: HomeViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val allShoesState by viewModel.allShoes.collectAsState()
+    val itemCount by viewModel.itemCount.collectAsState()
+
+    LaunchedEffect(key1 = allShoesState){
+        coroutineScope {
+            launch {
+                viewModel.getItemCount()
+            }
+        }
+    }
 
     ModalNavigationDrawer(
 
         drawerState = drawerState,
 
         drawerContent = {
-            NavDrawer(route = String())
+            NavDrawer(route = String(), modifier = Modifier, navHostController)
         }
 
     ) {
@@ -113,9 +129,6 @@ fun DiscoveryScreen(
                     }
                 )
 
-            },
-            bottomBar = {
-                BottomNav(navController = navHostController)
             }
         ) { padding ->
 
@@ -128,7 +141,7 @@ fun DiscoveryScreen(
 
                 Text(
                     text = buildAnnotatedString {
-                        append("1001 Shoes Are \n\n")
+                        append("$itemCount Shoes Are \n")
                         pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
                         append("Available")
                     },
@@ -136,10 +149,30 @@ fun DiscoveryScreen(
                     fontSize = 36.sp,
                     textAlign = TextAlign.Start,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(16.dp),
+                    lineHeight = 36.sp
                 )
 
-                AllProductsList(productList = products)
+                val shoeList = allShoesState.data ?: emptyList()
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(count = 2),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+
+                    items(shoeList) { product ->
+
+                        ProductCard(
+                            product.name.toString(),
+                            product.price!!.toDouble(),
+                            product.images!!.first().toString(),
+                            product.id!!,
+                            navHostController = navHostController
+                        )
+                    }
+                }
 
             }
         }
@@ -149,18 +182,24 @@ fun DiscoveryScreen(
 @Composable
 fun AllProductsList(productList: List<Product>) {
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 2),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-
-        items(productList) { product ->
-
-            ProductCard(product.name, product.price, product.image)
-        }
-    }
+//    LazyVerticalGrid(
+//        columns = GridCells.Fixed(count = 2),
+//        verticalArrangement = Arrangement.spacedBy(8.dp),
+//        horizontalArrangement = Arrangement.spacedBy(8.dp),
+//        contentPadding = PaddingValues(16.dp)
+//    ) {
+//
+//        items(productList) { product ->
+//
+//            ProductCard(
+//                product.name,
+//                product.price.toDouble(),
+//                product.image.toString(),
+//                product.id,
+//                navHostController = nav
+//            )
+//        }
+//    }
 }
 
 @Preview
