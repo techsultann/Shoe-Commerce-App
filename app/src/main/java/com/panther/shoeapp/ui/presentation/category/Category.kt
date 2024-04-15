@@ -1,6 +1,5 @@
 package com.panther.shoeapp.ui.presentation.category
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -40,13 +39,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.FieldColor
 import com.panther.shoeapp.ui.theme.navyBlue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryScreen(
     navHostController: NavHostController
@@ -132,7 +132,7 @@ fun CategoryProductList() {
 }
 
 @Composable
-fun CategoryProductCard(name: String, price: String, image: Int) {
+fun CategoryProductCard(name: String, price: String, image: String) {
 
     Surface(modifier = Modifier
         .padding(top = 16.dp)
@@ -184,11 +184,22 @@ fun CategoryProductCard(name: String, price: String, image: Int) {
 
             }
 
-            Image(
-                painter = painterResource(id = image),
-                contentDescription = "Image of sneaker",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(100.dp)
+//            Image(
+//                painter = painterResource(id = ""),
+//                contentDescription = "Image of sneaker",
+//                contentScale = ContentScale.Fit,
+//                modifier = Modifier.size(100.dp)
+//            )
+
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(image)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = name,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .size(100.dp)
             )
 
         }
@@ -202,9 +213,4 @@ fun CategoryProductCard(name: String, price: String, image: Int) {
 @Composable
 fun CategoryPreviewScreen() {
     CategoryScreen(rememberNavController())
-}
-@Preview
-@Composable
-fun PreviewCategoryProductCard() {
-    CategoryProductCard(name = "Nike Club Shoe", price = "$ 70.87", image = R.drawable.air_max_2700)
 }

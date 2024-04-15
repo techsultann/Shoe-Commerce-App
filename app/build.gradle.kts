@@ -5,6 +5,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -77,13 +78,6 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
     implementation("androidx.compose.material:material-icons-extended")
 
-    //Koin
-    //implementation("io.insert-koin:koin-android:3.5.3")
-    //implementation("io.insert-koin:koin-androidx-compose:3.5.3")
-    //implementation("io.insert-koin:koin-androidx-workmanager:3.5.1")
-    //implementation("io.insert-koin:koin-androidx-navigation:3.5.3")
-    //implementation( "io.insert-koin:koin-core:3.5.3")
-
     //Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
@@ -117,8 +111,11 @@ dependencies {
     implementation("com.google.android.gms:play-services-wallet:19.3.0")
     implementation("com.google.pay.button:compose-pay-button:1.0.0")
 
+    //// Serialize ////
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
 }
 
 kapt {
-    correctErrorTypes; true
+    correctErrorTypes = true
 }

@@ -11,7 +11,9 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.panther.shoeapp.models.CartItem
 import com.panther.shoeapp.models.CreditCard
+import com.panther.shoeapp.models.Order
 import com.panther.shoeapp.utils.PaymentsUtil
 import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +24,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.UUID
 import javax.inject.Inject
 
 
@@ -34,6 +39,10 @@ class CheckoutViewModel @Inject constructor(
 
    private val _getSavedCards = MutableStateFlow<Resource<List<CreditCard>>>(Resource.Loading())
    val getSavedCards : StateFlow<Resource<List<CreditCard>>> = _getSavedCards
+   private val _cartItems = MutableStateFlow<Resource<List<CartItem>>>(Resource.Loading())
+   val cartItems : StateFlow<Resource<List<CartItem>>> = _cartItems.asStateFlow()
+   private val _createOrder = MutableStateFlow<Resource<Order>>(Resource.Loading())
+   val createOrder: StateFlow<Resource<Order>> = _createOrder
 
    data class State(
       val googlePayAvailable: Boolean? = false,
@@ -79,6 +88,108 @@ class CheckoutViewModel @Inject constructor(
             _getSavedCards.value = Resource.Error(e.stackTrace.toString())
          }
       }
+   }
+
+   fun getCartItems() {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         val userId = auth.currentUser!!.uid
+         try {
+            _cartItems.value = Resource.Loading()
+
+            fireStore.collection("baskets")
+               .document(userId)
+               .collection("cartItems")
+               .get()
+               .addOnSuccessListener { result ->
+
+                  val shoeList = mutableListOf<CartItem>()
+                  for (document in result) {
+                     val cart = document.toObject(CartItem::class.java)
+                     shoeList.add(cart)
+                  }
+                  _cartItems.value = Resource.Success(shoeList)
+                  Log.d("GET CART ITEMS", "Cart Items: $shoeList")
+               }
+               .addOnFailureListener { e ->
+                  _cartItems.value = Resource.Error(e.localizedMessage)
+                  Log.e("GET CART ITEMS", "Error fetching cart items: ${e.message}")
+               }
+
+         } catch (e: Exception) {
+            Log.d("CART ITEMS", " Cart Items: ${e.message}")
+            Log.e("GET CART ITEMS", "Exception: ${e.message}")
+         }
+      }
+   }
+
+//   fun createOrders(userId: String, cartItems: List<CartItem>): Order {
+//      val totalPrice = cartItems.sumOf { it.price!! * it.quantity!! }
+//      return Order(
+//         cartItem = cartItems,
+//         totalPrice = totalPrice,
+//         userId = userId
+//      )
+//   }
+
+   fun createOrder(
+      totalPrice: Double,
+      cartItem: List<CartItem>,
+      address: String,
+   ) {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         try {
+
+            val simpleDate = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+            val currentDates = simpleDate.format(Date())
+            val userId = auth.currentUser!!.uid
+            val orderId = generateUniqueShoeId()
+
+            val order = Order(
+               orderId = "OD-$orderId",
+               userId = userId,
+               totalPrice = totalPrice,
+               status = "Pending",
+               timeStamp = currentDates,
+               address = address,
+               cartItem = cartItem.associateBy { it.id ?: "" }
+            )
+
+            fireStore.collection("users")
+               .document(userId)
+               .collection("orders")
+               .document("OD-${orderId}")
+               .set(order)
+               .addOnSuccessListener {
+
+                  _createOrder.value = Resource.Success(order)
+                  Log.d("ORDER DETAILS", "Order details saved")
+               }
+               .addOnFailureListener { e ->
+                  _createOrder.value = Resource.Error(e.localizedMessage)
+                  Log.d("ORDER DETAILS", "Error Adding to Cart ${e.localizedMessage}")
+               }
+         } catch (e: Exception) {
+
+            Log.e("ORDER", "Unable to save order details ${e.message}")
+
+         }
+      }
+   }
+
+   fun sendNotificationToAdmin() {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+      }
+   }
+
+   private fun generateUniqueShoeId(): String {
+      // You can use any unique identifier generation mechanism here, such as UUID
+      return UUID.randomUUID().toString()
    }
 
    private fun checkGooglePayAvailability() {

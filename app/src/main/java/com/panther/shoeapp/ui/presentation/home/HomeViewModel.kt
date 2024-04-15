@@ -138,7 +138,7 @@ class HomeViewModel @Inject constructor(
                         Log.e("ALL SHOE", exception.message.toString())
                     }
             }catch (e: Exception) {
-                Log.d("GET NIKE SHOES", "${e.message}")
+                Log.d("GET ADIDAS SHOES", "${e.message}")
             }
 
         }

@@ -1,5 +1,6 @@
 package com.panther.shoeapp.ui.presentation.checkout
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,10 +21,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -66,15 +69,19 @@ import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 @Composable
 fun CheckOutScreen(
     navHostController: NavHostController,
-    subTotalPrice: String?,
+    subTotalPrice: String?
 ) {
+
     val viewModel: CheckoutViewModel = viewModel()
     val cardState by viewModel.getSavedCards.collectAsState()
+    val cartItems by viewModel.cartItems.collectAsState()
     val shippingCost by remember { mutableDoubleStateOf(3000.00) }
     val subTotal by remember { mutableDoubleStateOf(subTotalPrice!!.toDouble()) }
     val totalAmount by rememberSaveable {
@@ -82,12 +89,13 @@ fun CheckOutScreen(
     }
    // val total by remember { mutableDoubleStateOf(totalAmount) }
     val isEditMode = remember { mutableStateOf(false) }
-    var textState by rememberSaveable { mutableStateOf("Add your address here") }
+    var addressText by rememberSaveable { mutableStateOf("Add your address here") }
 
     LaunchedEffect(key1 = Unit) {
         coroutineScope {
             launch {
                 viewModel.getSavedCards()
+                viewModel.getCartItems()
             }
         }
     }
@@ -167,23 +175,56 @@ fun CheckOutScreen(
 
             if (cardList.isEmpty()) {
 
-                Text(text = "Add a Payment Method")
+                Text(
+                    text = "Add a Payment Method",
+                    fontSize = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
 
             } else {
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth()
                 ) {
+
+                    item {
+
+                        OutlinedButton(
+                            onClick = { /*TODO*/ },
+                            shape = CircleShape,
+                            elevation = ButtonDefaults.buttonElevation(
+                                defaultElevation = 8.dp
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(text = "Add a payment Method")
+
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                Icon(painter = painterResource(id = R.drawable.ic_round_add), contentDescription = "add icon button")
+                            }
+
+                        }
+                    }
+
                     items(cardList) { card ->
 
-                        val cardImage = when (card.cardName) {
+                        val cardImage = when (card.cardType) {
                             "Master Card" -> { R.drawable.master_card }
                             "VISA" -> { R.drawable.visa_logo }
                             "VERVE" -> { R.drawable.master_card }
                             else -> R.drawable.card_icon
                         }
 
-                        PaymentCard(image = R.drawable.master_card, cardNo = card.cardNumber.toString())
+                        PaymentCard(image = cardImage, cardNo = card.cardNumber.toString())
                     }
                 }
             }
@@ -220,8 +261,8 @@ fun CheckOutScreen(
                     if (isEditMode.value) {
 
                         OutlinedTextField(
-                            value = textState,
-                            onValueChange = { textState = it },
+                            value = addressText,
+                            onValueChange = { addressText = it },
                             colors = TextFieldDefaults.colors(),
                             modifier = Modifier
                                 .border(0.dp, Color.Transparent),
@@ -235,7 +276,7 @@ fun CheckOutScreen(
                     } else {
 
                         Text(
-                            text = textState,
+                            text = addressText,
                             textAlign = TextAlign.Start,
                             overflow = TextOverflow.Ellipsis,
                             fontStyle = FontStyle.Italic
@@ -316,12 +357,23 @@ fun CheckOutScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            val orderList = cartItems.data
+            Log.d("ORDER", "Order: $orderList")
+
+            val orderListToJson = Json.encodeToString(orderList)
+            Log.d("JSON", "JSON DATA: $orderListToJson" )
+
             ShoeAppButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .requiredHeight(66.dp),
                 onClick = {
+                    viewModel.createOrder(
+                        totalPrice = totalAmount,
+                        cartItem = orderList!!,
+                        address = addressText
+                    )
                     navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
                 }
             ) {

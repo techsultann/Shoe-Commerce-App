@@ -6,7 +6,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.BottomBarScreen
-import kotlinx.coroutines.delay
+import com.panther.shoeapp.ui.component.ShoeAppButton
 
 @Composable
 fun OrderSuccessfulScreen(
@@ -42,9 +45,6 @@ fun OrderSuccessfulScreen(
         alpha.animateTo( 1f,
             animationSpec = tween(2000)
         )
-        delay(4000)
-        navHostController.popBackStack()
-        navHostController.navigate(route = BottomBarScreen.Home.route)
     }
 
     Column(
@@ -65,19 +65,31 @@ fun OrderSuccessfulScreen(
         )
         
         Text(
-            text = "Congratulations!!",
+            text = "Congratulations!!!",
             fontWeight = FontWeight.Bold,
             fontSize = 36.sp,
             modifier = Modifier
-                .alpha(alpha.value)
         )
         
         Text(
             text = "Order Done Successfully and Payment is sent for the product!",
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .alpha(alpha.value)
         )
+
+        Spacer(modifier = Modifier.height(50.dp))
+
+        ShoeAppButton(
+            onClick = {
+                navHostController.popBackStack()
+                navHostController.navigate(route = BottomBarScreen.Home.route)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(66.dp)
+        ) {
+            Text(text = "Done", fontSize = 18.sp)
+        }
     }
 }
 

@@ -161,7 +161,7 @@ fun HomeTabRow(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding()
+                                    .padding(16.dp)
                                     .align(Alignment.Center)
                             )
                         } else {
@@ -203,6 +203,7 @@ fun HomeTabRow(
                                 .align(Alignment.Center)
                         )
                     }
+
                 }
 
             }
