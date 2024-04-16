@@ -43,7 +43,9 @@ import com.panther.shoeapp.ui.theme.white
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CategoryTabRow() {
+fun CategoryTabRow(
+    viewModel : CategoryViewModel = viewModel()
+) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val titles = listOf("All", "Men", "Women", "Kids")
     val pagerState = rememberPagerState {
@@ -58,7 +60,6 @@ fun CategoryTabRow() {
             selectedTabIndex = pagerState.currentPage
         }
     }
-    val viewModel : CategoryViewModel = viewModel()
 
     Column(
         modifier = Modifier

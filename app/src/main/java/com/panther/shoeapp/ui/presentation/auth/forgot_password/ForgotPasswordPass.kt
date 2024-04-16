@@ -18,12 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.ui.component.PasswordTextField
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.theme.navyBlue
 
 @Composable
-fun ForgotPasswordPass() {
+fun ForgotPasswordPass(navHostController: NavHostController) {
     var password by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = Modifier
@@ -71,7 +74,10 @@ fun ForgotPasswordPass() {
         Spacer(modifier = Modifier.padding(16.dp))
 
         ShoeAppButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navHostController.popBackStack()
+                navHostController.navigate(route = AuthScreen.LoginScreen.route)
+                      },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(66.dp)
@@ -89,5 +95,5 @@ fun ForgotPasswordPass() {
 @Composable
 fun PreviewForgotPass() {
 
-    ForgotPasswordPass()
+    ForgotPasswordPass(rememberNavController())
 }

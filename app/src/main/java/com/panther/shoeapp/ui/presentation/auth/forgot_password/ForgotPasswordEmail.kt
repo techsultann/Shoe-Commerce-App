@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.ui.component.AuthTextField
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -97,7 +98,10 @@ fun ForgotPassword(
                 .fillMaxWidth()
                 .weight(1f)
                 .requiredHeight(66.dp),
-            onClick = { /*TODO*/ }
+            onClick = {
+                navController.popBackStack()
+                navController.navigate(route = AuthScreen.ForgotPassword.route)
+            }
         ) {
             Text(text = "Send Email")
 

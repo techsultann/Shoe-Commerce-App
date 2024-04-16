@@ -1,8 +1,10 @@
 package com.panther.shoeapp.ui.presentation.details
 
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,11 +33,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -57,6 +65,7 @@ import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
 import com.panther.shoeapp.ui.theme.yellow
 import com.panther.shoeapp.utils.Resource
+import kotlinx.coroutines.delay
 
 @Composable
 fun DetailsScreen(
@@ -70,6 +79,29 @@ fun DetailsScreen(
     if (shoeId != null) {
             viewModel.getShoeById(shoeId)
         }
+
+    var amountButtonScale by remember {
+        mutableFloatStateOf(0.5f)
+    }
+    var cartIconScale by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    val animationButtonScale = animateFloatAsState(
+        targetValue = amountButtonScale, label = "",
+        animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing)
+    )
+    val animationCartIconScale = animateFloatAsState(
+        targetValue = cartIconScale, label = "",
+        animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing)
+    )
+
+    LaunchedEffect(true) {
+        delay(150)
+        amountButtonScale = 1f
+        delay(300)
+        cartIconScale = 1f
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -231,6 +263,7 @@ fun DetailsScreen(
 
 
                         Box(modifier = Modifier
+                            .scale(animationButtonScale.value)
                             .width(99.dp)
                             .height(157.dp)
                             .clip(RoundedCornerShape(24.dp))
@@ -245,7 +278,9 @@ fun DetailsScreen(
                                     name = shoeDetails.name.toString(),
                                     price = shoeDetails.price!!
                                 )
-                                Toast.makeText(mContext, "Product added to cart", Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(mContext, "Product added to cart", Toast.LENGTH_SHORT)
+                                    .show()
                             },
                             contentAlignment = Alignment.Center
 
@@ -254,9 +289,14 @@ fun DetailsScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.cart),
-                                    contentDescription = "cart icon")
+                                Icon(
+                                    imageVector = Icons.Filled.ShoppingCart ,
+                                    contentDescription = "cart icon",
+                                    modifier = Modifier
+                                        .scale(animationCartIconScale.value)
+                                        .size(30.dp),
+                                    tint = white
+                                )
 
                                 Spacer(modifier = Modifier.padding(vertical = 12.dp))
 
@@ -301,6 +341,19 @@ fun ShoeImagePager(
         imageCount.size
     }
 
+    var productScale by remember {
+        mutableFloatStateOf(0.5f)
+    }
+
+    val animationProductScale = animateFloatAsState(
+        targetValue = productScale, label = "",
+        animationSpec = tween(durationMillis = 600, easing = FastOutLinearInEasing)
+    )
+    LaunchedEffect(true) {
+        delay(150)
+        productScale = 1f
+    }
+
     HorizontalPager(state = pagerState) { page ->
         val imageUrl = imageCount[page]
 
@@ -312,6 +365,7 @@ fun ShoeImagePager(
             contentDescription = "Shoe image",
             contentScale = ContentScale.Fit ,
             modifier = Modifier
+                .scale(animationProductScale.value)
                 .padding(vertical = 50.dp)
                 .fillMaxWidth()
                 .height(200.dp),

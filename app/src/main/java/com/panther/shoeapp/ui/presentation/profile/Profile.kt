@@ -57,7 +57,7 @@ fun ProfileScreen(
 ) {
 
     val name by viewModel.displayName.collectAsState()
-   // val email by viewModel.userEmail.collectAsState()
+    val email by viewModel.userEmail.collectAsState()
     var selectImage by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -66,7 +66,13 @@ fun ProfileScreen(
     ) { uri: Uri? ->
         selectImage = uri
     }
-    LaunchedEffect(key1 = viewModel) {
+    val displayName by remember {
+        mutableStateOf(name)
+    }
+    val displayEmail by remember {
+        mutableStateOf(email)
+    }
+    LaunchedEffect(Unit) {
         viewModel.displayName()
         viewModel.userEmail()
     }
@@ -134,7 +140,7 @@ fun ProfileScreen(
             )
             Log.d("Display name", "Name: $name")
             Text(
-                text = name.uppercase() ,
+                text = displayName.uppercase() ,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -158,7 +164,7 @@ fun ProfileScreen(
             DetailsBackground(text = name)
 
             Text(
-                text = "Email",
+                text = displayEmail,
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)

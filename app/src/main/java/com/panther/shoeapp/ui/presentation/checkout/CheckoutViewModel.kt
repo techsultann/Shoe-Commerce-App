@@ -124,15 +124,6 @@ class CheckoutViewModel @Inject constructor(
       }
    }
 
-//   fun createOrders(userId: String, cartItems: List<CartItem>): Order {
-//      val totalPrice = cartItems.sumOf { it.price!! * it.quantity!! }
-//      return Order(
-//         cartItem = cartItems,
-//         totalPrice = totalPrice,
-//         userId = userId
-//      )
-//   }
-
    fun createOrder(
       totalPrice: Double,
       cartItem: List<CartItem>,
@@ -158,10 +149,10 @@ class CheckoutViewModel @Inject constructor(
                cartItem = cartItem.associateBy { it.id ?: "" }
             )
 
-            fireStore.collection("users")
+            fireStore.collection("orders")
                .document(userId)
-               .collection("orders")
-               .document("OD-${orderId}")
+               .collection("orderItems")
+               .document()
                .set(order)
                .addOnSuccessListener {
 
@@ -180,9 +171,33 @@ class CheckoutViewModel @Inject constructor(
       }
    }
 
+   fun clearCartItem() {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         try {
+            val userId = auth.currentUser!!.uid
+            fireStore.collection("baskets")
+               .document(userId)
+               .delete()
+               .addOnSuccessListener {
+                  Log.d("DELETE CART ITEMS", "Cart cleared successfully")
+               }
+               .addOnFailureListener {
+                  Log.d("DELETE CART ITEMS", "Could not clear cart items")
+               }
+
+         } catch (e: Exception) {
+            Log.d("DELETE CART", "${e.message}")
+         }
+      }
+
+   }
+
    fun sendNotificationToAdmin() {
 
       viewModelScope.launch(Dispatchers.IO) {
+
 
       }
    }

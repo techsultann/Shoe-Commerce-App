@@ -25,6 +25,7 @@ import com.panther.shoeapp.ui.presentation.card.CreditCardVieModel
 import com.panther.shoeapp.ui.presentation.cart.CartScreen
 import com.panther.shoeapp.ui.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.presentation.category.CategoryScreen
+import com.panther.shoeapp.ui.presentation.category.CategoryViewModel
 import com.panther.shoeapp.ui.presentation.checkout.CheckOutScreen
 import com.panther.shoeapp.ui.presentation.checkout.CheckoutViewModel
 import com.panther.shoeapp.ui.presentation.checkout.OrderSuccessfulScreen
@@ -33,6 +34,8 @@ import com.panther.shoeapp.ui.presentation.details.DetailsViewModel
 import com.panther.shoeapp.ui.presentation.discovery.DiscoveryScreen
 import com.panther.shoeapp.ui.presentation.home.HomeScreenContent
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
+import com.panther.shoeapp.ui.presentation.order.OrderSummary
+import com.panther.shoeapp.ui.presentation.order.OrderViewModel
 import com.panther.shoeapp.ui.presentation.profile.ProfileScreen
 import com.panther.shoeapp.ui.presentation.profile.ProfileViewModel
 import com.panther.shoeapp.ui.presentation.settings.SettingsScreen
@@ -179,7 +182,12 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         startDestination = HomeScreenNav.CategoryScreen.route
     ){
         composable(route = HomeScreenNav.CategoryScreen.route){
-            CategoryScreen(navController)
+            val viewModel = hiltViewModel<CategoryViewModel>()
+            CategoryScreen(navController, viewModel)
+        }
+        composable(route = HomeScreenNav.TrackOrder.route){
+            val viewModel = hiltViewModel<OrderViewModel>()
+            OrderSummary(viewModel)
         }
         composable(
             route = "${ HomeScreenNav.PaymentCardScreen.route }/{cardType}/{name}/{cardNumber}",
@@ -244,4 +252,5 @@ sealed class HomeScreenNav(val route: String) {
     object DiscoversScreen : HomeScreenNav(route = "discover_screen")
     object CheckoutScreen : HomeScreenNav(route = "checkout_screen")
     object SuccessfulScreen : HomeScreenNav(route = "successful_screen")
+    object TrackOrder : HomeScreenNav(route = "track_order_screen")
 }

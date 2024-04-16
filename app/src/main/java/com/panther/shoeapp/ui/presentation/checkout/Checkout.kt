@@ -69,8 +69,6 @@ import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 
 @Composable
@@ -360,8 +358,8 @@ fun CheckOutScreen(
             val orderList = cartItems.data
             Log.d("ORDER", "Order: $orderList")
 
-            val orderListToJson = Json.encodeToString(orderList)
-            Log.d("JSON", "JSON DATA: $orderListToJson" )
+           // val orderListToJson = Json.encodeToString(orderList)
+            //Log.d("JSON", "JSON DATA: $orderListToJson" )
 
             ShoeAppButton(
                 modifier = Modifier
@@ -374,6 +372,7 @@ fun CheckOutScreen(
                         cartItem = orderList!!,
                         address = addressText
                     )
+                    viewModel.clearCartItem()
                     navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
                 }
             ) {

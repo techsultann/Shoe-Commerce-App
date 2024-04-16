@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -189,6 +190,16 @@ fun LoginScreen(
                 }
             },
             visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None
+        )
+        Text(
+            text = "Forgot Password?",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.End)
+                .clickable {
+                    navController.navigate(route = AuthScreen.ForgotPasswordEmail.route)
+                }
         )
 
         Row {
