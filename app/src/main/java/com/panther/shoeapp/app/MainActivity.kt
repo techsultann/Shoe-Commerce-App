@@ -13,7 +13,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.panther.shoeapp.navigation.RootNavGraph
+import com.panther.shoeapp.ui.presentation.home.HomeScreen
 import com.panther.shoeapp.ui.theme.ShoeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,6 +33,7 @@ class MainActivity : ComponentActivity() {
             // TODO: Inform user that that your app will not show notifications.
         }
     }
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -40,12 +45,21 @@ class MainActivity : ComponentActivity() {
             )
         )
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
         setContent {
+            val currentUser = auth.currentUser
             ShoeAppTheme {
 
-                RootNavGraph(navController = rememberNavController())
+                if (currentUser != null) {
+                   // HomeNavGraph(navController = rememberNavController())
+                    HomeScreen()
+                } else {
+
+                    RootNavGraph(navController = rememberNavController())
+                }
             }
         }
+
         askNotificationPermission()
 
     }

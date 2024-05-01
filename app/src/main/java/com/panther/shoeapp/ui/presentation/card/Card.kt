@@ -43,6 +43,7 @@ fun CardScreen(
     cardType: String?,
     name: String?,
     cardNumber:String?,
+    cvv: String?,
     navHostController: NavHostController
 ) {
 
@@ -113,7 +114,7 @@ fun CardScreen(
                 )
             }
 
-            CreditCard(cardType, name, cardNumber)
+            CreditCard(cardType, name, cardNumber, cvv)
 
             Spacer(modifier = Modifier.padding(16.dp))
 
@@ -124,7 +125,7 @@ fun CardScreen(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
-            DetailsBackground(text = "1286 6857 5838")
+            DetailsBackground(text = cardNumber!!)
 
             Text(
                 text = "Card Holder Name",
@@ -133,7 +134,7 @@ fun CardScreen(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
-            DetailsBackground(text = "Alexander Hussain")
+            DetailsBackground(text = name!!)
 
             Spacer(modifier = Modifier.weight(1f))
 

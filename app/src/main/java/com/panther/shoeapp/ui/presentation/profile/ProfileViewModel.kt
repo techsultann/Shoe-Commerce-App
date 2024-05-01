@@ -23,12 +23,12 @@ class ProfileViewModel @Inject constructor(
     private val _userEmail = MutableStateFlow("")
     val userEmail : StateFlow<String> = _userEmail
 
-//    init {
-//        displayName()
-//        userEmail()
-//    }
+    init {
+        displayName()
+        userEmail()
+    }
 
-    fun displayName() {
+    private fun displayName() {
         viewModelScope.launch(Dispatchers.IO) {
             val currentUser = auth.currentUser
             if (currentUser != null) {
@@ -43,13 +43,14 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun userEmail() {
+    private fun userEmail() {
         viewModelScope.launch(Dispatchers.IO) {
             val currentUser = auth.currentUser
             if (currentUser != null) {
                 try {
+                    _userEmail.value = currentUser.email.toString()
                     Log.d("PROFILE", "Profile Email: ${currentUser.email}")
-                    _displayName.value = currentUser.email.toString()
+
                 } catch (e: Exception) {
                     // Handle errors gracefully, e.g., log the error or display a message
                     Log.w("HomeViewModel", "Error retrieving user email: $e")

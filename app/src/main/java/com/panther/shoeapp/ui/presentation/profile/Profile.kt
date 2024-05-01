@@ -1,9 +1,6 @@
 package com.panther.shoeapp.ui.presentation.profile
 
-import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,21 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.panther.shoeapp.R
-
 import com.panther.shoeapp.ui.component.DetailsBackground
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -58,24 +45,15 @@ fun ProfileScreen(
 
     val name by viewModel.displayName.collectAsState()
     val email by viewModel.userEmail.collectAsState()
-    var selectImage by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        selectImage = uri
-    }
-    val displayName by remember {
-        mutableStateOf(name)
-    }
-    val displayEmail by remember {
-        mutableStateOf(email)
-    }
-    LaunchedEffect(Unit) {
-        viewModel.displayName()
-        viewModel.userEmail()
-    }
+
+//    var selectImage by remember {
+//        mutableStateOf<Uri?>(null)
+//    }
+//    val galleryLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent()
+//    ) { uri: Uri? ->
+//        selectImage = uri
+//    }
 
 
     Scaffold(
@@ -92,24 +70,7 @@ fun ProfileScreen(
                     )
                 },
                 navigationIcon = {
-                    Surface(
-                        modifier = Modifier
-                            .size(height = 56.dp, width = 56.dp)
-                            .clip(shape = CircleShape),
-                        tonalElevation = 4.dp,
-                        shadowElevation = 4.dp
-                    ) {
-                        IconButton(
-                            onClick = {}
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Navigation back icon",
-                                tint = Color.Unspecified
-                            )
-                        }
 
-                    }
                 },
                 actions = {
 
@@ -128,7 +89,7 @@ fun ProfileScreen(
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(selectImage)
+                    .data(R.drawable.display_picture)
                     .placeholder(R.drawable.vomero_womens)
                     .build(),
                 contentDescription = "profile image",
@@ -140,7 +101,7 @@ fun ProfileScreen(
             )
             Log.d("Display name", "Name: $name")
             Text(
-                text = displayName.uppercase() ,
+                text = name.uppercase() ,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -148,7 +109,7 @@ fun ProfileScreen(
             Text(
                 text = "Change Photo",
                 modifier = Modifier
-                    .clickable { galleryLauncher.launch("image/*") }
+                    .clickable {  }
             )
 
             Spacer(modifier = Modifier.padding(16.dp))
@@ -164,15 +125,15 @@ fun ProfileScreen(
             DetailsBackground(text = name)
 
             Text(
-                text = displayEmail,
+                text = "Email",
                 textAlign = TextAlign.Start,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
 
-           // Log.d("User Email", "Email: $email")
-            DetailsBackground(text = "email")
+            Log.d("User Email", "Email: $email")
+            DetailsBackground(text = email)
 
             Text(
                 text = "Number",

@@ -2,7 +2,6 @@ package com.panther.shoeapp.utils
 
 import com.google.android.gms.wallet.WalletConstants
 import java.text.NumberFormat
-import java.util.Currency
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -25,7 +24,9 @@ object Constants {
 
     val SHIPPING_SUPPORTED_COUNTRIES = listOf("NG")
 
-    val CURRENCY = Currency.getInstance("NGN")
-    val localeCurrency = NumberFormat.getCurrencyInstance(Locale("NGN"))
+    fun Double.toCurrency(): String {
+        val format = NumberFormat.getCurrencyInstance(Locale("en", "NG"))
+        return format.format(this)
+    }
 
 }

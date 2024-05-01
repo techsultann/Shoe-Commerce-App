@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.DropdownMenuItem
@@ -36,6 +38,8 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.style.TextAlign
@@ -44,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.panther.shoeapp.navigation.BottomBarScreen
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TextFieldWithPlaceholder
@@ -61,7 +64,7 @@ fun AddCardScreen(
     var isCardTypeExpanded by rememberSaveable { mutableStateOf(false) }
 
     var cardType by rememberSaveable { mutableStateOf("") }
-    var cardHolderName by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
     var cardNumber by rememberSaveable { mutableStateOf("") }
     var expiryDate by rememberSaveable { mutableStateOf("") }
     var cvv by rememberSaveable { mutableStateOf("") }
@@ -73,7 +76,7 @@ fun AddCardScreen(
             }
             is Resource.Success -> {
                 navHostController.popBackStack()
-                navHostController.navigate(BottomBarScreen.Home.route)
+                navHostController.navigate("${HomeScreenNav.PaymentCardScreen.route}/$cardType/$name/$cardNumber/$cvv")
             }
             is Resource.Error -> {
 
@@ -205,13 +208,18 @@ fun AddCardScreen(
 
             TextFieldWithPlaceholder(
                 modifier = Modifier,
-                value = cardHolderName ,
+                value = name ,
                 onValueChange = {
-                    cardHolderName = it
+                    name = it
                 },
                 placeholder = {
                     Text(text = "Alexander Hussain")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+                keyboardActions = KeyboardActions()
             )
 
             Text(
@@ -245,10 +253,14 @@ fun AddCardScreen(
                         if (i % 4 == 3 && i != 15) out += "-"
                     }
                     TransformedText(
-                        AnnotatedString(out),
+                        AnnotatedString(out), 
                         creditCardOffsetMapping
                     )
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Number
+                )
             )
 
             Text(
@@ -267,7 +279,12 @@ fun AddCardScreen(
                 },
                 placeholder = {
                     Text(text = "12/12")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions()
             )
 
             Text(
@@ -286,7 +303,12 @@ fun AddCardScreen(
                 },
                 placeholder = {
                     Text(text = "000")
-                }
+                },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions()
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -299,10 +321,10 @@ fun AddCardScreen(
                 onClick = {
                     viewModel.saveCardDetails(
                         cardType,
-                        cardHolderName,
+                        name,
                         cardNumber
                     )
-                    navHostController.navigate(route = "${HomeScreenNav.PaymentCardScreen.route}/$cardType/$cardHolderName/$cardNumber")
+                    navHostController.navigate(route = "${HomeScreenNav.PaymentCardScreen.route}/$cardType/$name/$cardNumber")
                 }
             ) {
                 Text(

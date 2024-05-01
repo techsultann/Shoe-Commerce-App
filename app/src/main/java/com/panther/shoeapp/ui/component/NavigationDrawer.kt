@@ -91,7 +91,7 @@ fun NavDrawer(
                     label = {
 
                         Text(
-                            text = "Track Order",
+                            text = "Brands",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.primary
@@ -99,7 +99,7 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { navController.navigate(route = HomeScreenNav.TrackOrder.route) },
+                    onClick = { navController.navigate( route = HomeScreenNav.BrandScreen.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -111,7 +111,7 @@ fun NavDrawer(
                     label = {
 
                         Text(
-                            text = "Discover All",
+                            text = "Track Order",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.primary
@@ -119,7 +119,7 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { navController.navigate(route = HomeScreenNav.DiscoversScreen.route) },
+                    onClick = { navController.navigate(route = HomeScreenNav.TrackOrder.route) },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background

@@ -41,10 +41,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
-import com.panther.shoeapp.models.data.Product
-import com.panther.shoeapp.ui.component.BottomNav
+import com.panther.shoeapp.ui.component.HomeScreenCard
 import com.panther.shoeapp.ui.component.NavDrawer
-import com.panther.shoeapp.ui.component.ProductCard
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.presentation.home.HomeViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
@@ -164,9 +162,9 @@ fun DiscoveryScreen(
 
                     items(shoeList) { product ->
 
-                        ProductCard(
+                        HomeScreenCard(
                             product.name.toString(),
-                            product.price!!.toDouble(),
+                            product.price,
                             product.images!!.first().toString(),
                             product.id!!,
                             navHostController = navHostController
@@ -177,29 +175,6 @@ fun DiscoveryScreen(
             }
         }
     }
-}
-
-@Composable
-fun AllProductsList(productList: List<Product>) {
-
-//    LazyVerticalGrid(
-//        columns = GridCells.Fixed(count = 2),
-//        verticalArrangement = Arrangement.spacedBy(8.dp),
-//        horizontalArrangement = Arrangement.spacedBy(8.dp),
-//        contentPadding = PaddingValues(16.dp)
-//    ) {
-//
-//        items(productList) { product ->
-//
-//            ProductCard(
-//                product.name,
-//                product.price.toDouble(),
-//                product.image.toString(),
-//                product.id,
-//                navHostController = nav
-//            )
-//        }
-//    }
 }
 
 @Preview

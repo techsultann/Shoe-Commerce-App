@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -228,7 +232,7 @@ fun DetailsScreen(
                                     }
                                 },
                                 color = navyBlue,
-                                fontSize = 22.sp,
+                                fontSize = 18.sp,
                                 textAlign = TextAlign.Start,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -242,22 +246,62 @@ fun DetailsScreen(
                                     }
                                 },
                                 color = navyBlue,
-                                fontSize = 22.sp,
+                                fontSize = 18.sp,
                                 textAlign = TextAlign.Start,
                                 overflow = TextOverflow.Ellipsis
                             )
 
                             Text(
                                 text = buildAnnotatedString {
-                                    append("Sizes: ")
+                                    append("Colors: ")
                                     pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
-                                    append("Rubber 100%")
+                                    append("")
                                 },
                                 color = navyBlue,
                                 fontSize = 20.sp,
                                 textAlign = TextAlign.Start,
                                 overflow = TextOverflow.Ellipsis
                             )
+
+                            val shoeColorList = shoeDetailsState.data?.colors ?: emptyList()
+
+                            LazyRow() {
+
+                              items(shoeColorList) { colors ->
+
+                                  ProductColor(text = colors ) {
+
+                                  }
+                              }
+
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    append("Sizes: ")
+                                    pushStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold))
+                                    append("")
+                                },
+                                color = navyBlue,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            val shoeSizeList = shoeDetailsState.data?.sizes ?: emptyList()
+
+                            LazyRow() {
+
+                                items(shoeSizeList) { sizes ->
+
+                                    ProductSizeCard(size = sizes, isSelected = sizes == sizes ) {
+
+                                    }
+                                }
+
+                            }
+
 
                         }
 
@@ -325,9 +369,64 @@ fun DetailsScreen(
         }
     }
 
-
-
 }
+
+@Composable
+fun ProductSizeCard(
+    modifier: Modifier = Modifier,
+    size: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+) {
+    val backgroundColor = if (isSelected) skyBlue  else Color.Transparent
+    val textColor = if (isSelected) Color.White else Color.Black
+    val border = if (isSelected) 0.dp else 1.dp
+
+    Text(
+        modifier = modifier
+            .padding(end = 4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .border(width = border, color = Color.Black, shape = RoundedCornerShape(12.dp))
+            .background(backgroundColor)
+            .padding(4.dp)
+            .clickable {
+                onClick()
+            }
+            ,
+        text = size,
+        fontSize = 18.sp,
+        color = textColor
+    )
+}
+
+@Composable
+fun ProductColor(
+    modifier: Modifier = Modifier,
+    /*isSelected: Boolean,*/
+    text: String,
+    onClick: () -> Unit,
+) {
+  //  val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+
+    Box(
+        modifier = modifier
+            .padding(end = 4.dp)
+            .border(width = 0.5.dp, color = MaterialTheme.colorScheme.primary, shape = CircleShape)
+            .padding(4.dp)
+            .background(MaterialTheme.colorScheme.background, shape = CircleShape)
+            .wrapContentWidth()
+            .clickable {
+                onClick()
+            }
+    ){
+        Text(
+            text = text.uppercase(),
+            fontSize = 18.sp,
+            color = navyBlue
+        )
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

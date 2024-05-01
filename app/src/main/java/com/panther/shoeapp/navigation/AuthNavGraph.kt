@@ -18,15 +18,19 @@ import com.panther.shoeapp.ui.presentation.auth.SignupScreen
 import com.panther.shoeapp.ui.presentation.auth.forgot_password.ForgotPassword
 import com.panther.shoeapp.ui.presentation.auth.forgot_password.ForgotPasswordPass
 import com.panther.shoeapp.ui.presentation.onboard.OnboardScreen
+import com.panther.shoeapp.ui.presentation.splash.SplashScreen
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController
 ) {
 
     navigation(
-        startDestination = AuthScreen.OnboardScreen.route,
+        startDestination = AuthScreen.SplashScreen.route,
         route = Graph.AUTHENTICATION
     ) {
+        composable(route = AuthScreen.SplashScreen.route){
+            SplashScreen(navHostController = navController)
+        }
         composable(
             route = AuthScreen.OnboardScreen.route,
             enterTransition = {
@@ -165,4 +169,5 @@ sealed class AuthScreen(val route: String) {
     object LoginScreen : AuthScreen (route = "login_screen")
     object ForgotPasswordEmail : AuthScreen (route = "forgot_pass_email")
     object ForgotPassword : AuthScreen (route = "forgot_pass")
+    object SplashScreen : AuthScreen (route = "splash_screen")
 }

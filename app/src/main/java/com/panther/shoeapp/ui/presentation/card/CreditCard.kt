@@ -48,7 +48,8 @@ import com.panther.shoeapp.ui.theme.CardLightColor
 fun CreditCard(
     cardType: String?,
     name: String?,
-    cardNumber: String?
+    cardNumber: String?,
+    cvv: String?
 ) {
     var rotated by remember { mutableStateOf(false) }
 
@@ -243,22 +244,24 @@ fun CreditCard(
                 thickness = 50.dp
             )
 
-            Text(
-                text = "123",
-                color = Color.Black,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .background(Color.White)
-                    .graphicsLayer {
-                        alpha = animateBack
-                        rotationY = rotation
-                    }
-                    .padding(10.dp),
+            if (cvv != null) {
+                Text(
+                    text = cvv,
+                    color = Color.Black,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .graphicsLayer {
+                            alpha = animateBack
+                            rotationY = rotation
+                        }
+                        .padding(10.dp),
 
-                fontSize = 15.sp,
-                textAlign = TextAlign.End
-            )
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.End
+                )
+            }
 
             Text(
                 text = " Tech Sultan",

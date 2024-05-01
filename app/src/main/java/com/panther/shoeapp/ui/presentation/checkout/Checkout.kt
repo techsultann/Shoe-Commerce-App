@@ -372,7 +372,7 @@ fun CheckOutScreen(
                         cartItem = orderList!!,
                         address = addressText
                     )
-                    viewModel.clearCartItem()
+                    viewModel.ClearCartItem()
                     navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
                 }
             ) {

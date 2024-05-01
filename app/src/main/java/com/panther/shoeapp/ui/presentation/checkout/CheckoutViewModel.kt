@@ -171,7 +171,7 @@ class CheckoutViewModel @Inject constructor(
       }
    }
 
-   fun clearCartItem() {
+   fun ClearCartItem() {
 
       viewModelScope.launch(Dispatchers.IO) {
 
@@ -179,6 +179,8 @@ class CheckoutViewModel @Inject constructor(
             val userId = auth.currentUser!!.uid
             fireStore.collection("baskets")
                .document(userId)
+               .collection("cartItems")
+               .document()
                .delete()
                .addOnSuccessListener {
                   Log.d("DELETE CART ITEMS", "Cart cleared successfully")

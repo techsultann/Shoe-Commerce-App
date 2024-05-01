@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Notifications
@@ -41,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +72,7 @@ import com.panther.shoeapp.ui.theme.Red
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
+import com.panther.shoeapp.utils.Constants.toCurrency
 import com.panther.shoeapp.utils.Resource
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -117,25 +116,7 @@ fun CartScreen(
                     )
                 },
                 navigationIcon = {
-                    Surface(
-                        modifier = Modifier
-                            .size(height = 56.dp, width = 56.dp)
-                            .clip(shape = CircleShape),
-                        tonalElevation = 4.dp,
-                        shadowElevation = 4.dp
-                    ) {
-                        IconButton(
-                            onClick = {
 
-                            }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Navigation back icon",
-                                tint = Color.Unspecified
-                            )
-                        }
-
-                    }
                 },
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
@@ -201,7 +182,7 @@ fun CartScreen(
 
                                 CartCard(
                                     name = product.name.toString(),
-                                    price = product.price,
+                                    price = product.price!!.toCurrency(),
                                     image = product.image.toString(),
                                     id = product.id,
                                     initialQuantity = product.quantity
@@ -247,7 +228,7 @@ fun CartScreen(
                 Log.d("TOTAL AMOUNT", "Total: $totalAmount")
 
                 Text(
-                    text = "N $totalAmount",
+                    text = totalAmount.toCurrency(),
                     fontSize = 16.sp
                 )
             }
@@ -274,7 +255,7 @@ fun CartScreen(
 @Composable
 fun CartCard(
     name: String,
-    price: Double?,
+    price: String,
     image: String,
     id: String?,
     initialQuantity: Int? = 1,
@@ -339,7 +320,7 @@ fun CartCard(
                 Spacer(modifier = Modifier.padding(vertical = 8.dp))
 
                 Text(
-                    text = "N $price",
+                    text = price,
                     color = Color(0xFF152354),
                     fontSize = 12.sp
                 )

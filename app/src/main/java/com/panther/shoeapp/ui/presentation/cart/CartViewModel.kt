@@ -39,6 +39,9 @@ class CartViewModel @Inject constructor(
 //        }
     }
 
+   // val cypher = Cipher.getInstance("")
+    //val secretKey = SecretKey(Key.toBy)
+
     fun getItemCount() {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = auth.currentUser!!.uid

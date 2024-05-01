@@ -2,7 +2,6 @@ package com.panther.shoeapp.app
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.HiltAndroidApp
@@ -25,7 +24,7 @@ class MainApplication: Application() {
 
             // Log and toast
             Log.d("FCM", "User token: $token")
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
 
     }

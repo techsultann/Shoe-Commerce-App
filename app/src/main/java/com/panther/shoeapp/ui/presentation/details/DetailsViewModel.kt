@@ -37,6 +37,7 @@ class DetailsViewModel @Inject constructor(
             .addOnFailureListener { e ->
                 _shoeById.value = Resource.Error(e.localizedMessage)
             }
+
     }
 
     fun addToCart(

@@ -19,6 +19,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
+import com.panther.shoeapp.ui.presentation.brand.BrandScreen
+import com.panther.shoeapp.ui.presentation.brand.BrandViewModel
 import com.panther.shoeapp.ui.presentation.card.AddCardScreen
 import com.panther.shoeapp.ui.presentation.card.CardScreen
 import com.panther.shoeapp.ui.presentation.card.CreditCardVieModel
@@ -68,6 +70,7 @@ fun HomeNavGraph(
             val viewModel = hiltViewModel<ProfileViewModel>()
             ProfileScreen(viewModel)
         }
+
         navDrawerGraph(navController)
         detailsNavGraph(navController)
         cartNavGraph(navController)
@@ -220,7 +223,8 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
             val cardType = backStackEntry.arguments?.getString("cardType")
             val name = backStackEntry.arguments?.getString("name")
             val cardNumber = backStackEntry.arguments?.getString("cardNumber")
-            CardScreen(cardType, name, cardNumber, navController)
+            val cvv = backStackEntry.arguments?.getString("cardNumber")
+            CardScreen(cardType, name, cardNumber, cvv, navController)
         }
         composable(
             route = HomeScreenNav.AddCardScreen.route,
@@ -231,8 +235,9 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         composable(route = HomeScreenNav.SettingsScreen.route){
             SettingsScreen()
         }
-        composable(route = HomeScreenNav.DiscoversScreen.route){
-            DiscoveryScreen(navHostController = navController)
+        composable(route = HomeScreenNav.BrandScreen.route){
+            val viewModel = hiltViewModel<BrandViewModel>()
+            BrandScreen(navHostController = navController, viewModel)
         }
         composable(route = AuthScreen.LoginScreen.route){
             val vm = hiltViewModel<OnboardingViewModel>()
@@ -246,10 +251,10 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
 sealed class HomeScreenNav(val route: String) {
     object DetailsScreen : HomeScreenNav(route = "details_screen")
     object CategoryScreen : HomeScreenNav(route = "category_screen")
+    object BrandScreen : HomeScreenNav(route = "brand_screen")
     object PaymentCardScreen : HomeScreenNav(route = "card_screen")
     object AddCardScreen : HomeScreenNav(route = "add_card_screen")
     object SettingsScreen : HomeScreenNav(route = "settings_screen")
-    object DiscoversScreen : HomeScreenNav(route = "discover_screen")
     object CheckoutScreen : HomeScreenNav(route = "checkout_screen")
     object SuccessfulScreen : HomeScreenNav(route = "successful_screen")
     object TrackOrder : HomeScreenNav(route = "track_order_screen")

@@ -13,7 +13,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -34,12 +36,14 @@ fun TopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable() (RowScope.() -> Unit)
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     CenterAlignedTopAppBar(
         modifier = Modifier.padding(16.dp),
         title = title,
         navigationIcon = navigationIcon,
-        actions = actions
+        actions = actions,
+        scrollBehavior = scrollBehavior
     )
 
 }

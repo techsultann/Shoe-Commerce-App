@@ -65,9 +65,9 @@ class OnboardingViewModel @Inject constructor (
 
         viewModelScope.launch(Dispatchers.IO) {
             if (isEmailValid(email)) {
-                val login = loginState.value
-                _loginState.value = repo.login(email, password)
-                Log.d("LOGIN TAG", "LOGIN: $login")
+                    val login = loginState.value
+                    _loginState.value = repo.login(email, password)
+                    Log.d("LOGIN TAG", "LOGIN: $login")
             }
 
         }
