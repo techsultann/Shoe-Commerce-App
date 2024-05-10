@@ -62,4 +62,5 @@ object Graph {
     const val DETAILS = "details_graph"
     const val NAV_DRAWER = "nav_drawer_graph"
     const val CHECKOUT = "checkout_graph"
+    const val PROFILE = "profile_graph"
 }

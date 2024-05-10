@@ -76,6 +76,9 @@ fun CategoryTabRow(
                         .tabIndicatorOffset(tabPositions[selectedTabIndex])
                         .clip(RoundedCornerShape(50.dp))
                 )
+            },
+            divider = {
+
             }
         ) {
             titles.forEachIndexed { index, title ->

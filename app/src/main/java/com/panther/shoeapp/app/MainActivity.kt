@@ -20,6 +20,8 @@ import com.panther.shoeapp.navigation.RootNavGraph
 import com.panther.shoeapp.ui.presentation.home.HomeScreen
 import com.panther.shoeapp.ui.theme.ShoeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import android.content.Intent
+import android.net.Uri
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,7 +53,7 @@ class MainActivity : ComponentActivity() {
             ShoeAppTheme {
 
                 if (currentUser != null) {
-                   // HomeNavGraph(navController = rememberNavController())
+                    // HomeNavGraph(navController = rememberNavController())
                     HomeScreen()
                 } else {
 
@@ -61,7 +63,6 @@ class MainActivity : ComponentActivity() {
         }
 
         askNotificationPermission()
-
     }
 
     private fun askNotificationPermission() {

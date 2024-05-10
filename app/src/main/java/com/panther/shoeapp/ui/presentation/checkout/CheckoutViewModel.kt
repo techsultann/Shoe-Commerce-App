@@ -11,9 +11,15 @@ import com.google.android.gms.wallet.PaymentDataRequest
 import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.panther.shoeapp.api.FlutterWaveApi
+import com.panther.shoeapp.models.Address
 import com.panther.shoeapp.models.CartItem
 import com.panther.shoeapp.models.CreditCard
 import com.panther.shoeapp.models.Order
+import com.panther.shoeapp.models.User
+import com.panther.shoeapp.models.api_response.PaymentRequest
+import com.panther.shoeapp.models.api_response.PaymentResponse
+import com.panther.shoeapp.utils.Constants.SECRET_KEY
 import com.panther.shoeapp.utils.PaymentsUtil
 import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +40,8 @@ import javax.inject.Inject
 class CheckoutViewModel @Inject constructor(
    private val fireStore: FirebaseFirestore,
    private val auth: FirebaseAuth,
-   private val paymentsClient: PaymentsClient
+   private val paymentsClient: PaymentsClient,
+   private val apiService: FlutterWaveApi
 ) : ViewModel() {
 
    private val _getSavedCards = MutableStateFlow<Resource<List<CreditCard>>>(Resource.Loading())
@@ -43,6 +50,18 @@ class CheckoutViewModel @Inject constructor(
    val cartItems : StateFlow<Resource<List<CartItem>>> = _cartItems.asStateFlow()
    private val _createOrder = MutableStateFlow<Resource<Order>>(Resource.Loading())
    val createOrder: StateFlow<Resource<Order>> = _createOrder
+   private val _getAddress = MutableStateFlow<Resource<List<Address>>>(Resource.Loading())
+   val getAddress: StateFlow<Resource<List<Address>>> = _getAddress
+   private val _paymentState = MutableStateFlow<Resource<PaymentResponse>>(Resource.Loading())
+   val paymentState: StateFlow<Resource<PaymentResponse>> = _paymentState
+   private val _displayName = MutableStateFlow("")
+   val displayName : StateFlow<String> = _displayName
+   private val _userEmail = MutableStateFlow("")
+   val userEmail : StateFlow<String> = _userEmail
+   private val _userData = MutableStateFlow<Resource<User>>(Resource.Loading())
+   val userData: StateFlow<Resource<User>> = _userData
+   private val _verifyPaymentState = MutableStateFlow<Resource<PaymentResponse>>(Resource.Loading())
+   val verifyPaymentState: StateFlow<Resource<PaymentResponse>> = _verifyPaymentState
 
    data class State(
       val googlePayAvailable: Boolean? = false,
@@ -54,7 +73,114 @@ class CheckoutViewModel @Inject constructor(
    val state: StateFlow<State> = _state.asStateFlow()
 
    init {
-      checkGooglePayAvailability()
+      displayName()
+      userEmail()
+   }
+
+   fun verifyPayment(id: String) {
+
+      viewModelScope.launch(Dispatchers.IO) {
+         try {
+             val response = apiService.verifyFlutterWavePayment(SECRET_KEY, id)
+
+            if (response.isSuccessful && response.body() != null) {
+
+               _verifyPaymentState.value = Resource.Success(response.body()!!)
+            } else {
+               _verifyPaymentState.value = Resource.Error("Error: ${response.message()}")
+               Log.d("VERIFY PAYMENT", "Verify Payment Error: ${response.message()}")
+            }
+         } catch (e:Exception) {
+            _paymentState.value = Resource.Error("Exception: ${e.message}")
+            Log.d("VERIFY PAYMENT", "Verify Payment Error: ${e.message}")
+         }
+      }
+
+   }
+
+   fun makeFlutterWavePayment(paymentRequest: PaymentRequest) {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         try {
+
+            val response = apiService.flutterWavePayment(SECRET_KEY, paymentRequest)
+
+            if (response.isSuccessful && response.body() != null) {
+               _paymentState.value = Resource.Success(response.body()!!)
+
+               Log.d("FLUTTERWAVE", "Wave Payment: ${response.message()}")
+
+            } else {
+
+               _paymentState.value = Resource.Error("Error: ${response.message()}")
+               Log.d("FLUTTERWAVE", "Wave Payment Error: ${response.message()}")
+            }
+         } catch (e: Exception) {
+
+            _paymentState.value = Resource.Error("Exception: ${e.message}")
+            Log.d("FLUTTERWAVE", "Wave Payment Error: ${e.message}")
+         }
+
+      }
+
+   }
+
+   private fun displayName() {
+      viewModelScope.launch(Dispatchers.IO) {
+         val currentUser = auth.currentUser
+         if (currentUser != null) {
+            try {
+               _displayName.value = currentUser.displayName.toString()
+               Log.d("PROFILE", "Profile Name: ${currentUser.displayName}")
+            } catch (e: Exception) {
+               // Handle errors gracefully, e.g., log the error or display a message
+               Log.w("HomeViewModel", "Error retrieving display name: $e")
+            }
+         }
+      }
+   }
+
+   private fun userEmail() {
+      viewModelScope.launch(Dispatchers.IO) {
+         val currentUser = auth.currentUser
+         if (currentUser != null) {
+            try {
+               _userEmail.value = currentUser.email.toString()
+               Log.d("PROFILE", "Profile Email: ${currentUser.email}")
+
+            } catch (e: Exception) {
+               // Handle errors gracefully, e.g., log the error or display a message
+               Log.w("HomeViewModel", "Error retrieving user email: $e")
+            }
+         }
+      }
+   }
+
+   private fun getUserData() {
+
+      val currentUser = auth.currentUser
+      val userId = currentUser?.uid
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         try {
+            if (userId != null) {
+               fireStore.collection("users")
+                  .document(userId)
+                  .get()
+                  .addOnSuccessListener { document ->
+                     val user = document.toObject(User::class.java)
+                     _userData.value = Resource.Success(user!!)
+                  }
+                  .addOnFailureListener { e ->
+                     _userData.value = Resource.Error(e.localizedMessage)
+                  }
+            }
+         } catch (e: Exception) {
+
+         }
+      }
    }
 
    fun getSavedCards() {
@@ -194,6 +320,36 @@ class CheckoutViewModel @Inject constructor(
          }
       }
 
+   }
+
+   fun getAddressList() {
+
+      viewModelScope.launch(Dispatchers.IO) {
+
+         val userId = auth.currentUser!!.uid
+         try {
+            _getAddress.value = Resource.Loading()
+
+            fireStore.collection("users")
+               .document(userId)
+               .collection("User Address")
+               .get()
+               .addOnSuccessListener { result ->
+
+                  val addressList = result.toObjects(Address::class.java)
+                  _getAddress.value = Resource.Success(addressList)
+
+                  Log.d("GET ALL SHOES", "Shoes: $addressList")
+               }
+               .addOnFailureListener { e ->
+                  _getAddress.value = Resource.Error(e.localizedMessage)
+               }
+         } catch (e: Exception) {
+            _getAddress.value = Resource.Loading()
+            Log.d("GET ALL SHOES", "${e.message}")
+         }
+
+      }
    }
 
    fun sendNotificationToAdmin() {

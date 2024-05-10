@@ -24,6 +24,7 @@ class DetailsViewModel @Inject constructor(
     private val _shoeById = MutableStateFlow<Resource<Shoe>>(Resource.Loading())
     val shoeById: StateFlow<Resource<Shoe>> = _shoeById
 
+
     fun getShoeById(shoeId: String) {
 
         fireStore.collection("Shoes")
@@ -31,7 +32,6 @@ class DetailsViewModel @Inject constructor(
             .get()
             .addOnSuccessListener { document ->
                 val shoe = document.toObject(Shoe::class.java)
-               // Log.d("GET ALL SHOES", "Shoes: $shoe")
                 _shoeById.value = Resource.Success(shoe!!)
             }
             .addOnFailureListener { e ->

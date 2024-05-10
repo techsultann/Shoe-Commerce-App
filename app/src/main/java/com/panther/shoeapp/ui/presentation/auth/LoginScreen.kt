@@ -74,9 +74,13 @@ fun LoginScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     val loginState by viewModel.loginState.collectAsState()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    var showProgressBar by remember { mutableStateOf(false) }
     val mContext = LocalContext.current
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
+    var buttonClicked by rememberSaveable { mutableStateOf(false) }
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    val validateForm = email.isNotEmpty() && password.isNotEmpty()
 
     LaunchedEffect(key1 = loginState) {
         val auth = Firebase.auth
@@ -84,7 +88,7 @@ fun LoginScreen(
 
         when (loginState) {
             is Resource.Loading -> {
-
+                showProgressBar = true
             }
             is Resource.Success -> {
                 if (currentUser != null) {
@@ -95,7 +99,7 @@ fun LoginScreen(
             }
             is Resource.Error -> {
                Toast.makeText(mContext, loginState.message, Toast.LENGTH_SHORT).show()
-                //scaffoldState.snackbarHostState.showSnackbar("Login failed")
+                scaffoldState.snackbarHostState.showSnackbar(loginState.message?: "An unknown error occurred.")
             }
         }
     }
@@ -152,7 +156,11 @@ fun LoginScreen(
                 )
             },
             trailingIcon = {},
-            visualTransformation = VisualTransformation.None
+            visualTransformation = VisualTransformation.None,
+            supportingText = {
+                if (buttonClicked && email.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = buttonClicked && email.isEmpty()
         )
         Spacer(modifier = Modifier.padding(16.dp))
 
@@ -189,7 +197,11 @@ fun LoginScreen(
                     Icon(imageVector = visibilityIcon, contentDescription = description, tint = Color.LightGray)
                 }
             },
-            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None
+            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+            supportingText = {
+                if (buttonClicked && password.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = buttonClicked && password.isEmpty()
         )
         Text(
             text = "Forgot Password?",
@@ -199,7 +211,8 @@ fun LoginScreen(
                 .align(Alignment.End)
                 .clickable {
                     navController.navigate(route = AuthScreen.ForgotPasswordEmail.route)
-                }
+                },
+            textAlign = TextAlign.End
         )
 
         Row {
@@ -225,22 +238,25 @@ fun LoginScreen(
                 .weight(1f)
                 .requiredHeight(66.dp),
             onClick = {
-                viewModel.login(email, password)
+                buttonClicked = true
+                if (validateForm) {
+                    viewModel.login(email, password)
+                }
+
             }
         ) {
              if (loginState is Resource.Loading) {
-                 Text(
-                     text = "Login",
-                     fontSize = 18.sp
-                 )
-             }
-             else {
                  CircularProgressIndicator(
                      color = MaterialTheme.colorScheme.primary,
                      trackColor = MaterialTheme.colorScheme.surface,
                      strokeCap = StrokeCap.Butt
                  )
-
+             }
+             else {
+                 Text(
+                     text = "Login",
+                     fontSize = 18.sp
+                 )
              }
             
         }

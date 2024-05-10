@@ -6,6 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     kotlin("plugin.serialization")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -113,6 +114,11 @@ dependencies {
 
     //// Serialize ////
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    //// RETROFIT ////
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 }
 

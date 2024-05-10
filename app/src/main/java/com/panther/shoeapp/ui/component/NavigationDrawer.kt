@@ -1,5 +1,6 @@
 package com.panther.shoeapp.ui.component
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +56,7 @@ fun NavDrawer(
 ) {
 
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    val mContext = LocalContext.current
 
             ModalDrawerSheet(
                 drawerContainerColor = Color.White,
@@ -111,7 +114,7 @@ fun NavDrawer(
                     label = {
 
                         Text(
-                            text = "Track Order",
+                            text = "Orders",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.primary
@@ -139,7 +142,9 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        Toast.makeText(mContext, "This feature is not implemented yet", Toast.LENGTH_SHORT).show()
+                    },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -171,7 +176,7 @@ fun NavDrawer(
                     label = {
 
                         Text(
-                            text = "Orders",
+                            text = "Track Order",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.primary
@@ -180,7 +185,9 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        Toast.makeText(mContext, "This feature is not implemented yet", Toast.LENGTH_SHORT).show()
+                    },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -200,7 +207,9 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        Toast.makeText(mContext, "This feature is not implemented yet", Toast.LENGTH_SHORT).show()
+                    },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background
@@ -220,7 +229,9 @@ fun NavDrawer(
 
                     },
                     selected = route == Graph.HOME,
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        Toast.makeText(mContext, "This feature is not implemented yet", Toast.LENGTH_SHORT).show()
+                              },
                     colors = NavigationDrawerItemDefaults.colors(
                         selectedContainerColor = MaterialTheme.colorScheme.background,
                         unselectedContainerColor = MaterialTheme.colorScheme.background

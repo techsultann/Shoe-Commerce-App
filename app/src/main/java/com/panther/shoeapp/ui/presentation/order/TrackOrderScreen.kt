@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -48,7 +49,8 @@ import com.panther.shoeapp.ui.theme.FieldColor
 
 @Composable
 fun OrderSummary(
-    viewModel: OrderViewModel = viewModel()
+    viewModel: OrderViewModel = viewModel(),
+    navHostController: NavHostController
 ) {
     val orderState by viewModel.getOrderItems.collectAsState()
 
@@ -75,7 +77,8 @@ fun OrderSummary(
                         shadowElevation = 4.dp
                     ) {
                         IconButton(
-                            onClick = { /*TODO*/ }) {
+                            onClick = { navHostController.popBackStack() }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "navigation back icon",

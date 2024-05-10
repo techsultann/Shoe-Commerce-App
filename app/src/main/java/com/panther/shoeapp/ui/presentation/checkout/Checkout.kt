@@ -1,37 +1,36 @@
 package com.panther.shoeapp.ui.presentation.checkout
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,14 +44,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,12 +56,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.panther.shoeapp.R
+import com.panther.shoeapp.models.api_response.Customer
+import com.panther.shoeapp.models.api_response.PaymentRequest
 import com.panther.shoeapp.navigation.HomeScreenNav
-import com.panther.shoeapp.ui.component.PaymentCard
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
+import com.panther.shoeapp.utils.Constants.toCurrency
+import com.panther.shoeapp.utils.Resource
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -80,21 +77,54 @@ fun CheckOutScreen(
     val viewModel: CheckoutViewModel = viewModel()
     val cardState by viewModel.getSavedCards.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
+    val name by viewModel.displayName.collectAsState()
+    val email by viewModel.userEmail.collectAsState()
     val shippingCost by remember { mutableDoubleStateOf(3000.00) }
     val subTotal by remember { mutableDoubleStateOf(subTotalPrice!!.toDouble()) }
     val totalAmount by rememberSaveable {
         mutableDoubleStateOf( shippingCost + subTotal )
     }
+    val addressList = viewModel.getAddress.collectAsState()
+    val addressData = addressList.value.data
+    val userData by viewModel.userData.collectAsState()
+    val userDetails = userData.data
    // val total by remember { mutableDoubleStateOf(totalAmount) }
     val isEditMode = remember { mutableStateOf(false) }
     var addressText by rememberSaveable { mutableStateOf("Add your address here") }
 
-    LaunchedEffect(key1 = Unit) {
+    val uriHandler = LocalUriHandler.current
+
+    //observe the payment state from the view model
+    val paymentState = viewModel.paymentState.collectAsState()
+
+    // When the payment link is available, call this function to redirect the user
+    fun redirectToPaymentLink(paymentLink: String) {
+        uriHandler.openUri(paymentLink)
+    }
+
+    when (val response = paymentState.value) {
+        is Resource.Error -> {
+
+        }
+        is Resource.Loading -> {
+
+        }
+        is Resource.Success -> {
+            val paymentResponse = response.data?.data
+            if (paymentResponse != null) {
+                redirectToPaymentLink(paymentResponse.link)
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = Unit, key2 = paymentState) {
         coroutineScope {
             launch {
                 viewModel.getSavedCards()
                 viewModel.getCartItems()
+                viewModel.getAddressList()
             }
+
         }
     }
 
@@ -122,10 +152,11 @@ fun CheckOutScreen(
                     ) {
                         IconButton(
                             onClick = {
-
-                            }) {
+                                navHostController.popBackStack()
+                            }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigation back icon",
                                 tint = Color.Unspecified
                             )
@@ -169,130 +200,178 @@ fun CheckOutScreen(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             )
 
-            val cardList = cardState.data ?: emptyList()
-
-            if (cardList.isEmpty()) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Delivery address",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(16.dp)
+                )
 
                 Text(
-                    text = "Add a Payment Method",
-                    fontSize = 18.sp,
+                    text = "Change",
+                    fontSize = 14.sp,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
+                        .padding(16.dp)
+                        .clickable { navHostController.navigate(HomeScreenNav.AddressListScreen.route) }
                 )
+            }
 
+            if (addressData?.isEmpty() == true) {
+                Text(
+                    text = "Add Address",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { navHostController.navigate(HomeScreenNav.AddAddressScreen.route) }
+                )
             } else {
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-
-                    item {
-
-                        OutlinedButton(
-                            onClick = { /*TODO*/ },
-                            shape = CircleShape,
-                            elevation = ButtonDefaults.buttonElevation(
-                                defaultElevation = 8.dp
-                            ),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(text = "Add a payment Method")
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Icon(painter = painterResource(id = R.drawable.ic_round_add), contentDescription = "add icon button")
-                            }
-
-                        }
-                    }
-
-                    items(cardList) { card ->
-
-                        val cardImage = when (card.cardType) {
-                            "Master Card" -> { R.drawable.master_card }
-                            "VISA" -> { R.drawable.visa_logo }
-                            "VERVE" -> { R.drawable.master_card }
-                            else -> R.drawable.card_icon
-                        }
-
-                        PaymentCard(image = cardImage, cardNo = card.cardNumber.toString())
-                    }
-                }
-            }
-
-
-            Text(
-                text = "Delivery address",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
-            )
-            
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.location_map),
-                    contentDescription = "location image",
-                    modifier = Modifier.size(100.dp)
-                )
-
-                Column(
+                Card(
                     modifier = Modifier
-                        .width(200.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Home address",
-                        fontSize = 18.sp
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .height(150.dp)
+                        .fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp
+                    ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
                     )
-                    if (isEditMode.value) {
-
-                        OutlinedTextField(
-                            value = addressText,
-                            onValueChange = { addressText = it },
-                            colors = TextFieldDefaults.colors(),
+                ) {
+                    val firstAddress = addressData?.first()
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Row(
                             modifier = Modifier
-                                .border(0.dp, Color.Transparent),
-                            keyboardOptions = KeyboardOptions(
-                                capitalization = KeyboardCapitalization.Sentences,
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Done
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = "person icon"
                             )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "${firstAddress?.lastName} ${firstAddress?.firstName}",
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                        }
 
-                        )
-                    } else {
+                        Row(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.LocationOn,
+                                contentDescription = "person icon"
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            if (firstAddress != null) {
+                                Text(
+                                    text = "${firstAddress.state}, ${firstAddress.city}, ${firstAddress.street}, ${firstAddress.postcode}",
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        }
 
-                        Text(
-                            text = addressText,
-                            textAlign = TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis,
-                            fontStyle = FontStyle.Italic
-                        )
+                        Row(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Call,
+                                contentDescription = "person icon"
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            if (firstAddress != null) {
+                                Text(
+                                    text = firstAddress.phoneNumber!!,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+
                     }
-
                 }
 
-                IconButton(
-                    onClick = { isEditMode.value = !isEditMode.value }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.edit_icon),
-                        contentDescription = "edit icon",
-                        modifier = Modifier.size(25.dp)
-                    )
-                }
+
             }
+
+
+
+//
+//            Row(
+//                modifier = Modifier
+//                    .padding(horizontal = 16.dp, vertical = 8.dp)
+//                    .fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.Top
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.location_map),
+//                    contentDescription = "location image",
+//                    modifier = Modifier.size(100.dp)
+//                )
+//
+//                Column(
+//                    modifier = Modifier
+//                        .width(200.dp),
+//                    verticalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Text(
+//                        text = "Home address",
+//                        fontSize = 18.sp
+//                    )
+//                    if (isEditMode.value) {
+//
+//                        OutlinedTextField(
+//                            value = addressText,
+//                            onValueChange = { addressText = it },
+//                            colors = TextFieldDefaults.colors(),
+//                            modifier = Modifier
+//                                .border(0.dp, Color.Transparent),
+//                            keyboardOptions = KeyboardOptions(
+//                                capitalization = KeyboardCapitalization.Sentences,
+//                                keyboardType = KeyboardType.Text,
+//                                imeAction = ImeAction.Done
+//                            )
+//
+//                        )
+//                    } else {
+//
+//                        Text(
+//                            text = addressText,
+//                            textAlign = TextAlign.Start,
+//                            overflow = TextOverflow.Ellipsis,
+//                            fontStyle = FontStyle.Italic
+//                        )
+//                    }
+//
+//                }
+//
+//                IconButton(
+//                    onClick = { isEditMode.value = !isEditMode.value }
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.edit_icon),
+//                        contentDescription = "edit icon",
+//                        modifier = Modifier.size(25.dp)
+//                    )
+//                }
+//            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Divider(
                 thickness = 1.dp,
@@ -311,7 +390,7 @@ fun CheckOutScreen(
                 )
 
                 Text(
-                    text = "N $subTotalPrice",
+                    text = subTotal.toCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -329,7 +408,7 @@ fun CheckOutScreen(
                 )
 
                 Text(
-                    text = "N $shippingCost",
+                    text = shippingCost.toCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -347,7 +426,7 @@ fun CheckOutScreen(
                 )
 
                 Text(
-                    text = "N $totalAmount",
+                    text = totalAmount.toCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -367,13 +446,25 @@ fun CheckOutScreen(
                     .padding(16.dp)
                     .requiredHeight(66.dp),
                 onClick = {
-                    viewModel.createOrder(
+                    /*viewModel.createOrder(
                         totalPrice = totalAmount,
                         cartItem = orderList!!,
                         address = addressText
-                    )
-                    viewModel.ClearCartItem()
-                    navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)
+                    )*/
+                        viewModel.makeFlutterWavePayment(
+                            PaymentRequest(
+                                amount = "2000",
+                                currency = "NGN",
+                                customer = Customer(
+                                    name = name,
+                                    email = email,
+                                    phonenumber = "08133427487"
+                                ),
+                                redirectUrl = "https://www.shoe-app.com",
+                                txRef = "txf-1234"
+                            )
+                        )
+                    /*navHostController.navigate(route = HomeScreenNav.SuccessfulScreen.route)*/
                 }
             ) {
                 Text(

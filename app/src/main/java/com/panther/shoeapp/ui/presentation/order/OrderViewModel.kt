@@ -27,7 +27,7 @@ class OrderViewModel @Inject constructor(
         getOrderItems()
     }
 
-    fun getOrderItems() {
+    private fun getOrderItems() {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -47,7 +47,7 @@ class OrderViewModel @Inject constructor(
                             orderList.add(orderItem)
                         }
                         _getOrderItems.value = Resource.Success(orderList)
-                            Log.d("ORDER DETAILS", "ORDER: $orderList")
+                        Log.d("ORDER DETAILS", "ORDER: $orderList")
                     }
                     .addOnFailureListener{ e ->
                         _getOrderItems.value = Resource.Error(e.localizedMessage)

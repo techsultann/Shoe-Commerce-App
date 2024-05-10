@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.panther.shoeapp.R
@@ -74,7 +75,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun DetailsScreen(
     shoeId: String?,
-    viewModel: DetailsViewModel = viewModel()
+    viewModel: DetailsViewModel = viewModel(),
+    navHostController: NavHostController
 ) {
     val shoeDetailsState by viewModel.shoeById.collectAsState()
     val shoeDetails = shoeDetailsState.data
@@ -130,7 +132,8 @@ fun DetailsScreen(
                         shadowElevation = 4.dp
                     ) {
                         IconButton(
-                            onClick = { /*TODO*/ }) {
+                            onClick = { navHostController.popBackStack() }
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "navigation back icon",

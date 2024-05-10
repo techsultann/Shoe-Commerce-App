@@ -23,20 +23,23 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.BottomBarScreen
 import com.panther.shoeapp.ui.component.ShoeAppButton
 
 @Composable
 fun OrderSuccessfulScreen(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    status: String,
+    txRef: String?,
+    transactionId: String
 ) {
 
+    val viewModel: CheckoutViewModel = viewModel()
     val alpha = remember {
         Animatable(0f)
     }
@@ -45,6 +48,8 @@ fun OrderSuccessfulScreen(
         alpha.animateTo( 1f,
             animationSpec = tween(2000)
         )
+
+        viewModel.verifyPayment(transactionId)
     }
 
     Column(
@@ -93,8 +98,9 @@ fun OrderSuccessfulScreen(
     }
 }
 
+/*
 @Preview
 @Composable
 fun SuccessPreview() {
     OrderSuccessfulScreen(rememberNavController())
-}
+}*/

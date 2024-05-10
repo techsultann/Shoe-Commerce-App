@@ -67,25 +67,30 @@ fun SignupScreen(
     val mContext = LocalContext.current
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
     val signUpResult by viewModel.signupResult.collectAsState()
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
-    var showProgress by remember { mutableStateOf(false) }
+    var showProgressBar by remember { mutableStateOf(false) }
     val scaffoldState = rememberBottomSheetScaffoldState()
+    var buttonClicked by rememberSaveable { mutableStateOf(false) }
+
+    val validateForm = email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()
+            && confirmPassword.isNotEmpty() && password == confirmPassword
+
 
     LaunchedEffect(key1 = signUpResult) {
         when (signUpResult) {
             is Resource.Loading -> {
-
+                showProgressBar = true
             }
             is Resource.Success -> {
-                viewModel.saveUserDataToFiresStore(username, email)
                 navController.popBackStack()
                 navController.navigate(route = AuthScreen.LoginScreen.route)
             }
             is Resource.Error -> {
                 Toast.makeText(mContext, signUpResult.message, Toast.LENGTH_SHORT).show()
-               // scaffoldState.snackbarHostState.showSnackbar("Sign up failed, Please try again later")
+               scaffoldState.snackbarHostState.showSnackbar(signUpResult.message?: "An unknown error occurred.")
             }
         }
     }
@@ -144,7 +149,11 @@ fun SignupScreen(
                 )
             },
             trailingIcon = {},
-            visualTransformation = VisualTransformation.None
+            visualTransformation = VisualTransformation.None,
+            supportingText = {
+                if (buttonClicked && username.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = buttonClicked && username.isEmpty()
         )
 
         Spacer(modifier = Modifier.padding(16.dp))
@@ -173,7 +182,11 @@ fun SignupScreen(
                 )
             },
             trailingIcon = {},
-            visualTransformation = VisualTransformation.None
+            visualTransformation = VisualTransformation.None,
+            supportingText = {
+                if (buttonClicked && email.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = buttonClicked && email.isEmpty()
         )
         Spacer(modifier = Modifier.padding(vertical = 16.dp))
 
@@ -210,7 +223,50 @@ fun SignupScreen(
                     Icon(imageVector = visibilityIcon, contentDescription = description, tint = Color.LightGray)
                 }
             },
-            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None
+            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+            supportingText = {
+                if (buttonClicked && password.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = buttonClicked && password.isEmpty()
+        )
+
+        AuthTextField(
+            label = {
+                Text(text = "Enter your password")
+            },
+            value = confirmPassword,
+            onValueChange = { it ->
+                confirmPassword = it
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password
+            ),
+            keyboardActions = KeyboardActions(),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {
+                IconButton(onClick = {passwordHidden = !passwordHidden}
+                ) {
+                    val visibilityIcon = if (passwordHidden) Icons.Outlined.Visibility
+                    else Icons.Outlined.VisibilityOff
+
+                    val description = if (passwordHidden) "Show password" else "Hide password"
+                    Icon(imageVector = visibilityIcon, contentDescription = description, tint = Color.LightGray)
+                }
+            },
+            visualTransformation = if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
+            supportingText = {
+                when {
+                    confirmPassword.isEmpty() -> Text(text = "This field cannot be empty")
+                    confirmPassword != password -> Text(text = "Passwords do not match")
+                }
+            },
+            isError = buttonClicked && confirmPassword.isEmpty() || buttonClicked && confirmPassword != password
         )
 
 
@@ -222,22 +278,25 @@ fun SignupScreen(
                 .weight(1f)
                 .requiredHeight(66.dp),
             onClick = {
-                viewModel.signUp(email, password, username)
+                buttonClicked = true
+                if (validateForm) {
+                    viewModel.signUp(email, password, username)
+                }
+
             }
         ) {
-            if (signUpResult is Resource.Loading) {
-                Text(
-                    text = "Sign Up",
-                    fontSize = 18.sp
-                )
-            }
-            else {
+            if (showProgressBar) {
                 CircularProgressIndicator(
                     color = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.surface,
                     strokeCap = StrokeCap.Butt
                 )
-
+            }
+            else {
+                Text(
+                    text = "Sign Up",
+                    fontSize = 18.sp
+                )
             }
         }
 

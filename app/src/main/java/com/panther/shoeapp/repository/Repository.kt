@@ -9,7 +9,7 @@ interface Repository {
 
     suspend fun login(email: String, password: String) : Resource<User>
 
-    suspend fun saveUserDataToFiresStore(userName: String, email: String) : Resource<User>
+    //fun saveUserDataToFiresStore(userName: String, email: String) : Resource<User>
 
     suspend fun getUserRole(userId: String): String?
 }

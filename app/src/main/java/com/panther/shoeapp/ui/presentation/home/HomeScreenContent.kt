@@ -3,6 +3,7 @@ package com.panther.shoeapp.ui.presentation.home
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -56,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -90,7 +92,7 @@ fun HomeScreenContent(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val drawerState = DrawerState(initialValue = DrawerValue.Closed)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
    // val getAllShoeState by viewModel.allShoes.collectAsState()
     ModalNavigationDrawer(
@@ -204,23 +206,20 @@ fun HomeScreenContent(
 @Composable
 fun SectionA() {
 
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+
     val count = Util.Banners.size
     val pagerState = rememberPagerState { count }
     var index: Int by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
-            .padding(vertical = 16.dp)
-            .wrapContentHeight()
+            .fillMaxWidth()
+            .height(200.dp)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp)
         ) {
             LaunchedEffect(Unit) {
                 while (isActive) {
@@ -233,97 +232,100 @@ fun SectionA() {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
-                    .width(300.dp)
+                    .fillMaxWidth()
+                    .height(200.dp)
             ) { index ->
 
-                Text(
-                    text = Util.Banners[index].title,
-                    color = navyBlue,
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis,
+                Surface(
                     modifier = Modifier
-                        .width(300.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Surface(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .width(74.dp)
-                    .height(66.dp)
-                    .clip(
-                        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp)
-                    ),
-                color = Color(0xFFFF5545)
-            ) {
-
-                IconButton(onClick = { showBottomSheet = true }) {
-                    Icon(painter = painterResource(
-                        id = R.drawable.filter_8),
-                        contentDescription = "filter icon",
-                        tint = Color.Unspecified
-                    )
-
-                }
-            }
-
-            if (showBottomSheet){
-
-                ModalBottomSheet(
-                    modifier = Modifier,
-                    onDismissRequest = { showBottomSheet = false },
-                    sheetState = sheetState
+                        .padding(8.dp)
+                        .height(180.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 6.dp
                 ) {
-                    PriceRangeSlider(modifier = Modifier)
-
-                    Spacer(modifier = Modifier.padding(50.dp))
-
-                    ShoeAppButton(
+                    Column(
                         modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                            .requiredHeight(66.dp),
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showBottomSheet = false
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
 
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                verticalArrangement = Arrangement.SpaceAround
+                            ) {
+
+                                Text(
+                                    text = Util.Banners[index].title,
+                                    color = navyBlue,
+                                    fontSize = 22.sp,
+                                    textAlign = TextAlign.Start,
+                                    overflow = TextOverflow.Clip,
+                                    modifier = Modifier
+                                        .width(150.dp)
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+
+                                ShoeAppButton(
+                                    onClick = { /*TODO*/ },
+                                    modifier = Modifier
+                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        text = Util.Banners[index].btnText
+                                    )
                                 }
                             }
+
+                            Image(
+                                painter = painterResource(id = Util.Banners[index].image),
+                                contentDescription = "image",
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(8.dp)
+                                    .size(100.dp),
+                                contentScale = ContentScale.Fit
+                            )
+
                         }
-                    ) {
-                        Text(
-                            text = "Apply",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+
+                        Row(
+                            Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            repeat(pagerState.pageCount) { iteration ->
+                                val color = if (pagerState.currentPage == iteration) yellow else secondaryTextColor
+                                Box(
+                                    modifier = Modifier
+                                        .padding(3.dp)
+                                        .clip(CircleShape)
+                                        .background(color)
+                                        .size(8.dp)
+                                )
+                            }
+                        }
                     }
+
+
+
+
                 }
-            }
-        }
 
-        Row(
-            Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) yellow else secondaryTextColor
-                Box(
-                    modifier = Modifier
-                        .padding(3.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(8.dp)
-                )
             }
-        }
 
+
+        }
 
 
     }
@@ -360,7 +362,10 @@ fun NewDeals(
         val newDealsList = newDeals.value.data ?: emptyList()
         Log.d("New DEAL LIST", "NEW DEALS: $newDealsList")
 
-        LazyRow() {
+        LazyRow(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        ) {
 
             items(newDealsList) { newDeal ->
 
@@ -407,7 +412,10 @@ fun Nike(
 
         val nikeList = nike.value.data ?: emptyList()
 
-        LazyRow() {
+        LazyRow(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        ) {
 
             items(nikeList) { nike ->
 
@@ -457,7 +465,10 @@ fun Adidas(
 
                 val adidasList = adidas.value.data ?: emptyList()
 
-                LazyRow() {
+                LazyRow(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                ) {
 
                     items(adidasList) { adidas ->
 
@@ -505,7 +516,10 @@ fun Puma(
 
         val pumaList = puma.value.data ?: emptyList()
 
-        LazyRow() {
+        LazyRow(
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+        ) {
 
             items(pumaList) { puma ->
 

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -34,9 +35,9 @@ import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.BottomBarScreen
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.CardButton
-import com.panther.shoeapp.ui.component.DetailsBackground
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
+import com.panther.shoeapp.ui.theme.FieldColor
 
 @Composable
 fun CardScreen(
@@ -125,7 +126,7 @@ fun CardScreen(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
-            DetailsBackground(text = cardNumber!!)
+            CardTextBg(text = cardNumber!!)
 
             Text(
                 text = "Card Holder Name",
@@ -134,7 +135,7 @@ fun CardScreen(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
-            DetailsBackground(text = name!!)
+            CardTextBg(text = name!!)
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -157,8 +158,36 @@ fun CardScreen(
     }
 }
 
-//@Preview
-//@Composable
-//fun PreviewCardScreen() {
-//    CardScreen()
-//}
+@Composable
+fun CardTextBg(
+    text: String
+) {
+    Surface(
+        modifier = Modifier
+            .padding(16.dp)
+            .height(65.dp)
+            .fillMaxWidth(),
+        color = FieldColor,
+        shape = CircleShape
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 1,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .background(FieldColor)
+                    .clip(CircleShape)
+            )
+        }
+
+    }
+}

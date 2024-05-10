@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,10 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,7 +43,6 @@ import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.FieldColor
-import com.panther.shoeapp.ui.theme.navyBlue
 
 @Composable
 fun CategoryScreen(
@@ -77,10 +73,11 @@ fun CategoryScreen(
                     ) {
                         IconButton(
                             onClick = {
-
-                            }) {
+                                navHostController.popBackStack()
+                            }
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Navigation back icon",
                                 tint = Color.Unspecified
                             )
@@ -110,19 +107,7 @@ fun CategoryScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
 
-            Text(
-                text = buildAnnotatedString {
-                    append("Shoes Available for \n")
-                    pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
-                    append("Men")
-                },
-                color = navyBlue,
-                fontSize = 36.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(16.dp),
-                lineHeight = 42.sp
-            )
+
             CategoryTabRow()
         }
     }

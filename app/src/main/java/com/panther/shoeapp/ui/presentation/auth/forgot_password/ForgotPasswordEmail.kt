@@ -88,7 +88,11 @@ fun ForgotPassword(
                 )
             },
             trailingIcon = {},
-            visualTransformation = VisualTransformation.None
+            visualTransformation = VisualTransformation.None,
+            supportingText = {
+                if (email.isEmpty()) Text(text = "This field cannot be empty")
+            },
+            isError = email.isEmpty()
         )
 
         Spacer(modifier = Modifier.padding(16.dp))

@@ -1,5 +1,7 @@
 package com.panther.shoeapp.navigation
 
+import android.content.Intent
+import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
@@ -16,7 +18,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navigation
+import com.panther.shoeapp.ui.presentation.address.AddAddress
+import com.panther.shoeapp.ui.presentation.address.AddressList
+import com.panther.shoeapp.ui.presentation.address.AddressViewModel
+import com.panther.shoeapp.ui.presentation.address.EditAddress
 import com.panther.shoeapp.ui.presentation.auth.LoginScreen
 import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
 import com.panther.shoeapp.ui.presentation.brand.BrandScreen
@@ -68,12 +75,13 @@ fun HomeNavGraph(
         }
         composable(route = BottomBarScreen.Profile.route){
             val viewModel = hiltViewModel<ProfileViewModel>()
-            ProfileScreen(viewModel)
+            ProfileScreen(viewModel, navController)
         }
 
         navDrawerGraph(navController)
         detailsNavGraph(navController)
         cartNavGraph(navController)
+        profileNavGraph(navController)
 
     }
 
@@ -108,7 +116,98 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController){
         ){ backStackEntry ->
             val viewModel = hiltViewModel<DetailsViewModel>()
             val shoeId = backStackEntry.arguments?.getString("shoeId")
-            DetailsScreen(shoeId = shoeId, viewModel)
+            DetailsScreen(shoeId = shoeId, viewModel, navController)
+        }
+    }
+}
+
+fun NavGraphBuilder.profileNavGraph(navController: NavHostController){
+    navigation(
+        route = Graph.PROFILE,
+        startDestination = BottomBarScreen.Profile.route
+    ){
+
+        composable(
+            route = HomeScreenNav.AddressListScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ){
+            val viewModel = hiltViewModel<AddressViewModel>()
+            AddressList(navHostController = navController)
+        }
+
+        composable(
+            route = HomeScreenNav.AddAddressScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ){
+            val viewModel = hiltViewModel<AddressViewModel>()
+            AddAddress(navHostController = navController)
+        }
+
+        composable(
+            route = "${ HomeScreenNav.EditAddressScreen.route }/{addressId}",
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ){ backStackEntry ->
+            val addressId = backStackEntry.arguments?.getString("addressId")
+            val viewModel = hiltViewModel<AddressViewModel>()
+            Log.d("ADDRESS ID", "Address ID: $addressId")
+            EditAddress(navHostController = navController, addressId = addressId, viewModel)
         }
     }
 }
@@ -118,6 +217,7 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
         route = Graph.CHECKOUT,
         startDestination = "${HomeScreenNav.CheckoutScreen.route}/{subTotalPrice}"
     ){
+
         composable(
             route = "${HomeScreenNav.CheckoutScreen.route}/{subTotalPrice}",
             arguments = listOf(navArgument("subTotalPrice") {type = NavType.StringType} ),
@@ -147,6 +247,7 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
             val subTotalPrice = backStackEntry.arguments?.getString("subTotalPrice")
             CheckOutScreen(navController, subTotalPrice)
         }
+
         composable(
             route = HomeScreenNav.SuccessfulScreen.route,
             enterTransition = {
@@ -168,10 +269,29 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
                     animationSpec = tween(300, easing = EaseOut),
                     towards = AnimatedContentTransitionScope.SlideDirection.End
                 )
+            },
+            deepLinks = listOf(
+                navDeepLink {
+                uriPattern = "https://shoe-app.com/{status}/{tx_ref}/{transaction_id}"
+                action = Intent.ACTION_VIEW
             }
-        ){
-            OrderSuccessfulScreen(navController)
+            ),
+            arguments = listOf(
+                navArgument("status") { type = NavType.StringType },
+                navArgument("tx_ref") { type = NavType.StringType },
+                navArgument("transaction_id") { type = NavType.IntType }
+            )
+        ){ backStackEntry ->
+
+            val status = backStackEntry.arguments?.getString("status")
+            val txRef = backStackEntry.arguments?.getString("tx_ref")
+            val transactionId = backStackEntry.arguments?.getString("transaction_id")
+
+
+            OrderSuccessfulScreen(navController, status = status!!, txRef = txRef, transactionId = transactionId!!)
         }
+
+
         composable(route = BottomBarScreen.Home.route){
             val viewModel = hiltViewModel<HomeViewModel>()
             HomeScreenContent(navController, viewModel)
@@ -190,7 +310,7 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
         }
         composable(route = HomeScreenNav.TrackOrder.route){
             val viewModel = hiltViewModel<OrderViewModel>()
-            OrderSummary(viewModel)
+            OrderSummary(viewModel, navController)
         }
         composable(
             route = "${ HomeScreenNav.PaymentCardScreen.route }/{cardType}/{name}/{cardNumber}",
@@ -239,7 +359,7 @@ fun NavGraphBuilder.navDrawerGraph(navController: NavHostController){
             val viewModel = hiltViewModel<BrandViewModel>()
             BrandScreen(navHostController = navController, viewModel)
         }
-        composable(route = AuthScreen.LoginScreen.route){
+        composable(route = Graph.AUTHENTICATION){
             val vm = hiltViewModel<OnboardingViewModel>()
             LoginScreen(navController = navController, vm)
         }
@@ -258,4 +378,7 @@ sealed class HomeScreenNav(val route: String) {
     object CheckoutScreen : HomeScreenNav(route = "checkout_screen")
     object SuccessfulScreen : HomeScreenNav(route = "successful_screen")
     object TrackOrder : HomeScreenNav(route = "track_order_screen")
+    object AddAddressScreen : HomeScreenNav(route = "add_address_screen")
+    object EditAddressScreen : HomeScreenNav(route = "edit_address_screen")
+    object AddressListScreen : HomeScreenNav(route = "address_list_screen")
 }

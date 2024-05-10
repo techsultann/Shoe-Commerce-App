@@ -28,7 +28,9 @@ fun  AuthTextField(
     keyboardActions: KeyboardActions,
     leadingIcon: @Composable() (() -> Unit)?,
     trailingIcon: @Composable() (() -> Unit)?,
-    visualTransformation: VisualTransformation
+    visualTransformation: VisualTransformation,
+    supportingText: @Composable() (() -> Unit)?,
+    isError: Boolean
 ) {
 
     OutlinedTextField(
@@ -42,7 +44,9 @@ fun  AuthTextField(
         keyboardOptions = keyboardOptions,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
-        visualTransformation = visualTransformation
+        visualTransformation = visualTransformation,
+        supportingText = supportingText,
+        isError = isError
     )
 }
 
