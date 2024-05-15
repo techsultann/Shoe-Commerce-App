@@ -17,11 +17,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.panther.shoeapp.navigation.RootNavGraph
-import com.panther.shoeapp.ui.presentation.home.HomeScreen
+import com.panther.shoeapp.presentation.home.HomeScreen
 import com.panther.shoeapp.ui.theme.ShoeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import android.content.Intent
-import android.net.Uri
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

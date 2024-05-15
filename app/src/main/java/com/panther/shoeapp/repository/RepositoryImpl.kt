@@ -78,8 +78,7 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Resource<User> {
         return try {
-
-            val response = auth.signInWithEmailAndPassword(email, password).await()
+            auth.signInWithEmailAndPassword(email, password).await()
             Log.d("TAG", "Login: SUCCESS")
             Resource.Success(User())
         } catch (e: Exception) {

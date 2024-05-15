@@ -22,7 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,7 +44,7 @@ import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.navigation.Graph
 import com.panther.shoeapp.navigation.HomeScreenNav
-import com.panther.shoeapp.ui.presentation.home.HomeViewModel
+import com.panther.shoeapp.presentation.home.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,13 +55,13 @@ fun NavDrawer(
     viewModel: HomeViewModel = viewModel()
 ) {
 
-    var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
     val mContext = LocalContext.current
 
-            ModalDrawerSheet(
-                drawerContainerColor = Color.White,
-                drawerContentColor = MaterialTheme.colorScheme.background
-            ) {
+    ModalDrawerSheet(
+        drawerContainerColor = Color.White,
+        drawerContentColor = MaterialTheme.colorScheme.background
+    ) {
 
                 DrawerHeader(modifier)
 

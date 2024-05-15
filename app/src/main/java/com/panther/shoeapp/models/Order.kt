@@ -10,5 +10,7 @@ data class Order(
     val status: String? = null,
     val timeStamp: String? = null,
     val address: String? = null,
-    val cartItem: Map<String, CartItem>? = null
+    val cartItem: Map<String, CartItem>? = null,
+    val name: String? = null,
+    val phoneNumber: String? = null,
 )

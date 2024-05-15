@@ -12,13 +12,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.panther.shoeapp.ui.presentation.auth.LoginScreen
-import com.panther.shoeapp.ui.presentation.auth.OnboardingViewModel
-import com.panther.shoeapp.ui.presentation.auth.SignupScreen
-import com.panther.shoeapp.ui.presentation.auth.forgot_password.ForgotPassword
-import com.panther.shoeapp.ui.presentation.auth.forgot_password.ForgotPasswordPass
-import com.panther.shoeapp.ui.presentation.onboard.OnboardScreen
-import com.panther.shoeapp.ui.presentation.splash.SplashScreen
+import com.panther.shoeapp.presentation.auth.LoginScreen
+import com.panther.shoeapp.presentation.auth.OnboardingViewModel
+import com.panther.shoeapp.presentation.auth.SignupScreen
+import com.panther.shoeapp.presentation.auth.forgot_password.ForgotPassword
+import com.panther.shoeapp.presentation.auth.forgot_password.ForgotPasswordPass
+import com.panther.shoeapp.presentation.onboard.OnboardScreen
+import com.panther.shoeapp.presentation.splash.SplashScreen
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController
