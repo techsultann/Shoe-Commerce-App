@@ -48,6 +48,10 @@ object AppModule {
     fun provideRepository(auth: FirebaseAuth, fireStore: FirebaseFirestore) : Repository {
         return RepositoryImpl(auth, fireStore)
     }
+//    @Provides
+//    @Singleton
+//    fun providePayStackPayment() : PaymentSheet {
+//    }
 
     @Provides
     @Singleton

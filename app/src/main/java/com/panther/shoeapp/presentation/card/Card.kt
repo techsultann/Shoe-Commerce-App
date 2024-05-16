@@ -103,7 +103,7 @@ fun CardScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CardButton(boolean = true, icon = R.drawable.apple_pay, onClick = {})
+               // CardButton(boolean = true, icon = R.drawable.apple_pay, onClick = {})
                 CardButton(boolean = true, icon = R.drawable.visa_logo, onClick = {})
                 CardButton(boolean = true, icon = R.drawable.master_card, onClick = {})
                 CardButton(

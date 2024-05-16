@@ -276,7 +276,7 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
             },
             deepLinks = listOf(
                 navDeepLink {
-                uriPattern = "https://techsultan.page.link/payout/{status}/{tx_ref}/{transaction_id}"
+                uriPattern = "https://techsultan.com/{status}/{tx_ref}/{transaction_id}"
                 action = Intent.ACTION_VIEW
             }
             ),

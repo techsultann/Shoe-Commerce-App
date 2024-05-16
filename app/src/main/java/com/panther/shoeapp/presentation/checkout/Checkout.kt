@@ -389,7 +389,7 @@ fun CheckOutScreen(
                             cartItem = orderList!!,
                             address = "${firstAddressData.state}, ${firstAddressData.city}, ${firstAddressData.street}, ${firstAddressData.postcode}",
                             name = "${firstAddressData.lastName} ${firstAddressData.firstName}",
-                            phoneNumber = ""
+                            phoneNumber = firstAddressData.phoneNumber!!
                         )
                     }
                         viewModel.makeFlutterWavePayment(
@@ -401,7 +401,7 @@ fun CheckOutScreen(
                                     email = email,
                                     phonenumber = "09130221615"
                                 ),
-                                redirectUrl = "https://techsultan.page.link/payout",
+                                redirectUrl = "https://techsultan.com",
                                 txRef = "txf-1234"
                             )
                         )

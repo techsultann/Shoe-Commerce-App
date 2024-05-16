@@ -32,6 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,11 +85,7 @@ fun OrderSummaryScreen(
     val itemState by viewModel.itemById.collectAsState()
     val itemDetails = itemState.data
 
-//    LaunchedEffect(key1 = Unit) {
-//        if (itemId != null) {
-//            viewModel.getShoeById(itemId)
-//        }
-//    }
+    var status by rememberSaveable { mutableStateOf("Pending") }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -253,7 +252,7 @@ fun OrderSummaryScreen(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(text = "Received")
+                Text(text = "Delivered")
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -307,12 +306,12 @@ fun OrderSummaryScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "First name",
+                        text = "Adekunle",
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Start
                     )
                     Text(
-                        text = "Last name",
+                        text = "Jeremiah",
                         overflow = TextOverflow.Ellipsis,
                         textAlign = TextAlign.Start
                     )

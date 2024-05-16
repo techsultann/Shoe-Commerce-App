@@ -31,9 +31,8 @@
 
             <intent-filter>
                 <data
-                    android:host="techsultan.page.link"
-                    android:scheme="https"
-                    android:pathPrefix="/payout" />
+                    android:host="techsultan.com"
+                    android:scheme="https" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />

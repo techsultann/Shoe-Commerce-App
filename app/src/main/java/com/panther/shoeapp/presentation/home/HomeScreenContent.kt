@@ -267,7 +267,7 @@ fun SectionA() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(220.dp)
     ) {
 
         Row(
@@ -286,88 +286,66 @@ fun SectionA() {
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(220.dp)
             ) { index ->
 
                 Surface(
                     modifier = Modifier
                         .padding(8.dp)
-                        .height(180.dp)
-                        .fillMaxWidth(),
+                        .fillMaxSize(),
                     shape = RoundedCornerShape(16.dp),
                     shadowElevation = 6.dp
                 ) {
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
 
-                        Row(
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .fillMaxWidth()
                         ) {
-
-                            Column(
+                            Image(
+                                painter = painterResource(id = Util.Banners[index].image),
+                                contentDescription = "banner image",
                                 modifier = Modifier
-                                    .weight(1f),
-                                verticalArrangement = Arrangement.SpaceAround
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.FillBounds
+                            )
+
+                            ShoeAppButton(
+                                onClick = { /*TODO*/ },
+                                modifier = Modifier
+                                    .padding(start = 16.dp, top = 135.dp)
                             ) {
+                                Text(text = Util.Banners[index].btnText)
+                            }
 
-                                Text(
-                                    text = Util.Banners[index].title,
-                                    color = navyBlue,
-                                    fontSize = 22.sp,
-                                    textAlign = TextAlign.Start,
-                                    overflow = TextOverflow.Clip,
-                                    modifier = Modifier
-                                        .width(150.dp)
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                )
-
-                                ShoeAppButton(
-                                    onClick = { /*TODO*/ },
-                                    modifier = Modifier
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                ) {
-                                    Text(
-                                        text = Util.Banners[index].btnText
+                            Row(
+                                Modifier
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .align(Alignment.BottomCenter)
+                                    .padding(bottom = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                repeat(pagerState.pageCount) { iteration ->
+                                    val color = if (pagerState.currentPage == iteration) yellow else secondaryTextColor
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(3.dp)
+                                            .clip(CircleShape)
+                                            .background(color)
+                                            .size(8.dp)
                                     )
                                 }
                             }
 
-                            Image(
-                                painter = painterResource(id = Util.Banners[index].image),
-                                contentDescription = "image",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(8.dp)
-                                    .size(100.dp),
-                                contentScale = ContentScale.Fit
-                            )
-
                         }
 
-                        Row(
-                            Modifier
-                                .wrapContentHeight()
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            repeat(pagerState.pageCount) { iteration ->
-                                val color = if (pagerState.currentPage == iteration) yellow else secondaryTextColor
-                                Box(
-                                    modifier = Modifier
-                                        .padding(3.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .size(8.dp)
-                                )
-                            }
-                        }
+
                     }
 
 

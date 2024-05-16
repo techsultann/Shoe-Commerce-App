@@ -91,12 +91,10 @@ fun SignupScreen(
                 showProgressBar = true
             }
             is Resource.Success -> {
-                showProgressBar = false
                 navController.popBackStack()
                 navController.navigate(route = AuthScreen.LoginScreen.route)
             }
             is Resource.Error -> {
-                showProgressBar = false
                 Toast.makeText(mContext, signUpResult.message, Toast.LENGTH_SHORT).show()
                snackBarHostState.showSnackbar(signUpResult.message?: "An unknown error occurred.")
             }

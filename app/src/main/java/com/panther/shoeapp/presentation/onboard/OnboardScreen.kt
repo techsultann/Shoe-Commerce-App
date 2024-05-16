@@ -57,7 +57,7 @@ fun OnboardScreen(navController: NavHostController) {
                 color = secondaryTextColor.copy(alpha = 0.2f)
             )
             Image(
-                painter = painterResource(id = R.drawable.air_zoom),
+                painter = painterResource(id = R.drawable.zoom_air),
                 contentDescription = "nike shoe image",
                 modifier = Modifier
                     .fillMaxSize()
