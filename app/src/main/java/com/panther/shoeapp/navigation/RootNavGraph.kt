@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.panther.shoeapp.ui.presentation.home.HomeScreen
+import com.panther.shoeapp.presentation.home.HomeScreen
 
 @Composable
 fun RootNavGraph(
@@ -62,4 +62,5 @@ object Graph {
     const val DETAILS = "details_graph"
     const val NAV_DRAWER = "nav_drawer_graph"
     const val CHECKOUT = "checkout_graph"
+    const val PROFILE = "profile_graph"
 }

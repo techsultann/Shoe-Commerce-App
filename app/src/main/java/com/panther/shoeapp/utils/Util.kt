@@ -1,5 +1,6 @@
 package com.panther.shoeapp.utils
 
+import com.panther.shoeapp.R
 import com.panther.shoeapp.models.Banner
 
 object Util {
@@ -7,15 +8,18 @@ object Util {
     val Banners = listOf(
         Banner(
             id = 1,
-            title = "Enjoy new Nike Products"
+            image = R.drawable.second_banner,
+            btnText = "Shop Now"
         ),
         Banner(
             id = 2,
-            title = "Check out our Best selling products"
+            image = R.drawable.first_banner,
+            btnText = "Subscribe"
         ),
         Banner(
-            id = 1,
-            title = "Subscribe to get exclusive news about us"
+            id = 3,
+            image = R.drawable.third_banner,
+            btnText = "Github"
         ),
     )
 }

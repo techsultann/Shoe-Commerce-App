@@ -30,6 +30,7 @@ class RepositoryImpl @Inject constructor(
 
                         currentUser?.updateProfile(profileUpdates)
                         currentUser?.sendEmailVerification()
+                        saveUserDataToFiresStore(username, email)
                     }
                 }
 
@@ -43,7 +44,7 @@ class RepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun saveUserDataToFiresStore(userName: String, email: String): Resource<User> {
+    fun saveUserDataToFiresStore(userName: String, email: String): Resource<User> {
 
         return try {
             val currentUser = auth.currentUser
@@ -60,7 +61,8 @@ class RepositoryImpl @Inject constructor(
                 email = email,
                 displayName = userName,
                 photoUrl = null,
-                role = "user"
+                role = "user",
+                phoneNumber = ""
             )
 
             userDocRef?.let { await(it.set(userData)) }
@@ -76,8 +78,7 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun login(email: String, password: String): Resource<User> {
         return try {
-
-            val response = auth.signInWithEmailAndPassword(email, password).await()
+            auth.signInWithEmailAndPassword(email, password).await()
             Log.d("TAG", "Login: SUCCESS")
             Resource.Success(User())
         } catch (e: Exception) {

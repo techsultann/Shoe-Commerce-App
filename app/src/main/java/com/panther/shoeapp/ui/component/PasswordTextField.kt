@@ -2,13 +2,12 @@ package com.panther.shoeapp.ui.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,7 @@ fun PasswordTextField(
     else
         painterResource(id = R.drawable.baseline_visibility_off)
 
-    TextField(
+    OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
             .requiredHeight(66.dp),
@@ -60,7 +59,6 @@ fun PasswordTextField(
         visualTransformation =
         if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        shape = CircleShape
 
         )
 }

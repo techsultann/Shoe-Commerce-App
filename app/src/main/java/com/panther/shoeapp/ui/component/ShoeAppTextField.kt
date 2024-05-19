@@ -7,12 +7,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
@@ -31,24 +28,25 @@ fun  AuthTextField(
     keyboardActions: KeyboardActions,
     leadingIcon: @Composable() (() -> Unit)?,
     trailingIcon: @Composable() (() -> Unit)?,
-    visualTransformation: VisualTransformation
+    visualTransformation: VisualTransformation,
+    supportingText: @Composable() (() -> Unit)?,
+    isError: Boolean
 ) {
 
-    TextField(
+    OutlinedTextField(
         modifier = modifier
-            .clip(CircleShape)
-            .fillMaxWidth()
-            .clipToBounds(),
+            .fillMaxWidth(),
         value = value,
         onValueChange = onValueChange,
         singleLine = singleLine,
         label = label,
-        shape = CircleShape,
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
-        visualTransformation = visualTransformation
+        visualTransformation = visualTransformation,
+        supportingText = supportingText,
+        isError = isError
     )
 }
 
@@ -59,6 +57,8 @@ fun TextFieldWithPlaceholder(
     onValueChange: (String) -> Unit = {},
     placeholder:  @Composable() (() -> Unit)?,
     singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
 ) {
 
     TextField(
@@ -72,7 +72,9 @@ fun TextFieldWithPlaceholder(
             .clip(CircleShape)
             .clipToBounds()
             .requiredHeight(66.dp),
-        shape = CircleShape
+        shape = CircleShape,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
     )
 }
 /*@Composable

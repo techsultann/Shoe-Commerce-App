@@ -42,6 +42,7 @@ fun ProductCard(
     ) {
         Box(
             modifier = Modifier
+                .padding(horizontal = 16.dp)
                 .width(170.dp)
                 .height(210.dp)
                 .clip(RoundedCornerShape(24.dp))
@@ -66,14 +67,18 @@ fun ProductCard(
             Text(
                 text = name,
                 color = Color(0xFF152354),
-                fontSize = 20.sp
+                fontSize = 20.sp,
+                modifier = Modifier
+                .padding(horizontal = 16.dp)
             )
         }
         Spacer(modifier = Modifier.padding(horizontal = 16.dp))
         Text(
             text = "# $price",
             color = Color(0xFF152354),
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
         )
 
     }

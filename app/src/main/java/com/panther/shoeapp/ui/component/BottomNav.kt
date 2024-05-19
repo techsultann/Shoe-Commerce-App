@@ -29,7 +29,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.navigation.BottomBarScreen
-import com.panther.shoeapp.ui.presentation.cart.CartViewModel
+import com.panther.shoeapp.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.white
 import kotlinx.coroutines.coroutineScope
