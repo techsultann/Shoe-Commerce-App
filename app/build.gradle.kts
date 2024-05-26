@@ -26,29 +26,35 @@ android {
         }
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
-
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
-
 //    buildTypes {
-//        release {
+//        getByName("release") {
 //            isMinifyEnabled = true
+//
+//            isShrinkResources = true
+//
 //            proguardFiles(
 //                getDefaultProguardFile("proguard-android-optimize.txt"),
 //                "proguard-rules.pro"
 //            )
 //            signingConfig = signingConfigs.getByName("debug")
+////            testProguardFiles(
+////                // The proguard files listed here are included in the
+////                // test APK only.
+////                "test-proguard-rules.pro"
+////            )
+//
 //        }
 //    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -85,7 +91,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+  //  androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.5")
@@ -107,6 +113,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-dynamic-links")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-appcheck-debug")
 
     // ViewModel and lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")

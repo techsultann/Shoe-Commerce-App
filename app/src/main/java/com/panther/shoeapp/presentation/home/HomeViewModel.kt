@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.panther.shoeapp.models.Shoe
 import com.panther.shoeapp.models.User
@@ -32,8 +31,6 @@ class HomeViewModel @Inject constructor(
     val adidas : StateFlow<Resource<List<Shoe>>> = _adidas
     private val _puma = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
     val puma : StateFlow<Resource<List<Shoe>>> = _puma
-    private val _itemCount = MutableStateFlow(0)
-    val itemCount = _itemCount
     private val _newDeals = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
     val newDeals : StateFlow<Resource<List<Shoe>>> = _newDeals
 
@@ -214,28 +211,6 @@ class HomeViewModel @Inject constructor(
                 Log.d("GET PUMA SHOES", "${e.message}")
             }
 
-        }
-    }
-
-
-
-    fun getItemCount() {
-        viewModelScope.launch(Dispatchers.IO) {
-
-            val countQuery = fireStore.collection("Shoes")
-                .count()
-
-            countQuery.get(AggregateSource.SERVER).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Count fetched successfully
-                    _itemCount.value = (task.result?.count ?: 0).toInt()
-                    val snapshot = task.result
-                    Log.d("ITEM COUNT", "Number Of Item: ${snapshot.count}")
-                } else {
-                    Log.d("ITEM COUNT", "Count failed: ", task.exception)
-                    _itemCount.value = 0
-                }
-            }
         }
     }
 

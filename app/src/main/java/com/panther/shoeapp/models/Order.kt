@@ -13,4 +13,8 @@ data class Order(
     val cartItem: Map<String, CartItem>? = null,
     val name: String? = null,
     val phoneNumber: String? = null,
+    val deliveryPersonFirstName: String? = "",
+    val deliveryPersonLastName: String? = "",
+    val deliveryPersonNumber: String? = "",
+    val deliveryDate: String? = ""
 )

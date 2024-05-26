@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -84,6 +86,7 @@ fun LoginScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
         Spacer(modifier = Modifier.height(36.dp))
@@ -109,7 +112,7 @@ fun LoginScreen(
 
         Text(text = "Email")
 
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+      //  Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
         AuthTextField(
             label = {
@@ -138,9 +141,9 @@ fun LoginScreen(
             isError = buttonClicked && email.isEmpty()
         )
 
-        Text(text = "Password")
+        Spacer(modifier = Modifier.height(4.dp))
 
-        Spacer(modifier = Modifier.padding(vertical = 4.dp))
+        Text(text = "Password")
 
         AuthTextField(
             label = {
@@ -177,6 +180,7 @@ fun LoginScreen(
             },
             isError = buttonClicked && password.isEmpty()
         )
+
         Text(
             text = "Forgot Password?",
             modifier = Modifier

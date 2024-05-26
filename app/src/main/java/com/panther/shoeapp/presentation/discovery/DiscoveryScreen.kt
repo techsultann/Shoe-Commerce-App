@@ -21,7 +21,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,7 +45,6 @@ import com.panther.shoeapp.ui.component.HomeScreenCard
 import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.TopAppBar
 import com.panther.shoeapp.ui.theme.navyBlue
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -57,15 +55,7 @@ fun DiscoveryScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val allShoesState by viewModel.allShoes.collectAsState()
-    val itemCount by viewModel.itemCount.collectAsState()
-
-    LaunchedEffect(key1 = allShoesState){
-        coroutineScope {
-            launch {
-                viewModel.getItemCount()
-            }
-        }
-    }
+    val itemCount = allShoesState.data?.size ?: 0
 
     ModalNavigationDrawer(
 

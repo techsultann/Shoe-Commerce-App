@@ -25,9 +25,9 @@ object Constants {
     val SHIPPING_SUPPORTED_COUNTRIES = listOf("NG")
 
     const val BASE_URL = "https://api.flutterwave.com/"
-    const val SECRET_KEY = "FLWSECK_TEST-37d4beac3417e55f60db5da6dce65bbc-X"
-    const val ENCRYPTION_KEY = "FLWSECK_TEST0ef8074119a7"
-    const val PUBLIC_KEY = "FLWPUBK_TEST-787b427b4f2e85724620951e53ad461e-X"
+    const val SECRET_KEY = "FLWSECK_TEST-7d67c226a7c62a0abd42b255bff47539-X"
+    const val ENCRYPTION_KEY = "FLWSECK_TESTa913d67cfde6"
+    const val PUBLIC_KEY = "FLWPUBK_TEST-577e0ecead81b6a25d20a78787737277-X"
 
     fun Double.toCurrency(): String {
         val format = NumberFormat.getCurrencyInstance(Locale("en", "NG"))

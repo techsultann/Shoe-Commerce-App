@@ -39,6 +39,7 @@ import com.panther.shoeapp.presentation.category.CategoryViewModel
 import com.panther.shoeapp.presentation.checkout.CheckOutScreen
 import com.panther.shoeapp.presentation.checkout.CheckoutViewModel
 import com.panther.shoeapp.presentation.checkout.OrderSuccessfulScreen
+import com.panther.shoeapp.presentation.checkout.WebViewsScreen
 import com.panther.shoeapp.presentation.details.DetailsScreen
 import com.panther.shoeapp.presentation.details.DetailsViewModel
 import com.panther.shoeapp.presentation.discovery.DiscoveryScreen
@@ -250,6 +251,37 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
             val viewModel = hiltViewModel<CheckoutViewModel>()
             val subTotalPrice = backStackEntry.arguments?.getString("subTotalPrice")
             CheckOutScreen(navController, subTotalPrice, viewModel)
+        }
+
+        composable(
+            route = "${HomeScreenNav.WebViewScreen.route}/{uri}",
+            arguments = listOf(
+                navArgument("uri") { type = NavType.StringType },
+            ),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(300, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        300, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            },
+        ){ backStackEntry ->
+            val viewModel = hiltViewModel<CheckoutViewModel>()
+            val uri = backStackEntry.arguments?.getString("uri")
+            WebViewsScreen(url = uri)
         }
 
         composable(
@@ -529,4 +561,6 @@ sealed class HomeScreenNav(val route: String) {
     object EditAddressScreen : HomeScreenNav(route = "edit_address_screen")
     object AddressListScreen : HomeScreenNav(route = "address_list_screen")
     object ReviewScreen : HomeScreenNav(route = "review_screen")
+
+    object WebViewScreen: HomeScreenNav(route = "web_view_screen")
 }

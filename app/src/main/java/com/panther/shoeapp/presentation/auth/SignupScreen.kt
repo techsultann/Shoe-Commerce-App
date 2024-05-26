@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.rememberScrollState
@@ -158,7 +159,7 @@ fun SignupScreen(
 
             Text(text = "Username")
 
-            Spacer(modifier = Modifier.padding(vertical = 4.dp))
+          //  Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
             AuthTextField(
                 label = {
@@ -187,9 +188,9 @@ fun SignupScreen(
                 isError = buttonClicked && username.isEmpty()
             )
 
-            Text(text = "Email")
-
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+            Text(text = "Email")
 
             AuthTextField(
                 label = {
@@ -218,9 +219,9 @@ fun SignupScreen(
                 isError = buttonClicked && email.isEmpty()
             )
 
-            Text(text = "Password")
-
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+            Text(text = "Password")
 
             AuthTextField(
                 label = {
@@ -258,9 +259,9 @@ fun SignupScreen(
                 isError = buttonClicked && password.isEmpty()
             )
 
-            Text(text = "Confirm Password")
-
             Spacer(modifier = Modifier.padding(vertical = 4.dp))
+
+            Text(text = "Confirm Password")
 
             AuthTextField(
                 label = {
@@ -330,6 +331,8 @@ fun SignupScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 modifier = Modifier
