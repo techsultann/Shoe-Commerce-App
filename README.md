@@ -43,9 +43,12 @@ Before starting, ensure you have Android Studio Arctic Fox or later installed. C
 - Coroutines for asynchronous programming
 - FlutterWave SDK for payment integration
 
-## Usage
+![Screenshot_20240601_130336](https://github.com/techsultann/Shoe-Commerce-App/assets/61953705/b5a446e7-796e-4cf8-93ed-b21b9a2201da)
 
-Run the app on an emulator or physical device to navigate through its features and enjoy a seamless shopping experience.
+![Screenshot_20240601_122741](https://github.com/techsultann/Shoe-Commerce-App/assets/61953705/a714eff8-4405-4e13-bfdc-72f49a7e6101)
+
+![Screenshot_20240601_130404](https://github.com/techsultann/Shoe-Commerce-App/assets/61953705/03fb6c66-e73c-4a2d-8ba2-e5388ae10cb5)
+
 
 ## Contributing
 
