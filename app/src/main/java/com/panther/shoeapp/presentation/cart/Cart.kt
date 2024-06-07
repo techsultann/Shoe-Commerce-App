@@ -82,7 +82,6 @@ fun CartScreen(
     navHostController: NavHostController
 ){
     val viewModel: CartViewModel = viewModel()
-    val itemCount by viewModel.itemCount.collectAsState()
     val cartItemState by viewModel.cartItems.collectAsState()
     val totalAmount by viewModel.totalAmount.collectAsState(initial = 0.0)
 
@@ -90,7 +89,6 @@ fun CartScreen(
 
         coroutineScope {
             launch {
-                viewModel.getItemCount()
                 viewModel.getCartItems()
                 viewModel.cartItems.collect{
                     if (it is Resource.Success){
@@ -153,7 +151,7 @@ fun CartScreen(
                         text = buildAnnotatedString {
                             append("Your Cart\n")
                             pushStyle(style = SpanStyle(fontWeight = FontWeight.Bold))
-                            append("List ($itemCount)")
+                            append("List (${cartItems.size})")
                         },
                         color = navyBlue,
                         fontSize = 36.sp,

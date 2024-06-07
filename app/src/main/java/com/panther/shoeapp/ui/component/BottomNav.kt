@@ -32,8 +32,6 @@ import com.panther.shoeapp.navigation.BottomBarScreen
 import com.panther.shoeapp.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.white
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun BottomNav(
@@ -41,15 +39,12 @@ fun BottomNav(
     viewModel: CartViewModel = viewModel()
 ) {
     // Observe the itemCount state flow
-    val itemCount by viewModel.itemCount.collectAsState()
+    val cartItemState by viewModel.cartItems.collectAsState()
+    val cartItems = cartItemState.data
+
     LaunchedEffect(Unit) {
 
-        coroutineScope {
-            launch {
-                viewModel.getItemCount()
-            }
-        }
-
+        viewModel.getCartItems()
     }
 
     val screens = listOf(
@@ -74,7 +69,7 @@ fun BottomNav(
 
             screens.forEach { screen ->
                 val badgeNumber = if (screen == BottomBarScreen.Cart) {
-                    itemCount
+                    cartItems?.size ?: 0
                 } else {
                     null
                 }

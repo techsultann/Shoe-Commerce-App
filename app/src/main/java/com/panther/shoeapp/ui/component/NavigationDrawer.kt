@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
-import com.panther.shoeapp.navigation.AuthScreen
 import com.panther.shoeapp.navigation.Graph
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.presentation.home.HomeViewModel
@@ -257,7 +256,7 @@ fun NavDrawer(
                     onClick = {
                         viewModel.logout()
                         navController.popBackStack()
-                        navController.navigate(route = AuthScreen.LoginScreen.route)
+                        navController.navigate(route = Graph.AUTHENTICATION)
                               },
                     icon = {
                         Icon(
