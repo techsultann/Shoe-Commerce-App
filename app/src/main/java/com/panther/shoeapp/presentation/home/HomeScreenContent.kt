@@ -1,7 +1,6 @@
 package com.panther.shoeapp.presentation.home
 
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,14 +63,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.R
 import com.panther.shoeapp.navigation.HomeScreenNav
+import com.panther.shoeapp.ui.component.BottomNav
 import com.panther.shoeapp.ui.component.HomeScreenCard
 import com.panther.shoeapp.ui.component.NavDrawer
 import com.panther.shoeapp.ui.component.PriceRangeSlider
@@ -91,13 +89,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreenContent(
     navHostController: NavHostController,
-    viewModel: HomeViewModel = viewModel()
+    modifier: Modifier
 ) {
+
+    val viewModel: HomeViewModel = viewModel()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-   // val getAllShoeState by viewModel.allShoes.collectAsState()
+
     ModalNavigationDrawer(
 
         drawerState = drawerState,
@@ -175,6 +175,9 @@ fun HomeScreenContent(
                         }
                     }
                 )
+            },
+            bottomBar = {
+                BottomNav(navController = navHostController)
             }
         ) { padding ->
 
@@ -371,6 +374,7 @@ fun NewDeals(
 
     val viewModel: HomeViewModel = viewModel()
     val newDeals = viewModel.newDeals.collectAsState()
+    val rating = viewModel.productRating.collectAsState()
 
     when (newDeals.value) {
 
@@ -391,9 +395,7 @@ fun NewDeals(
             }
         }
         is Resource.Success -> {
-
-                val newDealsList = newDeals.value.data ?: emptyList()
-                Log.d("New DEAL LIST", "NEW DEALS: $newDealsList")
+            val newDealsList = newDeals.value.data ?: emptyList()
 
                 LazyRow(
                     modifier = Modifier
@@ -762,14 +764,4 @@ fun BannerCard(
         }
 
     }
-}
-
-
-@Preview
-@Composable
-fun MainScreenPreview() {
-
-    HomeScreenContent(
-        navHostController = rememberNavController()
-    )
 }

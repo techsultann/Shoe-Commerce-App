@@ -20,31 +20,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.panther.shoeapp.navigation.BottomBarScreen
-import com.panther.shoeapp.presentation.cart.CartViewModel
 import com.panther.shoeapp.ui.theme.navyBlue
 import com.panther.shoeapp.ui.theme.white
+import com.panther.shoeapp.viewmodel.MainViewModel
 
 @Composable
 fun BottomNav(
     navController: NavHostController,
-    viewModel: CartViewModel = viewModel()
+    viewModel : MainViewModel = hiltViewModel()
 ) {
     // Observe the itemCount state flow
     val cartItemState by viewModel.cartItems.collectAsState()
     val cartItems = cartItemState.data
+   // val totalCartItem = viewModel.totalCartItem
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(cartItemState) {
 
-        viewModel.getCartItems()
+        viewModel.cartItems.value
+        viewModel.cartItems()
     }
 
     val screens = listOf(
@@ -67,9 +67,11 @@ fun BottomNav(
             contentColor = Color.White
         ) {
 
+
             screens.forEach { screen ->
                 val badgeNumber = if (screen == BottomBarScreen.Cart) {
-                    cartItems?.size ?: 0
+                    val cartTotal = cartItems?.size ?: 0
+                    cartTotal
                 } else {
                     null
                 }
@@ -155,9 +157,3 @@ fun RowScope.AddItem(
 }
 
 
-@Preview
-@Composable
-fun PreviewBottomNav() {
-
-    BottomNav(navController = rememberNavController())
-}

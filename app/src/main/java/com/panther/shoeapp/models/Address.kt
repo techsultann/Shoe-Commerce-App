@@ -2,7 +2,6 @@ package com.panther.shoeapp.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class Address(
     val id: String? = null,
     val firstName: String? = null,

@@ -112,7 +112,8 @@ fun OrdersScreen(
 
                 items(orderList) { order ->
 
-                    order.cartItem!!.forEach { (_, cartItem) ->
+                    order.cartItem!!.forEach {
+                        (_, cartItem) ->
 
                         val btnColor = when (order.status) {
                             "Pending" -> Color.Red

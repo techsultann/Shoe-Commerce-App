@@ -10,6 +10,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
@@ -17,13 +18,15 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.panther.shoeapp.navigation.RootNavGraph
-import com.panther.shoeapp.presentation.home.HomeScreen
+import com.panther.shoeapp.presentation.home.HomeLandingPage
 import com.panther.shoeapp.ui.theme.ShoeAppTheme
+import com.panther.shoeapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    val viewModel : MainViewModel by viewModels()
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -46,15 +49,15 @@ class MainActivity : ComponentActivity() {
         )
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
+
+        viewModel.cartItems.value
         setContent {
             val currentUser = auth.currentUser
             ShoeAppTheme {
 
                 if (currentUser != null) {
-                    // HomeNavGraph(navController = rememberNavController())
-                    HomeScreen()
+                    HomeLandingPage()
                 } else {
-
                     RootNavGraph(navController = rememberNavController())
                 }
             }

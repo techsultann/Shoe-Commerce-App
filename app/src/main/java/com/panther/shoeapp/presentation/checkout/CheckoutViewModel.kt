@@ -3,7 +3,6 @@ package com.panther.shoeapp.presentation.checkout
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.wallet.PaymentsClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.panther.shoeapp.api.FlutterWaveApi
@@ -12,8 +11,10 @@ import com.panther.shoeapp.models.CartItem
 import com.panther.shoeapp.models.CreditCard
 import com.panther.shoeapp.models.Order
 import com.panther.shoeapp.models.User
+import com.panther.shoeapp.models.api_response.Customer
 import com.panther.shoeapp.models.api_response.PaymentRequest
 import com.panther.shoeapp.models.api_response.PaymentResponse
+import com.panther.shoeapp.presentation.cart.CartManager
 import com.panther.shoeapp.utils.Constants.SECRET_KEY
 import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +33,8 @@ import javax.inject.Inject
 class CheckoutViewModel @Inject constructor(
    private val fireStore: FirebaseFirestore,
    private val auth: FirebaseAuth,
-   private val paymentsClient: PaymentsClient,
-   private val apiService: FlutterWaveApi
+   private val apiService: FlutterWaveApi,
+   private val cartManager: CartManager
 ) : ViewModel() {
 
    private val _getSavedCards = MutableStateFlow<Resource<List<CreditCard>>>(Resource.Loading())
@@ -54,13 +55,7 @@ class CheckoutViewModel @Inject constructor(
    val userData: StateFlow<Resource<User>> = _userData
    private val _verifyPaymentState = MutableStateFlow<Resource<PaymentResponse>>(Resource.Loading())
    val verifyPaymentState: StateFlow<Resource<PaymentResponse>> = _verifyPaymentState
-
-//   data class State(
-//      val googlePayAvailable: Boolean? = false,
-//      val googlePayButtonClickable: Boolean = true,
-//      val checkoutSuccess: Boolean = false,
-//   )
-//
+   
 //   private val _state = MutableStateFlow(State())
 //   val state: StateFlow<State> = _state.asStateFlow()
 
@@ -69,7 +64,9 @@ class CheckoutViewModel @Inject constructor(
       userEmail()
    }
 
-   fun verifyPayment(id: String) {
+   fun verifyPayment(
+      id: String
+   ) {
 
       viewModelScope.launch(Dispatchers.IO) {
          try {
@@ -90,12 +87,32 @@ class CheckoutViewModel @Inject constructor(
 
    }
 
-   fun makeFlutterWavePayment(paymentRequest: PaymentRequest) {
+   fun makeFlutterWavePayment(
+      amount: String,
+      currency: String,
+      email: String,
+      name: String,
+      phoneNumber: String
+   ) {
 
       viewModelScope.launch {
-
+         
          try {
+            val redirectUrl = "https://techsultan.com"
+            val txRef = generateUniqueShoeId()
 
+            val paymentRequest = PaymentRequest(
+               amount = "2000",
+               currency = currency,
+               customer = Customer(
+                  email = email,
+                  name = name,
+                  phonenumber = phoneNumber
+               ),
+               redirectUrl = redirectUrl,
+               txRef = txRef
+            )
+            
             val response = apiService.flutterWavePayment(SECRET_KEY, paymentRequest)
 
             if (response.isSuccessful && response.body() != null) {
@@ -106,7 +123,7 @@ class CheckoutViewModel @Inject constructor(
             } else {
 
                _paymentState.value = Resource.Error("Error: ${response.message()}")
-               Log.d("FLUTTERWAVE", "Wave Payment Error: ${response.message()}")
+               Log.d("FLUTTERWAVE", "Wave Payment Error: ${response.toString()}")
             }
          } catch (e: Exception) {
 
@@ -226,6 +243,9 @@ class CheckoutViewModel @Inject constructor(
                   for (document in result) {
                      val cart = document.toObject(CartItem::class.java)
                      shoeList.add(cart)
+                     viewModelScope.launch {
+                        cartManager.clearCart()
+                     }
                   }
                   _cartItems.value = Resource.Success(shoeList)
                   Log.d("GET CART ITEMS", "Cart Items: $shoeList")
@@ -277,9 +297,8 @@ class CheckoutViewModel @Inject constructor(
                .document(orderId)
                .set(order)
                .addOnSuccessListener {
-
-                  _createOrder.value = Resource.Success(order)
                   clearCartItem()
+                  _createOrder.value = Resource.Success(order)
                   Log.d("ORDER DETAILS", "Order details saved")
                }
                .addOnFailureListener { e ->
@@ -294,7 +313,7 @@ class CheckoutViewModel @Inject constructor(
       }
    }
 
-   private fun clearCartItem() {
+   fun clearCartItem() {
 
       viewModelScope.launch(Dispatchers.IO) {
 
@@ -302,8 +321,6 @@ class CheckoutViewModel @Inject constructor(
             val userId = auth.currentUser!!.uid
             fireStore.collection("baskets")
                .document(userId)
-               .collection("cartItems")
-               .document()
                .delete()
                .addOnSuccessListener {
                   Log.d("DELETE CART ITEMS", "Cart cleared successfully")
@@ -359,74 +376,9 @@ class CheckoutViewModel @Inject constructor(
 
    private fun generateUniqueShoeId(): String {
       // You can use any unique identifier generation mechanism here, such as UUID
-      return UUID.randomUUID().toString()
+     val uid = UUID.randomUUID().toString()
+      return "txf-$uid"
    }
 
-//   private fun checkGooglePayAvailability() {
-//
-//      val isReadyToPayJson = PaymentsUtil.isReadyToPayRequest() ?: return
-//      val request = IsReadyToPayRequest.fromJson(isReadyToPayJson.toString()) ?: return
-//
-//      // The call to isReadyToPay is asynchronous and returns a Task. We need to provide an
-//      // OnCompleteListener to be triggered when the result of the call is known.
-//      val task = paymentsClient.isReadyToPay(request)
-//
-//      task.addOnCompleteListener { completedTask ->
-//         try {
-//            completedTask.getResult(ApiException::class.java)
-//         } catch (exception: ApiException) {
-//            // Process error
-//            Log.w("isReadyToPay failed", exception)
-//         }
-//      }
-//   }
-
-
-//   fun requestPayment(priceCents: Double) {
-//
-//      val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(priceCents)
-//      val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-//
-//      viewModelScope.launch {
-//         _state.update { currentState -> currentState.copy(googlePayButtonClickable = false) }
-//         try {
-//            val paymentData = paymentsClient.loadPaymentData(request).await()
-//            handlePaymentSuccess(paymentData)
-//         } catch (exception: ApiException) {
-//            handleError(exception.statusCode, exception.message)
-//         } finally {
-//            _state.update { currentState -> currentState.copy(googlePayButtonClickable = true) }
-//         }
-//      }
-//   }
-
-//   fun getLoadPaymentDataTask(priceCents: Double): Task<PaymentData> {
-//
-//      val paymentDataRequestJson = PaymentsUtil.getPaymentDataRequest(priceCents)
-//      val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
-//
-//      return paymentsClient.loadPaymentData(request)
-//   }
-
-//   fun handlePaymentSuccess(paymentData: PaymentData) {
-//      // Implement your success logic here (e.g., call your backend for processing)
-//      _state.update { currentState -> currentState.copy(checkoutSuccess = true) }
-//   }
-
-//   fun handleError(statusCode: Int, message: String?) {
-//      // Implement your error handling logic here (e.g., display an error message)
-//   }
-
-//   fun setGooglePayButtonClickable(clickable:Boolean) {
-//      _state.update { currentState ->
-//         currentState.copy(googlePayButtonClickable = clickable)
-//      }
-//   }
-
-//   fun checkoutSuccess() {
-//      _state.update { currentState ->
-//         currentState.copy(checkoutSuccess = true)
-//      }
-//   }
 
 }

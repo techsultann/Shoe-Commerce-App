@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.gms.wallet.CreditCardExpirationDate
 import com.panther.shoeapp.R
 import com.panther.shoeapp.ui.theme.navyBlue
 

@@ -68,7 +68,7 @@ fun HomeNavGraph(
     ){
         composable(route = BottomBarScreen.Home.route){
             val viewModel = hiltViewModel<HomeViewModel>()
-            HomeScreenContent(navController, viewModel)
+            HomeScreenContent(navController, modifier)
         }
         composable(route = BottomBarScreen.Discovery.route){
             val viewModel = hiltViewModel<HomeViewModel>()
@@ -281,11 +281,11 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
         ){ backStackEntry ->
             val viewModel = hiltViewModel<CheckoutViewModel>()
             val uri = backStackEntry.arguments?.getString("uri")
-            WebViewsScreen(url = uri)
+            WebViewsScreen(url = uri, onBackPressed = { navController.popBackStack() }, navController)
         }
 
         composable(
-            route = HomeScreenNav.SuccessfulScreen.route,
+            route = "${HomeScreenNav.SuccessfulScreen.route}/{status}/{tx_ref}/{transaction_id}",
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(
@@ -330,7 +330,7 @@ fun NavGraphBuilder.cartNavGraph(navController: NavHostController){
 
         composable(route = BottomBarScreen.Home.route){
             val viewModel = hiltViewModel<HomeViewModel>()
-            HomeScreenContent(navController, viewModel)
+            HomeScreenContent(navController, Modifier)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.panther.shoeapp.models
 
+
 data class Shoe(
     val id: String? = null,
     val name: String? = null,

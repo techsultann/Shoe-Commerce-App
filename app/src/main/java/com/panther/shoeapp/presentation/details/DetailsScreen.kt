@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -393,7 +394,7 @@ fun DetailsScreen(
 
                         Spacer(modifier = Modifier.height(22.dp))
 
-                        Divider(
+                        HorizontalDivider(
                             thickness = 1.dp,
                             color = Color.LightGray
                         )
@@ -406,7 +407,7 @@ fun DetailsScreen(
                                 .padding(start = 22.dp)
                         )
 
-                        Divider(
+                        HorizontalDivider(
                             thickness = 1.dp,
                             color = Color.LightGray
                         )

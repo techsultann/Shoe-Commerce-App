@@ -29,7 +29,7 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,8 +59,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.panther.shoeapp.models.api_response.Customer
-import com.panther.shoeapp.models.api_response.PaymentRequest
 import com.panther.shoeapp.navigation.HomeScreenNav
 import com.panther.shoeapp.ui.component.ShoeAppButton
 import com.panther.shoeapp.ui.component.TopAppBar
@@ -120,7 +118,7 @@ fun CheckOutScreen(
 
             val responseLink = response.data?.data
             val uri = Uri.encode(responseLink?.link ?: "")
-            navHostController.navigate("${HomeScreenNav.WebViewScreen.route}/{$uri}")
+            navHostController.navigate("${HomeScreenNav.WebViewScreen.route}/$uri")
 
 //            if (paymentResponse != null) {
 //                redirectToPaymentLink(paymentResponse.link)
@@ -325,7 +323,7 @@ fun CheckOutScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Divider(
+            HorizontalDivider(
                 thickness = 1.dp,
                 color = Color.LightGray
             )
@@ -407,19 +405,13 @@ fun CheckOutScreen(
                             name = "${firstAddressData.lastName} ${firstAddressData.firstName}",
                             phoneNumber = firstAddressData.phoneNumber!!
                         )
-
+                        viewModel.clearCartItem()
                         viewModel.makeFlutterWavePayment(
-                            PaymentRequest(
-                                amount = "2000",
-                                currency = "NGN",
-                                customer = Customer(
-                                    name = name,
-                                    email = email,
-                                    phonenumber = "09130221615"
-                                ),
-                                redirectUrl = "https://techsultan.com",
-                                txRef = "txf-1234"
-                            )
+                            amount = totalAmount.toString(),
+                            currency = "NGN",
+                            email = email,
+                            name = name,
+                            phoneNumber = firstAddressData.phoneNumber
                         )
                     } else {
                         Toast.makeText(mContext, "Add a delivery address", Toast.LENGTH_SHORT).show()
@@ -457,7 +449,7 @@ fun WebView(
 
 class CustomWebViewClient: WebViewClient(){
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        if(url != null && url.startsWith("https://example.com")){
+        if(url != null && url.startsWith("https://techsultan.com")){
             view?.loadUrl(url)
             return true
         }

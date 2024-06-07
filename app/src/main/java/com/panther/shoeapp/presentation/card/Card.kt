@@ -71,7 +71,7 @@ fun CardScreen(
                     ) {
                         IconButton(
                             onClick = {
-
+                                navHostController.popBackStack()
                             }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,

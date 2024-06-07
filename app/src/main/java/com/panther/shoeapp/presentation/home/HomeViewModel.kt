@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.panther.shoeapp.models.Review
 import com.panther.shoeapp.models.Shoe
 import com.panther.shoeapp.models.User
 import com.panther.shoeapp.utils.Resource
@@ -33,6 +34,8 @@ class HomeViewModel @Inject constructor(
     val puma : StateFlow<Resource<List<Shoe>>> = _puma
     private val _newDeals = MutableStateFlow<Resource<List<Shoe>>>(Resource.Loading())
     val newDeals : StateFlow<Resource<List<Shoe>>> = _newDeals
+    private val _productRating = MutableStateFlow<Resource<List<Review>>>(Resource.Loading())
+    val productRating : StateFlow<Resource<List<Review>>> = _productRating
 
 
     init {
@@ -209,6 +212,40 @@ class HomeViewModel @Inject constructor(
                     }
             }catch (e: Exception) {
                 Log.d("GET PUMA SHOES", "${e.message}")
+            }
+
+        }
+    }
+
+    fun getProductRating(
+        shoeId: String
+    ) {
+
+        viewModelScope.launch(Dispatchers.IO) {
+
+            try {
+                _productRating.value = Resource.Loading()
+
+                fireStore.collection("reviews")
+                    .whereEqualTo("productId", shoeId)
+                    .get()
+                    .addOnSuccessListener { querySnapshot ->
+                        val productReview = mutableListOf<Review>()
+
+                        for (document in querySnapshot){
+                            val review = document.toObject(Review::class.java)
+                            productReview.add(review)
+                        }
+                        _productRating.value = Resource.Success(productReview)
+
+                    }
+                    .addOnFailureListener{ exception ->
+                        _productRating.value = Resource.Error(exception.message)
+                        Log.e("PRODUCT REVIEW", exception.message.toString())
+                    }
+            }catch (e: Exception) {
+                _productRating.value = Resource.Error(e.message)
+                Log.d("PRODUCT REVIEW", "${e.message}")
             }
 
         }

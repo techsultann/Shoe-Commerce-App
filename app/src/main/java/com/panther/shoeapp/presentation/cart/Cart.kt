@@ -1,6 +1,7 @@
 package com.panther.shoeapp.presentation.cart
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -74,8 +75,6 @@ import com.panther.shoeapp.ui.theme.skyBlue
 import com.panther.shoeapp.ui.theme.white
 import com.panther.shoeapp.utils.Constants.toCurrency
 import com.panther.shoeapp.utils.Resource
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun CartScreen(
@@ -84,19 +83,22 @@ fun CartScreen(
     val viewModel: CartViewModel = viewModel()
     val cartItemState by viewModel.cartItems.collectAsState()
     val totalAmount by viewModel.totalAmount.collectAsState(initial = 0.0)
+    val mContext = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(cartItemState) {
 
-        coroutineScope {
-            launch {
-                viewModel.getCartItems()
-                viewModel.cartItems.collect{
-                    if (it is Resource.Success){
-                        viewModel.updateCartAmount()
-                    }
-                }
+        viewModel.cartItems()
+        viewModel.cartItems.collect{
+            if (it is Resource.Success){
+                viewModel.updateCartAmount()
             }
         }
+//        coroutineScope {
+//            launch {
+//
+//
+//            }
+//        }
 
     }
 
@@ -226,8 +228,6 @@ fun CartScreen(
                     fontSize = 16.sp
                 )
 
-                Log.d("TOTAL AMOUNT", "Total: $totalAmount")
-
                 Text(
                     text = totalAmount.toCurrency(),
                     fontSize = 16.sp
@@ -239,7 +239,14 @@ fun CartScreen(
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 100.dp)
                     .requiredHeight(66.dp),
-                onClick = { navHostController.navigate( route = "${HomeScreenNav.CheckoutScreen.route}/$totalAmount" )  }
+                onClick = {
+                    if (cartItemState.data != null) {
+                        navHostController.navigate( route = "${HomeScreenNav.CheckoutScreen.route}/$totalAmount" )
+                    } else {
+                        Toast.makeText(mContext, "Your cart is empty", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
             ) {
                 Text(
                     text = "Checkout",

@@ -2,7 +2,6 @@ package com.panther.shoeapp.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class Order(
     val orderId: String? = "",
     val userId: String? = null,

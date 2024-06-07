@@ -3,7 +3,6 @@ package com.panther.shoeapp.models
 import kotlinx.serialization.Serializable
 
 
-@Serializable
 data class CartItem(
     val id: String? = null,
     val name: String? = null,

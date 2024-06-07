@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.panther.shoeapp.models.CartItem
 import com.panther.shoeapp.models.Review
 import com.panther.shoeapp.models.Shoe
+import com.panther.shoeapp.presentation.cart.CartManager
 import com.panther.shoeapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val fireStore: FirebaseFirestore,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val cartManager: CartManager,
 ) : ViewModel() {
 
     private val _shoeById = MutableStateFlow<Resource<Shoe>>(Resource.Loading())
