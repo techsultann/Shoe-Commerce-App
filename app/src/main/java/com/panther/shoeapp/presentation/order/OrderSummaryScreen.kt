@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
@@ -145,6 +147,7 @@ fun OrderSummaryScreen(
                 .padding(16.dp)
                 .fillMaxSize()
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
         ) {
 
             Text(
@@ -397,7 +400,7 @@ fun OrderSummaryScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .background(FieldColor, shape = RoundedCornerShape(24.dp))
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(200.dp)
                 .clip(RoundedCornerShape(24.dp))
         ) {
             Row(

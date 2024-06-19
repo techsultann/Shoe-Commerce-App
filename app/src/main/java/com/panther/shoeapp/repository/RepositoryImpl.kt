@@ -83,7 +83,7 @@ class RepositoryImpl @Inject constructor(
             Resource.Success(User())
         } catch (e: Exception) {
             Log.e("LOGIN TAG", "Login: FAILED")
-            Resource.Error("Failed")
+            Resource.Error(e.message)
         }
     }
 
@@ -109,7 +109,7 @@ class RepositoryImpl @Inject constructor(
             Resource.Success(User())
         } catch (e: Exception) {
             Log.e("TAG", "Logout: FAILED")
-            Resource.Error("Failed")
+            Resource.Error(e.message)
         }
     }
 

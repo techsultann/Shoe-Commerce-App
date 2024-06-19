@@ -3,8 +3,6 @@ package com.panther.shoeapp.presentation.checkout
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.panther.shoeapp.navigation.HomeScreenNav
@@ -76,7 +73,6 @@ fun CheckOutScreen(
     subTotalPrice: String?,
     viewModel: CheckoutViewModel = viewModel()
 ) {
-
     val mContext = LocalContext.current
     val cardState by viewModel.getSavedCards.collectAsState()
     val cartItems by viewModel.cartItems.collectAsState()
@@ -92,7 +88,7 @@ fun CheckOutScreen(
     val userData by viewModel.userData.collectAsState()
     val userDetails = userData.data
    // val total by remember { mutableDoubleStateOf(totalAmount) }
-    val firstAddressData = addressData?.first()
+    val firstAddressData = addressData?.firstOrNull()
 
     val uriHandler = LocalUriHandler.current
 
@@ -119,10 +115,6 @@ fun CheckOutScreen(
             val responseLink = response.data?.data
             val uri = Uri.encode(responseLink?.link ?: "")
             navHostController.navigate("${HomeScreenNav.WebViewScreen.route}/$uri")
-
-//            if (paymentResponse != null) {
-//                redirectToPaymentLink(paymentResponse.link)
-//            }
 
         }
         is Resource.Idle -> {
@@ -429,30 +421,4 @@ fun CheckOutScreen(
     }
 }
 
-@Composable
-fun WebView(
-    url: String,
-    webViewClient: WebViewClient = WebViewClient()
-) {
 
-    AndroidView(
-        factory = { context ->
-            WebView(context).apply {
-                this.webViewClient = webViewClient
-            }
-        },
-        update = { webView ->
-            webView.loadUrl(url)
-        }
-    )
-}
-
-class CustomWebViewClient: WebViewClient(){
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        if(url != null && url.startsWith("https://techsultan.com")){
-            view?.loadUrl(url)
-            return true
-        }
-        return false
-    }
-}
